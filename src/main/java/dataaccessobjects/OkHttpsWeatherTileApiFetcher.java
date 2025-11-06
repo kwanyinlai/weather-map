@@ -1,5 +1,6 @@
 package dataaccessobjects;
 
+import dataaccessinterface.TileNotFoundException;
 import okhttp3.Request;
 import okhttp3.Response;
 import okhttp3.OkHttpClient;
@@ -17,13 +18,6 @@ import javax.imageio.ImageIO;
 public class OkHttpsWeatherTileApiFetcher implements WeatherTileApiFetcher {
     private final OkHttpClient client = new OkHttpClient();
 
-    /** Make an API call to <a href="https://weathermaps.weatherapi.com">WeatherMaps</a> API to request
-     * image data, and return the image data.
-     *
-     * @param tile the tile for which image data is to be collected for
-     * @return image data associated with <code>tile</code>
-     * @throws TileNotFoundException If image data for <code>tile</code> could not be parsed, or if the tile given is invalid
-     */
     public BufferedImage getWeatherTileImageData(WeatherTile tile) throws TileNotFoundException {
         String url = "https://weathermaps.weatherapi.com/";
         final Request request = new Request.Builder()
