@@ -72,8 +72,13 @@ public class CachedTileRepository implements TileRepository {
      * @return The image data of the tile associated with the params or <code> null </code>
      *         if the params refer to an invalid tile
      */
-    public BufferedImage getTileImageData(int x, int y, double zoom, java.time.Instant timestamp){
-        return getTileImageDataFromStringKey(x+","+y+","+zoom+","+timestamp);
+    public BufferedImage getTileImageData(int x, int y, double zoom, java.time.Instant timestamp) throws TileNotFoundException {
+        try {
+            return getTileImageDataFromStringKey(x+","+y+","+zoom+","+timestamp);
+        }
+        catch (TileNotFoundException e) {
+            throw new TileNotFoundException(e.getMessage());
+        }
     }
 
     /** Return the tile image data associated with the Tile object
@@ -82,26 +87,36 @@ public class CachedTileRepository implements TileRepository {
      * @return The image data of the tile associated with the params or <code> null </code>
      *         if the params refer to an invalid tile
      */
-    public BufferedImage getTileImageData(WeatherTile tile){
+    public BufferedImage getTileImageData(WeatherTile tile) throws TileNotFoundException {
         String tileKey = tile.generateKey();
-        return getTileImageDataFromStringKey(tileKey);
+        try {
+            return getTileImageDataFromStringKey(tileKey);
+        }
+        catch (TileNotFoundException e) {
+            throw new TileNotFoundException(e.getMessage());
+        }
     }
 
-    private BufferedImage getTileImageDataFromStringKey(String tileKey){
+    private BufferedImage getTileImageDataFromStringKey(String tileKey) throws TileNotFoundException {
         if (tileHash.containsKey(tileKey)){
             return tileHash.get(tileKey).imageData;
         }
         else {
-            return getTileImageFromAPI(tile);
+            try {
+                return getTileImageFromAPI(tile);
+            } catch (TileNotFoundException e) {
+                throw new TileNotFoundException(e.getMessage());
+            }
         }
     }
 
     private BufferedImage getTileImageFromAPI(WeatherTile tile) throws TileNotFoundException {
         try {
-            BufferedImage imageData = weatherTileApiFetcher.getWeatherTileImageData(tile);
+            return weatherTileApiFetcher.getWeatherTileImageData(tile);
         } catch (TileNotFoundException e) {
-            throw new TileNotFoundException(e.toString());
+            throw new TileNotFoundException(e.getMessage());
         }
+
     }
 
 

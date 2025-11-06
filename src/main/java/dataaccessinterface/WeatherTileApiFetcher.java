@@ -13,5 +13,5 @@ public interface WeatherTileApiFetcher {
      * @return image data associated with <code>tile</code>
      * @throws TileNotFoundException If image data for <code>tile</code> could not be parsed, or if the tile given is invalid
      */
-    public BufferedImage getWeatherTileImageData(WeatherTile tile) throws TileNotFoundException;
+    BufferedImage getWeatherTileImageData(WeatherTile tile) throws TileNotFoundException;
 }
