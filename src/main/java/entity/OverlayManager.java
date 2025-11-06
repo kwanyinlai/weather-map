@@ -1,7 +1,7 @@
 package entity;
 
 import java.awt.*;
-import java.awt.image.BufferedImage;
+import java.awt.image.*;
 import java.util.ArrayList;
 
 public class OverlayManager {
@@ -49,19 +49,20 @@ public class OverlayManager {
         return overlay;
     }
 
-    //TODO implement updateOverlayUseCase
-    public void updateOverlay(Vector tl, Vector br, ArrayList<Tile> tileList){
-        for (Tile tile: tileList){
-            drawTileToOverlay(tl, br, tile);
-        }
-    }
+    /**
+    Draw given tile onto the overlay based on the viewport bounding box, represented as 2 vectors,
+    in tile coordinates.
+     @param tl - the top left of the viewport, in tile coordinates as a vector.
+     @param br - the bottom right of the viewport, in tile coordinates as a vector.
+     @param tile - the metadata of the tile
+     @param tileImg - the bufferedImage of the tile
+     **/
+    public void drawTileToOverlay(Vector tl, Vector br, WeatherTile tile, BufferedImage tileImg){
+        //
 
-    private void drawTileToOverlay(Vector tl, Vector br, Tile tile){
-        //Draw given tile onto the overlay based on the viewport bounding box, represented as 2 vectors,
-        // in tile coordinates.
-
+        TileCoords tc = tile.getCoordinates();
         //convert tile location to Vector for convenience.
-        Vector tileCoord = new Vector(tile.getX(),tile.getY());
+        Vector tileCoord = new Vector(tc.getX(),tc.getY());
         Vector topLeft = new Vector(tl);
         Vector botRight = new Vector(br);
 
@@ -70,7 +71,8 @@ public class OverlayManager {
         tileCoord.sub(topLeft);
         botRight.sub(topLeft);
 
-        //2. find a value s s.t. viewport * s = overlay. Assume same porportion, so br.x * s should = overlay.getWidth() and y*s = height.
+        //2. find a value s s.t. viewport * s = overlay. Assume same porportion,
+        // so br.x * s should = overlay.getWidth() and y*s = height.
         double scaleToOvl = (double)this.overlay.getWidth() / botRight.x ;
 
         //3. tc * c, top left of tile image is now aligned with the overlay image.
@@ -81,20 +83,17 @@ public class OverlayManager {
         // (theoratical) "scale" the image to fit onto the UV tile grid, then scale by c.
         // same as c * "scale" = c / (2^zoom * 256)
         double pngToTileFactor = scaleToOvl / (Math.pow(2,tile.getZoom()) * 256) ;
-
         //apply scale to the tile image.
-        BufferedImage tilePng= new BufferedImage((int)(256 * pngToTileFactor), (int)(256 * pngToTileFactor), BufferedImage.TYPE_3BYTE_BGR);
-        //tile.getImage().getScaledInstance((int)(256*pngToTileFactor), -1, image.SCALE_FAST);
+        Image scaledTileImg = tileImg.getScaledInstance((int)(256*pngToTileFactor), -1, Image.SCALE_FAST);
 
         //draw tile image onto overlay with selected layer's opacity.
         Graphics2D g = this.overlay.createGraphics();
         AlphaComposite alphaComposite = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, getSelectedOpacity());
         g.setComposite(alphaComposite);
-        g.drawImage(tilePng, (int)tileCoord.x, (int)tileCoord.y, null);
+        g.drawImage(scaledTileImg, (int)tileCoord.x, (int)tileCoord.y, null);
         g.dispose();
 
     }
-
 
 }
 

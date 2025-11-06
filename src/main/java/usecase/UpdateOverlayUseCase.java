@@ -1,23 +1,30 @@
 package usecase;
 
+import dataaccessinterface.TileRepository;
 import entity.*;
 
+import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 
 public final class UpdateOverlayUseCase {
     private final OverlayManager overlayManager;
-    //cache
-    //info on time
+    private final TileRepository tileCache;
+    private final ProgramTime time;
+    private final int maxZoom;
+    private final int minZoom;
 
-    //TODO add cache and time info
-    public UpdateOverlayUseCase(OverlayManager om){this.overlayManager = om;}
+    public UpdateOverlayUseCase(OverlayManager om, TileRepository tCache, ProgramTime time, int maxZoom, int minZoom){
+        this.overlayManager = om;
+        this.tileCache = tCache;
+        this.time = time;
+        this.maxZoom = maxZoom;
+        this.minZoom = minZoom;
+    }
 
-    //TODO add viewport
-    public void update(){
-        double zoom = 1.0; //view.getZoom();
-        Location tl = new Location(-10, -10);
-        Location br = new Location(10, 10);
-        BoundingBox bBox = new BoundingBox(tl, br);
+
+    public void update(Viewport vp){
+        int zoom = convertZoomToInt(vp.getZoomLevel());
+        BoundingBox bBox = vp.calculateBBox();
 
         //Convert to tile coords,
         //lat lon as bounding box, convert lat lon to 0-1. //Move this to boundingbox entity?
@@ -35,17 +42,21 @@ public final class UpdateOverlayUseCase {
 
         //get amount of visible tiles in both direction (vp might not be a square)
         int visibleTilesX = (int)botRight.x - (int)topLeft.x + 1; //(15.1 to 15.6, sill 1 tile visible)
-        int visibleTilesY = (int)topLeft.y- (int)botRight.y + 1;
-        ArrayList<Tile> tileList = new ArrayList<>();
+        int visibleTilesY = (int)topLeft.y - (int)botRight.y + 1;
 
         for(int i = 0; i < visibleTilesX; i++){
             for(int j = 0; j < visibleTilesY; j++){
-                //Tile tile = cache.fetchTile(this.overayManager.getSelected(), (int)topLeft.x + i, (int)topLeft.y + j)
-                //tileList.add(tile)
+                TileCoords tc = new TileCoords((int)topLeft.x + i, (int)topLeft.y + j, zoom);
+                WeatherTile tile = new WeatherTile(zoom, tc); //TODO update to add this.time.getCurrentTime()
+                BufferedImage tileImg = this.tileCache.getTileImageData(tile);
+                this.overlayManager.drawTileToOverlay(topLeft, botRight, tile, tileImg);
             }
         }
-        this.overlayManager.updateOverlay(topLeft, botRight, tileList);
         //output.setoverlay(this.overlayManager.getOverlay());
+    }
+
+    private int convertZoomToInt(double zoom){
+        return (int)Math.max(this.minZoom, Math.min(this.maxZoom, zoom));
     }
 
     // convert both lat and lon to a value between 0-1, 0 being -180 or 90, 1 being 180 or -90.
