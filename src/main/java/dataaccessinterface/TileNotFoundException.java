@@ -1,4 +1,4 @@
-package dataaccessobjects;
+package dataaccessinterface;
 
 import entity.WeatherTile;
 import java.io.IOException;

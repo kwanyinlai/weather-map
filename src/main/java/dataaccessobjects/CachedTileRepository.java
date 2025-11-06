@@ -1,6 +1,8 @@
 package dataaccessobjects;
 
+import dataaccessinterface.TileNotFoundException;
 import dataaccessinterface.TileRepository;
+import dataaccessinterface.WeatherTileApiFetcher;
 import entity.WeatherTile;
 import java.awt.image.BufferedImage;
 import java.util.HashMap;
@@ -11,10 +13,10 @@ import java.util.HashMap;
  *  grows up to a fixed size, and stores nodes by Least Recently Used.
  */
 public class CachedTileRepository implements TileRepository {
-
+    private final WeatherTileApiFetcher weatherTileApiFetcher = new OkHttpsWeatherTileApiFetcher();
     private HashMap<String, CacheEntry> tileHash;
     private CacheEntryList cacheEntryList; // linked list used for efficient removal and adding.
-    private int tileCacheSize; // max size for the given cache
+    private final int tileCacheSize; // max size for the given cache
 
     private static class CacheEntry {
         private BufferedImage imageData;
@@ -29,13 +31,13 @@ public class CachedTileRepository implements TileRepository {
         }
     }
 
+    /** storing head and tail node for doubly linked list
+     *  might only need head node though
+     */
     private static class CacheEntryList {
         private CacheEntry head;
         private CacheEntry tail;
 
-        public CacheEntryList(CacheEntry firstNode) {
-            return;
-        }
 
         public void addCacheEntry(CacheEntry entry) {
             if (this.head == null) {
@@ -45,7 +47,8 @@ public class CachedTileRepository implements TileRepository {
             }
             else{
                 this.tail.next = entry;
-                entry.next = this.tail;
+                entry.next = this.head;
+                this.tail = entry;
             }
         }
 
@@ -93,8 +96,12 @@ public class CachedTileRepository implements TileRepository {
         }
     }
 
-    private BufferedImage getTileImageFromAPI(WeatherTile tile){
-        return null;
+    private BufferedImage getTileImageFromAPI(WeatherTile tile) throws TileNotFoundException {
+        try {
+            BufferedImage imageData = weatherTileApiFetcher.getWeatherTileImageData(tile);
+        } catch (TileNotFoundException e) {
+            throw new TileNotFoundException(e.toString());
+        }
     }
 
 
