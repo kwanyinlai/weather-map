@@ -5,14 +5,14 @@ import java.awt.image.*;
 import java.util.ArrayList;
 
 public class OverlayManager {
-    private final ArrayList<String> types;
+    private final ArrayList<WeatherType> types;
     private final ArrayList<Float> opacity;
-    private String selected;
+    private WeatherType selected;
     private BufferedImage overlay;
 
     public OverlayManager(int x, int y){
-        this.types = new ArrayList<String>();
-        this.opacity = new ArrayList<Float>();
+        this.types = new ArrayList<>();
+        this.opacity = new ArrayList<>();
         this.selected = null;
         this.overlay = new BufferedImage(x, y, BufferedImage.TYPE_INT_ARGB);
     }
@@ -22,18 +22,20 @@ public class OverlayManager {
         this.overlay = new BufferedImage(x, y, BufferedImage.TYPE_INT_ARGB);
     }
 
-    public void addOverlayType(String type){
+    public void addOverlayType(WeatherType type){
         this.types.add(type);
         this.opacity.add((float)0.5);
     }
 
-    public void setSelected(String selection) throws LayerNotFoundException {
+    public void setSelected(WeatherType selection) throws LayerNotFoundException {
         // Change the selected layer. Raise LayerNotFoundException if selection is not an added overlay type.
         if(this.types.contains(selection)) {
             this.selected = selection;
         }
-        else {throw new LayerNotFoundException(selection);}
+        else {throw new LayerNotFoundException(selection.toString());}
     }
+
+    public WeatherType getSelected(){return this.selected;}
 
     public float getSelectedOpacity(){
         if (this.selected == null) {return 0;}
@@ -82,7 +84,7 @@ public class OverlayManager {
         // each tile png is 256x256.
         // (theoratical) "scale" the image to fit onto the UV tile grid, then scale by c.
         // same as c * "scale" = c / (2^zoom * 256)
-        double pngToTileFactor = scaleToOvl / (Math.pow(2,tile.getZoom()) * 256) ;
+        double pngToTileFactor = scaleToOvl / (Math.pow(2,tile.getCoordinates().getZoom()) * 256) ;
         //apply scale to the tile image.
         Image scaledTileImg = tileImg.getScaledInstance((int)(256*pngToTileFactor), -1, Image.SCALE_FAST);
 

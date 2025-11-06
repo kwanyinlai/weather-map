@@ -47,7 +47,7 @@ public final class UpdateOverlayUseCase {
         for(int i = 0; i < visibleTilesX; i++){
             for(int j = 0; j < visibleTilesY; j++){
                 TileCoords tc = new TileCoords((int)topLeft.x + i, (int)topLeft.y + j, zoom);
-                WeatherTile tile = new WeatherTile(zoom, tc); //TODO update to add this.time.getCurrentTime()
+                WeatherTile tile = new WeatherTile(tc, this.time.getCurrentTime(), this.overlayManager.getSelected());
                 BufferedImage tileImg = this.tileCache.getTileImageData(tile);
                 this.overlayManager.drawTileToOverlay(topLeft, botRight, tile, tileImg);
             }

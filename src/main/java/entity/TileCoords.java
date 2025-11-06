@@ -17,6 +17,8 @@ public class TileCoords {
 
     public int getY(){return this.y;}
 
+    public int getZoom(){return this.zoom;}
+
     public Location getLatLong() {
         OsmMercator merc = new OsmMercator(256);
         int px = x * 256 + 128;
