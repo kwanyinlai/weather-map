@@ -5,7 +5,7 @@ import dataaccessinterface.TileRepository;
 import dataaccessinterface.WeatherTileApiFetcher;
 import entity.WeatherTile;
 import java.awt.image.BufferedImage;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 
 
 /** Concrete implementation of a {@link TileRepository} interface, used to
@@ -14,53 +14,24 @@ import java.util.HashMap;
  */
 public class CachedTileRepository implements TileRepository {
     private final WeatherTileApiFetcher weatherTileApiFetcher = new OkHttpsWeatherTileApiFetcher();
-    private HashMap<String, CacheEntry> tileHash;
-    private CacheEntryList cacheEntryList; // linked list used for efficient removal and adding.
-    private final int tileCacheSize; // max size for the given cache
-
-    private static class CacheEntry {
-        private BufferedImage imageData;
-        private CachedTileRepository.CacheEntry next;
-        private CachedTileRepository.CacheEntry prev;
-
-        /**
-         * @param imageData The image data of a specific tile
-         */
-        protected CacheEntry(BufferedImage imageData) {
-            this.imageData = imageData;
-        }
-    }
-
-    /** storing head and tail node for doubly linked list
-     *  might only need head node though
-     */
-    private static class CacheEntryList {
-        private CacheEntry head;
-        private CacheEntry tail;
+    private TileCacheLinkedHash<String, BufferedImage> tileCache;
 
 
-        public void addCacheEntry(CacheEntry entry) {
-            if (this.head == null) {
-                this.head = entry;
-                this.tail = entry;
-                this.tail.next = this.head;
-            }
-            else{
-                this.tail.next = entry;
-                entry.next = this.head;
-                this.tail = entry;
-            }
+    private static class TileCacheLinkedHash<String, BufferedImage> extends LinkedHashMap<String, BufferedImage>{
+        private final int maxSize;
+        public TileCacheLinkedHash(int maxSize) {
+            this.maxSize = maxSize;
         }
 
+        protected boolean removeEldestEntry(){
+            return size() > maxSize;
+        }
     }
-
     /**
      * @param tileCacheSize The maximum cache size for the cache
      */
     public CachedTileRepository(int tileCacheSize){
-        tileHash = new HashMap<>();
-        tiles = new List<>();
-        this.tileCacheSize = tileCacheSize;
+        tileHash = new TileCacheLinkedHash<>(tileCacheSize);
     }
 
     /** Return the tile image data associated with the given parms
@@ -98,8 +69,8 @@ public class CachedTileRepository implements TileRepository {
     }
 
     private BufferedImage getTileImageDataFromStringKey(String tileKey) throws TileNotFoundException {
-        if (tileHash.containsKey(tileKey)){
-            return tileHash.get(tileKey).imageData;
+        if (tileCache.containsKey(tileKey)){
+            return tileCache.get(tileKey).imageData;
         }
         else {
             try {
@@ -122,18 +93,22 @@ public class CachedTileRepository implements TileRepository {
 
     /**
      *
-     * @param tile
+     * @param tile the tile to be added to cache
      */
-    public void addTileToCache(WeatherTile tile){
-        if (tileHash.containsKey(tile.generateKey())){
+    public void addTileToCache(WeatherTile tile) throws TileNotFoundException {
+        if (tileCache.containsKey(tile.generateKey())) {
             return;
         }
-        BufferedImage imageData = getTileImageDataFromAPI(tile);
-        tileHash.put(tile.getKey(), imageData);
-        tileCacheSize.add(tile);
+        BufferedImage imageData;
+        try {
+            imageData = weatherTileApiFetcher.getWeatherTileImageData(tile);
+        } catch (TileNotFoundException e) {
+            throw new TileNotFoundException(e.getMessage());
+        }
+        tileCache.put(tile.generateKey(), imageData);
     }
 
-    public void clearOutdatedCache(java.time.Instant time){
+    public void forceClearOutdatedCache(java.time.Instant time){
     }
 
 }
