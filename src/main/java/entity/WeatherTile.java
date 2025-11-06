@@ -39,7 +39,4 @@ public class WeatherTile {
         return weatherType;
     }
 
-    public String generateKey(){
-        return coordinates.x+","+coordinates.y+","+zoom+","+timestamp;
-    }
 }
