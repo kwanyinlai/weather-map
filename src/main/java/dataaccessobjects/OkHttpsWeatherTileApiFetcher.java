@@ -1,5 +1,6 @@
 package dataaccessobjects;
 
+import dataaccessinterface.TileNotFoundException;
 import okhttp3.Request;
 import okhttp3.Response;
 import okhttp3.OkHttpClient;
@@ -7,6 +8,12 @@ import dataaccessinterface.WeatherTileApiFetcher;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
 import entity.WeatherTile;
 import javax.imageio.ImageIO;
 
@@ -17,13 +24,6 @@ import javax.imageio.ImageIO;
 public class OkHttpsWeatherTileApiFetcher implements WeatherTileApiFetcher {
     private final OkHttpClient client = new OkHttpClient();
 
-    /** Make an API call to <a href="https://weathermaps.weatherapi.com">WeatherMaps</a> API to request
-     * image data, and return the image data.
-     *
-     * @param tile the tile for which image data is to be collected for
-     * @return image data associated with <code>tile</code>
-     * @throws TileNotFoundException If image data for <code>tile</code> could not be parsed, or if the tile given is invalid
-     */
     public BufferedImage getWeatherTileImageData(WeatherTile tile) throws TileNotFoundException {
         String url = "https://weathermaps.weatherapi.com/";
         final Request request = new Request.Builder()
@@ -63,5 +63,25 @@ public class OkHttpsWeatherTileApiFetcher implements WeatherTileApiFetcher {
             throw new IOException();
         }
     }
+
+    public List<BufferedImage> getListOfWeatherTileImageData(List<WeatherTile> weatherTileList){
+        List<BufferedImage> imageList = new ArrayList<>();
+        try(ExecutorService executor = Executors.newFixedThreadPool(4)){
+        List<CompletableFuture<BufferedImage>> futures = new ArrayList<>();
+
+        for (WeatherTile tile : weatherTileList) {
+            CompletableFuture<BufferedImage> imageData =
+                    CompletableFuture.supplyAsync(() -> getWeatherTileImageData(tile), executor)
+                            .exceptionally(ex -> null);
+
+            futures.add(imageData);
+        }
+        for (CompletableFuture<BufferedImage> future : futures) {
+            imageList.add(future.join());
+        }
+        return imageList;
+        }
+    }
 }
+
 

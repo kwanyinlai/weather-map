@@ -2,9 +2,16 @@ package entity;
 import java.time.*;
 import java.time.format.DateTimeFormatter;
 
+/** Class which represents a tile on the weather map overlay
+ *
+ */
 public class WeatherTile {
     private final TileCoords coordinates;
+
+    /** the time which is represented by the tile */
     private final java.time.Instant timestamp;
+
+    /** corresponds to {@link WeatherType} */
     private final WeatherType weatherType;
 
     public WeatherTile(TileCoords coordinates, java.time.Instant timestamp, WeatherType weatherType) {
@@ -39,7 +46,4 @@ public class WeatherTile {
         return weatherType;
     }
 
-    public String generateKey(){
-        return coordinates.x+","+coordinates.y+","+zoom+","+timestamp;
-    }
 }

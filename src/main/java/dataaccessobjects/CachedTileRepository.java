@@ -1,9 +1,16 @@
 package dataaccessobjects;
 
+import dataaccessinterface.TileNotFoundException;
 import dataaccessinterface.TileRepository;
+import dataaccessinterface.WeatherTileApiFetcher;
+import entity.TileCoords;
 import entity.WeatherTile;
+import entity.WeatherType;
+
 import java.awt.image.BufferedImage;
-import java.util.HashMap;
+import java.util.Collections;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 
 /** Concrete implementation of a {@link TileRepository} interface, used to
@@ -11,53 +18,21 @@ import java.util.HashMap;
  *  grows up to a fixed size, and stores nodes by Least Recently Used.
  */
 public class CachedTileRepository implements TileRepository {
-
-    private HashMap<String, CacheEntry> tileHash;
-    private CacheEntryList cacheEntryList; // linked list used for efficient removal and adding.
-    private int tileCacheSize; // max size for the given cache
-
-    private static class CacheEntry {
-        private BufferedImage imageData;
-        private CachedTileRepository.CacheEntry next;
-        private CachedTileRepository.CacheEntry prev;
-
-        /**
-         * @param imageData The image data of a specific tile
-         */
-        protected CacheEntry(BufferedImage imageData) {
-            this.imageData = imageData;
-        }
-    }
-
-    private static class CacheEntryList {
-        private CacheEntry head;
-        private CacheEntry tail;
-
-        public CacheEntryList(CacheEntry firstNode) {
-            return;
-        }
-
-        public void addCacheEntry(CacheEntry entry) {
-            if (this.head == null) {
-                this.head = entry;
-                this.tail = entry;
-                this.tail.next = this.head;
-            }
-            else{
-                this.tail.next = entry;
-                entry.next = this.tail;
-            }
-        }
-
-    }
+    private final WeatherTileApiFetcher weatherTileApiFetcher = new OkHttpsWeatherTileApiFetcher();
+    private Map<WeatherTile, BufferedImage> tileCache;
 
     /**
      * @param tileCacheSize The maximum cache size for the cache
      */
     public CachedTileRepository(int tileCacheSize){
-        tileHash = new HashMap<>();
-        tiles = new List<>();
-        this.tileCacheSize = tileCacheSize;
+        tileCache = Collections.synchronizedMap(
+                new LinkedHashMap<WeatherTile, BufferedImage>(){
+                    @Override
+                    protected boolean removeEldestEntry(Map.Entry<WeatherTile, BufferedImage> eldest) {
+                        return size() > tileCacheSize;
+                    }
+                }
+        );
     }
 
     /** Return the tile image data associated with the given parms
@@ -66,11 +41,25 @@ public class CachedTileRepository implements TileRepository {
      * @param y The y-coordinate of the tile
      * @param zoom The zoom level of the tile
      * @param timestamp The timestamp of the tile, up to 3 hours from the current time
+     * @param weatherType The weather type of the tile from the {@link WeatherType} enum
      * @return The image data of the tile associated with the params or <code> null </code>
      *         if the params refer to an invalid tile
      */
-    public BufferedImage getTileImageData(int x, int y, double zoom, java.time.Instant timestamp){
-        return getTileImageDataFromStringKey(x+","+y+","+zoom+","+timestamp);
+    public BufferedImage getTileImageData(
+            int x, int y, int zoom, java.time.Instant timestamp, WeatherType weatherType)
+            throws TileNotFoundException {
+        try {
+            return getTileImageData(
+                    new WeatherTile(
+                            new TileCoords(x,y,zoom),
+                            timestamp,
+                            weatherType
+                    )
+            );
+        }
+        catch (TileNotFoundException e) {
+            throw new TileNotFoundException(e.getMessage());
+        }
     }
 
     /** Return the tile image data associated with the Tile object
@@ -79,39 +68,92 @@ public class CachedTileRepository implements TileRepository {
      * @return The image data of the tile associated with the params or <code> null </code>
      *         if the params refer to an invalid tile
      */
-    public BufferedImage getTileImageData(WeatherTile tile){
-        String tileKey = tile.generateKey();
-        return getTileImageDataFromStringKey(tileKey);
+    public BufferedImage getTileImageData(WeatherTile tile) throws TileNotFoundException {
+        try {
+            return getTileImageDataHelper(tile);
+        }
+        catch (TileNotFoundException e) {
+            throw new TileNotFoundException(e.getMessage());
+        }
     }
 
-    private BufferedImage getTileImageDataFromStringKey(String tileKey){
-        if (tileHash.containsKey(tileKey)){
-            return tileHash.get(tileKey).imageData;
+    private BufferedImage getTileImageDataHelper(WeatherTile tile) throws TileNotFoundException {
+        if (tileCache.containsKey(tile)){
+            return tileCache.get(tile);
         }
         else {
-            return getTileImageFromAPI(tile);
+            try {
+                BufferedImage image = getTileImageFromAPI(tile);
+                addTileImagePairToCache(tile, image);
+                return image;
+            } catch (TileNotFoundException e) {
+                throw new TileNotFoundException(e.getMessage());
+            }
         }
     }
 
-    private BufferedImage getTileImageFromAPI(WeatherTile tile){
-        return null;
+    private BufferedImage getTileImageFromAPI(WeatherTile tile) throws TileNotFoundException {
+        try {
+            return weatherTileApiFetcher.getWeatherTileImageData(tile);
+        } catch (TileNotFoundException e) {
+            throw new TileNotFoundException(e.getMessage());
+        }
+
     }
 
-
-    /**
-     *
-     * @param tile
-     */
-    public void addTileToCache(WeatherTile tile){
-        if (tileHash.containsKey(tile.generateKey())){
+    private void addTileImagePairToCache(WeatherTile tile, BufferedImage image) {
+        if (tileCache.containsKey(tile)){
             return;
         }
-        BufferedImage imageData = getTileImageDataFromAPI(tile);
-        tileHash.put(tile.getKey(), imageData);
-        tileCacheSize.add(tile);
+        else{
+            tileCache.put(tile, image);
+        }
     }
 
-    public void clearOutdatedCache(java.time.Instant time){
+    public void addTileToCache(WeatherTile tile) throws TileNotFoundException {
+        if (tileCache.containsKey(tile)) {
+            return;
+        }
+        BufferedImage imageData;
+        try {
+            imageData = weatherTileApiFetcher.getWeatherTileImageData(tile);
+        } catch (TileNotFoundException e) {
+            throw new TileNotFoundException(e.getMessage());
+        }
+        tileCache.put(tile, imageData);
+    }
+
+    /** Remove all <code><WeatherTile, BufferedImage></code> key-pairs
+     * that have a timestamp after the current time.
+     */
+    public void forceClearOutdatedCache(){
+        tileCache.entrySet().removeIf(
+                tileImagePair->
+                        tileImagePair.
+                                getKey().
+                                getTimestamp().
+                                isAfter(java.time.Instant.now()
+                                )
+        );
+    }
+
+    /** Remove all <code><WeatherTile, BufferedImage></code> key-pairs
+     * that have a timestamp after the given time.
+     *
+     * @param time all tiles that have timestamp before this time will be removed
+     */
+    public void forceClearOutdatedCache(java.time.Instant time){
+        tileCache.entrySet().removeIf(
+                tileImagePair->
+                        tileImagePair.
+                                getKey().
+                                getTimestamp().
+                                isAfter(time)
+        );
+    }
+
+    public void clearCache(){
+        tileCache.clear();
     }
 
 }
