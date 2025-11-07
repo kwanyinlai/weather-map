@@ -1,10 +1,10 @@
 package usecase;
 
+import dataaccessinterface.TileNotFoundException;
 import dataaccessinterface.TileRepository;
 import entity.*;
 
 import java.awt.image.BufferedImage;
-import java.util.ArrayList;
 
 public final class UpdateOverlayUseCase {
     private final OverlayManager overlayManager;
@@ -19,6 +19,11 @@ public final class UpdateOverlayUseCase {
 
 
     public void update(Viewport vp){
+
+        if (this.overlayManager.getSelectedOpacity() == 0){
+            return;
+        }
+
         int zoom = vp.getBounedZoom();
         BoundingBox bBox = vp.calculateBBox();
 
@@ -29,8 +34,8 @@ public final class UpdateOverlayUseCase {
         double bBoxLY = bBox.getTopLeft().getNormalizedLongitude();
         double bBoxRY = bBox.getBottomRight().getNormalizedLongitude();
 
-        Vector topLeft = new Vector(bBoxLX, bBoxLY);
-        Vector botRight = new Vector(bBoxRX, bBoxRY);
+        Vector topLeft = new Vector(bBoxLX, 1 - bBoxLY);
+        Vector botRight = new Vector(bBoxRX, 1 - bBoxRY);
 
         //convert bounding box vecs to tile grid coords based on zoom (0-6, dimension are 2^z)
         topLeft.scale(Math.pow(2, zoom));
@@ -41,17 +46,31 @@ public final class UpdateOverlayUseCase {
         int visibleTilesY = (int)topLeft.y - (int)botRight.y + 1;
 
         for(int i = 0; i < visibleTilesX; i++){
-            for(int j = 0; j < visibleTilesY; j++){
-                TileCoords tc = new TileCoords((int)topLeft.x + i, (int)topLeft.y + j, zoom);
-                WeatherTile tile = new WeatherTile(tc, this.time.getCurrentTime(), this.overlayManager.getSelected());
-                BufferedImage tileImg = this.tileCache.getTileImageData(tile);
-                this.overlayManager.drawTileToOverlay(topLeft, botRight, tile, tileImg);
+            for(int j = 0; j < visibleTilesY; j++) {
+                //TODO looping? ((i % 2^zoom) + 2^zoom) % 2^zoom, j...
+                int x = (int) topLeft.x + i;
+                int y = (int) topLeft.y + j;
+
+                if (x >= 0 && x < Math.pow(2, zoom) && y >= 0 && y < Math.pow(2, zoom)) {
+                    TileCoords tc = new TileCoords(x, y, zoom);
+                    WeatherTile tile = new WeatherTile(tc, this.time.getCurrentTime(), this.overlayManager.getSelected());
+                    BufferedImage tileImg;
+                    try {
+                        tileImg = this.tileCache.getTileImageData(tile);
+                    } catch (TileNotFoundException e) {
+                        tileImg = new BufferedImage(256, 256, BufferedImage.TYPE_3BYTE_BGR);
+                    }
+
+
+                    this.overlayManager.drawTileToOverlay(topLeft, botRight, tile, tileImg);
+                }
             }
         }
-        //output.setoverlay(this.overlayManager.getOverlay());
     }
-
-
-
-
+        //output.setoverlay(this.overlayManager.getOverlay());
 }
+
+
+
+
+
