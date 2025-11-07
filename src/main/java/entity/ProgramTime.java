@@ -29,6 +29,10 @@ public class ProgramTime {
         currentTime = currentTime.plus(duration);
     }
 
+    public void setTime(java.time.Instant currentTime) {
+        this.currentTime = currentTime;
+    }
+
     public java.time.Instant getCurrentTime() {
         return currentTime;
     }
