@@ -1,5 +1,5 @@
 package usecase.maptime;
 
 public interface UpdateMapTimeOutputBoundary {
-    void updateTime();
+    void updateTime(UpdateMapTimeOutputData time);
 }
