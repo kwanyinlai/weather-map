@@ -1,9 +1,9 @@
 package view;
 
-import interface_adapter.maptime.ProgramTimeController;
-import interface_adapter.maptime.ProgramTimeState;
-import interface_adapter.maptime.ProgramTimeViewModel;
-import interface_adapter.maptime.ProgramTimeController;
+import interfaceadapter.maptime.ProgramTimeController;
+import interfaceadapter.maptime.ProgramTimeState;
+import interfaceadapter.maptime.ProgramTimeViewModel;
+import interfaceadapter.maptime.ProgramTimeController;
 
 import javax.swing.*;
 import java.awt.*;
@@ -72,5 +72,4 @@ public class ProgramTimeView extends JPanel implements PropertyChangeListener {
             System.out.println(evt.getPropertyName());
         }
     }
-
 }
