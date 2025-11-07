@@ -1,14 +1,14 @@
 package interfaceadapter.maptime;
 
 public class ProgramTimeState {
-    private double timesliderScale;
+    private java.time.Instant time;
 
-    public double getTimesliderScale() {
-        return timesliderScale;
+    public java.time.Instant getTime() {
+        return time;
     }
 
-    public void setTimesliderScale(double timesliderScale) {
-        this.timesliderScale = timesliderScale;
+    public void setTime(java.time.Instant time) {
+        this.time = time;
 
     }
 }
