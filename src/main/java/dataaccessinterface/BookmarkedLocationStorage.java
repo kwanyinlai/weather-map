@@ -8,6 +8,6 @@ public interface BookmarkedLocationStorage {
     List<BookmarkedLocation> getBookmarkedLocation();
 
     // Add the bookmarked location.
-    void addBookmarkedLocation(BookmarkedLocation bookmarkedLocation);
+    void bookmarkLocation(BookmarkedLocation bookmarkedLocation);
 
 }
