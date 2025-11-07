@@ -1,33 +1,41 @@
 package usecase;
 
+import dataaccessinterface.TileNotFoundException;
+import dataaccessinterface.TileRepository;
 import entity.*;
 
-import java.util.ArrayList;
+import java.awt.image.BufferedImage;
 
 public final class UpdateOverlayUseCase {
     private final OverlayManager overlayManager;
-    //cache
-    //info on time
+    private final TileRepository tileCache;
+    private final ProgramTime time;
 
-    //TODO add cache and time info
-    public UpdateOverlayUseCase(OverlayManager om){this.overlayManager = om;}
+    public UpdateOverlayUseCase(OverlayManager om, TileRepository tCache, ProgramTime time){
+        this.overlayManager = om;
+        this.tileCache = tCache;
+        this.time = time;
+    }
 
-    //TODO add viewport
-    public void update(){
-        double zoom = 1.0; //view.getZoom();
-        Location tl = new Location(-10, -10);
-        Location br = new Location(10, 10);
-        BoundingBox bBox = new BoundingBox(tl, br);
+
+    public void update(Viewport vp){
+
+        if (this.overlayManager.getSelectedOpacity() == 0){
+            return;
+        }
+
+        int zoom = vp.getBounedZoom();
+        BoundingBox bBox = vp.calculateBBox();
 
         //Convert to tile coords,
         //lat lon as bounding box, convert lat lon to 0-1. //Move this to boundingbox entity?
-        double bBoxLX = convertLatitude(bBox.getTopLeft().getLatitude());
-        double bBoxRX = convertLatitude(bBox.getBottomRight().getLatitude());
-        double bBoxLY = convertLongitude(bBox.getTopLeft().getLongitude());
-        double bBoxRY = convertLongitude(bBox.getBottomRight().getLongitude());
+        double bBoxLX = bBox.getTopLeft().getNormalizedLatitude();
+        double bBoxRX = bBox.getBottomRight().getNormalizedLatitude();
+        double bBoxLY = bBox.getTopLeft().getNormalizedLongitude();
+        double bBoxRY = bBox.getBottomRight().getNormalizedLongitude();
 
-        Vector topLeft = new Vector(bBoxLX, bBoxLY);
-        Vector botRight = new Vector(bBoxRX, bBoxRY);
+        Vector topLeft = new Vector(bBoxLX, 1 - bBoxLY);
+        Vector botRight = new Vector(bBoxRX, 1 - bBoxRY);
 
         //convert bounding box vecs to tile grid coords based on zoom (0-6, dimension are 2^z)
         topLeft.scale(Math.pow(2, zoom));
@@ -35,27 +43,34 @@ public final class UpdateOverlayUseCase {
 
         //get amount of visible tiles in both direction (vp might not be a square)
         int visibleTilesX = (int)botRight.x - (int)topLeft.x + 1; //(15.1 to 15.6, sill 1 tile visible)
-        int visibleTilesY = (int)topLeft.y- (int)botRight.y + 1;
-        ArrayList<Tile> tileList = new ArrayList<>();
+        int visibleTilesY = (int)topLeft.y - (int)botRight.y + 1;
 
         for(int i = 0; i < visibleTilesX; i++){
-            for(int j = 0; j < visibleTilesY; j++){
-                //Tile tile = cache.fetchTile(this.overayManager.getSelected(), (int)topLeft.x + i, (int)topLeft.y + j)
-                //tileList.add(tile)
+            for(int j = 0; j < visibleTilesY; j++) {
+                //TODO looping? ((i % 2^zoom) + 2^zoom) % 2^zoom, j...
+                int x = (int) topLeft.x + i;
+                int y = (int) topLeft.y + j;
+
+                if (x >= 0 && x < Math.pow(2, zoom) && y >= 0 && y < Math.pow(2, zoom)) {
+                    TileCoords tc = new TileCoords(x, y, zoom);
+                    WeatherTile tile = new WeatherTile(tc, this.time.getCurrentTime(), this.overlayManager.getSelected());
+                    BufferedImage tileImg;
+                    try {
+                        tileImg = this.tileCache.getTileImageData(tile);
+                    } catch (TileNotFoundException e) {
+                        tileImg = new BufferedImage(256, 256, BufferedImage.TYPE_3BYTE_BGR);
+                    }
+
+
+                    this.overlayManager.drawTileToOverlay(topLeft, botRight, tile, tileImg);
+                }
             }
         }
-        this.overlayManager.updateOverlay(topLeft, botRight, tileList);
+    }
         //output.setoverlay(this.overlayManager.getOverlay());
-    }
-
-    // convert both lat and lon to a value between 0-1, 0 being -180 or 90, 1 being 180 or -90.
-    // for lon, the direction is reversed as in image processing the Y axis goes from top to bottom.
-    //Move this to boundingbox entity?
-    private double convertLatitude(double lat){
-        return (lat + 180) / 360;
-    }
-
-    private double convertLongitude(double lon){
-        return (-1 * lon + 90) / 180;
-    }
 }
+
+
+
+
+

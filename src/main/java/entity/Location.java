@@ -27,4 +27,18 @@ public class Location {
         int ytile = (int) Math.floor(py / 256.0);
         return new TileCoords(xtile, ytile, zoom);
     }
+
+    // convert both lat and lon to a value between 0-1, 0 being -180 or -90, 1 being 180 or 90.
+    public double getNormalizedLatitude(){
+        return (this.latitude + 180) / 360;
+    }
+
+    public double getNormalizedLongitude(){
+        return (this.longitude + 90) / 180;
+    }
+
+    public Location getNormalizedLoation(){
+        return new Location(getNormalizedLatitude(), getNormalizedLongitude());
+    }
+
  }

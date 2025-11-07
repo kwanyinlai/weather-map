@@ -6,22 +6,24 @@ import org.openstreetmap.gui.jmapviewer.Coordinate;
 public class Viewport {
     private final JMapViewer mapViewer;
     private Location centre;
-    private float zoomLevel;
     private static final OsmMercator mercator = OsmMercator.MERCATOR_256;
+    private final int maxZoom;
+    private final int minZoom;
 
-    public Viewport(JMapViewer mapViewer, Location centre, float zoomLevel) {
+    public Viewport(JMapViewer mapViewer, Location centre, int zoomLevel, int maxZoom, int minZoom) {
         this.mapViewer = mapViewer;
         this.centre = centre;
-        this.zoomLevel = zoomLevel;
-        mapViewer.setZoom((int) zoomLevel);
+        this.maxZoom = maxZoom;
+        this.minZoom= minZoom;
+        mapViewer.setZoom( zoomLevel);
         Coordinate jmvCoordinate = new Coordinate(centre.getLatitude(), centre.getLongitude());
-        mapViewer.setDisplayPosition(jmvCoordinate, (int)this.zoomLevel);
+        mapViewer.setDisplayPosition(jmvCoordinate, zoomLevel);
     }
 
     public BoundingBox calculateBBox(){
         int viewWidth = mapViewer.getWidth();
         int viewHeight = mapViewer.getHeight();
-        int currentZoom = (int) this.zoomLevel;
+        int currentZoom = this.mapViewer.getZoom();
         double centreLatitude = this.centre.getLatitude();
         double centreLongitude = this.centre.getLongitude();
         double centrePixelX = mercator.lonToX(centreLongitude, currentZoom);
@@ -44,6 +46,10 @@ public class Viewport {
     }
 
     public float getZoomLevel() {
-        return zoomLevel;
+        return mapViewer.getZoom();
+    }
+
+    public int getBounedZoom(){
+        return Math.max(this.minZoom, Math.min(this.maxZoom, this.mapViewer.getZoom()));
     }
 }
