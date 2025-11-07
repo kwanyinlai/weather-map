@@ -10,28 +10,24 @@ public final class UpdateOverlayUseCase {
     private final OverlayManager overlayManager;
     private final TileRepository tileCache;
     private final ProgramTime time;
-    private final int maxZoom;
-    private final int minZoom;
 
-    public UpdateOverlayUseCase(OverlayManager om, TileRepository tCache, ProgramTime time, int maxZoom, int minZoom){
+    public UpdateOverlayUseCase(OverlayManager om, TileRepository tCache, ProgramTime time){
         this.overlayManager = om;
         this.tileCache = tCache;
         this.time = time;
-        this.maxZoom = maxZoom;
-        this.minZoom = minZoom;
     }
 
 
     public void update(Viewport vp){
-        int zoom = convertZoomToInt(vp.getZoomLevel());
+        int zoom = vp.getBounedZoom();
         BoundingBox bBox = vp.calculateBBox();
 
         //Convert to tile coords,
         //lat lon as bounding box, convert lat lon to 0-1. //Move this to boundingbox entity?
-        double bBoxLX = convertLatitude(bBox.getTopLeft().getLatitude());
-        double bBoxRX = convertLatitude(bBox.getBottomRight().getLatitude());
-        double bBoxLY = convertLongitude(bBox.getTopLeft().getLongitude());
-        double bBoxRY = convertLongitude(bBox.getBottomRight().getLongitude());
+        double bBoxLX = bBox.getTopLeft().getNormalizedLatitude();
+        double bBoxRX = bBox.getBottomRight().getNormalizedLatitude();
+        double bBoxLY = bBox.getTopLeft().getNormalizedLongitude();
+        double bBoxRY = bBox.getBottomRight().getNormalizedLongitude();
 
         Vector topLeft = new Vector(bBoxLX, bBoxLY);
         Vector botRight = new Vector(bBoxRX, bBoxRY);
@@ -55,18 +51,7 @@ public final class UpdateOverlayUseCase {
         //output.setoverlay(this.overlayManager.getOverlay());
     }
 
-    private int convertZoomToInt(double zoom){
-        return (int)Math.max(this.minZoom, Math.min(this.maxZoom, zoom));
-    }
 
-    // convert both lat and lon to a value between 0-1, 0 being -180 or 90, 1 being 180 or -90.
-    // for lon, the direction is reversed as in image processing the Y axis goes from top to bottom.
-    //Move this to boundingbox entity?
-    private double convertLatitude(double lat){
-        return (lat + 180) / 360;
-    }
 
-    private double convertLongitude(double lon){
-        return (-1 * lon + 90) / 180;
-    }
+
 }
