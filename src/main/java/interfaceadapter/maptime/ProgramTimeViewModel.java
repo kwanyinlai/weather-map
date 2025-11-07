@@ -1,5 +1,7 @@
-package interface_adapter.maptime;
+package main.java.interfaceadapter.maptime;
+
 import interface_adapter.ViewModel;
+import main.java.interfaceadapter.maptime.ProgramTimeState;
 
 public class ProgramTimeViewModel extends ViewModel<ProgramTimeState>{
 

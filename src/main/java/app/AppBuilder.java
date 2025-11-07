@@ -2,13 +2,15 @@ package app;
 
 import javax.swing.*;
 import java.awt.*;
+import main.java.view.ProgramTimeView;
+import main.java.interfaceadapter.maptime.ProgramTimeViewModel;
 
 public class AppBuilder {
     private final JPanel borderPanel = new JPanel();
     private final BorderLayout borderLayout = new BorderLayout();
 
-//    private ProgramTimeView programTimeView;
-//    private ProgramTimeViewModel programTimeViewModel;
+    private ProgramTimeView programTimeView;
+    private ProgramTimeViewModel programTimeViewModel;
 
     public AppBuilder() {
         borderPanel.setLayout(borderLayout);

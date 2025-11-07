@@ -1,11 +1,10 @@
-package usecase.maptime;
+package main.java.usecase.maptime;
 
 
 import entity.ProgramTime;
-import interface_adapter.maptime.ProgramTimePresenter;
+import main.java.interfaceadapter.maptime.ProgramTimePresenter;
 import usecase.UpdateOverlayUseCase;
-import usecase.maptime.UpdateMapTimeOutputData;
-import usecase.maptime.UpdateMapTimeInputData;
+import main.java.usecase.maptime.UpdateMapTimeInputBoundary;
 
 public class UpdateMapTimeUseCase implements UpdateMapTimeInputBoundary {
     private final ProgramTime programTime;

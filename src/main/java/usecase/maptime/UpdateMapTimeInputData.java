@@ -1,4 +1,4 @@
-package usecase.maptime;
+package main.java.usecase.maptime;
 
 public class UpdateMapTimeInputData {
     private final java.time.Instant currentTime;

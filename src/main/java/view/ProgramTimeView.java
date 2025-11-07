@@ -1,9 +1,9 @@
-package view;
+package main.java.view;
 
-import interface_adapter.maptime.ProgramTimeController;
-import interface_adapter.maptime.ProgramTimeState;
-import interface_adapter.maptime.ProgramTimeViewModel;
-import interface_adapter.maptime.ProgramTimeController;
+import main.java.interfaceadapter.maptime.ProgramTimeController;
+import main.java.interfaceadapter.maptime.ProgramTimeState;
+import main.java.interfaceadapter.maptime.ProgramTimeViewModel;
+import main.java.interfaceadapter.maptime.ProgramTimeController;
 
 import javax.swing.*;
 import java.awt.*;

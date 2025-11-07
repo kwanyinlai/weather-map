@@ -1,4 +1,4 @@
-package usecase.maptime;
+package main.java.usecase.maptime;
 
 import java.time.Instant;
 

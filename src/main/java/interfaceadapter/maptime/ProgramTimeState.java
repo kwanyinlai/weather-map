@@ -1,4 +1,4 @@
-package interface_adapter.maptime;
+package main.java.interfaceadapter.maptime;
 
 public class ProgramTimeState {
     private double timesliderScale;

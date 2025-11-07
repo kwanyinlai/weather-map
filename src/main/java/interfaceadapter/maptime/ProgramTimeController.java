@@ -1,7 +1,7 @@
-package interface_adapter.maptime;
+package main.java.interfaceadapter.maptime;
 
-import usecase.maptime.UpdateMapTimeInputData;
-import usecase.maptime.UpdateMapTimeUseCase;
+import main.java.usecase.maptime.UpdateMapTimeInputData;
+import main.java.usecase.maptime.UpdateMapTimeUseCase;
 
 public class ProgramTimeController {
     private final UpdateMapTimeUseCase updateMapTimeUseCase;
