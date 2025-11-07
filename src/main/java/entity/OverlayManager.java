@@ -99,8 +99,3 @@ public class OverlayManager {
 
 }
 
-class LayerNotFoundException extends Exception {
-    public LayerNotFoundException(String layer) {
-        super("Layer " + layer + " not found!");
-    }
-}
