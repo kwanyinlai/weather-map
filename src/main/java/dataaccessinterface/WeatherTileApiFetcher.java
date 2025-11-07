@@ -4,6 +4,9 @@ import entity.WeatherTile;
 
 import java.awt.image.BufferedImage;
 
+/** Interface which interacts with the weather API
+ *
+ */
 public interface WeatherTileApiFetcher {
 
     /** Make an API call to <a href="https://weathermaps.weatherapi.com">WeatherMaps</a> API to request

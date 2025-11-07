@@ -6,7 +6,7 @@ import entity.WeatherType;
 import java.awt.image.BufferedImage;
 
 
-/**
+/** Interface which returns the image data to given tiles
  *
  */
 public interface TileRepository {
