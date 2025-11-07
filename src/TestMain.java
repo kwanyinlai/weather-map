@@ -10,11 +10,11 @@ import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
 import java.io.File;
 
-public class Main extends JFrame implements JMapViewerEventListener {
+public class TestMain extends JFrame implements JMapViewerEventListener {
 
     private final JMapViewer map;
 
-    public Main() {
+    public TestMain() {
         super("JMapViewer test");
         setSize(800, 800);
         setLayout(new BorderLayout());
@@ -69,7 +69,7 @@ public class Main extends JFrame implements JMapViewerEventListener {
 
 
     public static void main(String[] args) {
-        new Main().setVisible(true);
+        new TestMain().setVisible(true);
     }
 
     public void processCommand(JMVCommandEvent command) {
