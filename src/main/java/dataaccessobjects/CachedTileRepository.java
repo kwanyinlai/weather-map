@@ -83,7 +83,9 @@ public class CachedTileRepository implements TileRepository {
         }
         else {
             try {
-                return getTileImageFromAPI(tile);
+                BufferedImage image = getTileImageFromAPI(tile);
+                addTileImagePairToCache(tile, image);
+                return image;
             } catch (TileNotFoundException e) {
                 throw new TileNotFoundException(e.getMessage());
             }
@@ -99,12 +101,17 @@ public class CachedTileRepository implements TileRepository {
 
     }
 
-    /**
-     *
-     * @param tile the tile to be added to cache
-     */
+    private void addTileImagePairToCache(WeatherTile tile, BufferedImage image) {
+        if (tileCache.containsKey(tile)){
+            return;
+        }
+        else{
+            tileCache.put(tile, image);
+        }
+    }
+
     public void addTileToCache(WeatherTile tile) throws TileNotFoundException {
-        if (tileCache.containsKey(tile.generateKey())) {
+        if (tileCache.containsKey(tile)) {
             return;
         }
         BufferedImage imageData;
@@ -120,11 +127,14 @@ public class CachedTileRepository implements TileRepository {
      * that have a timestamp after the current time.
      */
     public void forceClearOutdatedCache(){
-        for(WeatherTile tile: tileCache.keySet()){
-            if(tile.getTimestamp().equals(java.time.Instant.now())){
-                tileCache.remove(tile);
-            }
-        }
+        tileCache.entrySet().removeIf(
+                tileImagePair->
+                        tileImagePair.
+                                getKey().
+                                getTimestamp().
+                                isAfter(java.time.Instant.now()
+                                )
+        );
     }
 
     /** Remove all <code><WeatherTile, BufferedImage></code> key-pairs
@@ -133,11 +143,17 @@ public class CachedTileRepository implements TileRepository {
      * @param time all tiles that have timestamp before this time will be removed
      */
     public void forceClearOutdatedCache(java.time.Instant time){
-        for(WeatherTile tile: tileCache.keySet()){
-            if(tile.getTimestamp().equals(time)){
-                tileCache.remove(tile);
-            }
-        }
+        tileCache.entrySet().removeIf(
+                tileImagePair->
+                        tileImagePair.
+                                getKey().
+                                getTimestamp().
+                                isAfter(time)
+        );
+    }
+
+    public void clearCache(){
+        tileCache.clear();
     }
 
 }
