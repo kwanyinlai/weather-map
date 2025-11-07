@@ -2,7 +2,7 @@ package entity;
 
 import java.time.Instant;
 
-public class BookmarkedLocation extends entity.Location {
+public class BookmarkedLocation extends Location {
     private final String name;
     private final Instant savedTime;
 
