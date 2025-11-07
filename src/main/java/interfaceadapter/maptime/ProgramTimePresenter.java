@@ -3,6 +3,9 @@ package interfaceadapter.maptime;
 import usecase.maptime.UpdateMapTimeOutputData;
 import usecase.maptime.UpdateMapTimeOutputBoundary;
 
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
+
 /** Presenter class for UpdateMapTime interactor
  *
  */
@@ -17,7 +20,12 @@ public class ProgramTimePresenter implements UpdateMapTimeOutputBoundary {
     public void updateTime(UpdateMapTimeOutputData newTime) {
         // update program time in programTimeViewModel
         ProgramTimeState programTimeState = programTimeViewModel.getState();
-        programTimeState.setTime(newTime.getStamp());
+        java.time.Instant time = newTime.getStamp();
+        programTimeState.setTime(formatTimeInstant(time));
         programTimeViewModel.firePropertyChange("time slider");
+    }
+
+    private String formatTimeInstant(java.time.Instant time) {
+        return DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").format(time.atZone(ZoneId.systemDefault()));
     }
 }

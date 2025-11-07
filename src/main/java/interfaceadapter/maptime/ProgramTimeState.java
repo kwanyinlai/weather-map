@@ -1,13 +1,13 @@
 package interfaceadapter.maptime;
 
 public class ProgramTimeState {
-    private java.time.Instant time;
+    private String time;
 
-    public java.time.Instant getTime() {
+    public String getTime() {
         return time;
     }
 
-    public void setTime(java.time.Instant time) {
+    public void setTime(String time) {
         this.time = time;
 
     }
