@@ -4,22 +4,19 @@ import usecase.maptime.UpdateMapTimeInputData;
 import usecase.maptime.UpdateMapTimeUseCase;
 
 public class ProgramTimeController {
-    private final ProgramTimeState programTimeState;
     private final UpdateMapTimeUseCase updateMapTimeUseCase;
     private static final java.time.Duration maxForecast = java.time.Duration.ofHours(3);
 
-    public ProgramTimeController(ProgramTimeState programTimeState, UpdateMapTimeUseCase updateMapTimeUseCase) {
-        this.programTimeState = programTimeState;
+    public ProgramTimeController(UpdateMapTimeUseCase updateMapTimeUseCase) {
         this.updateMapTimeUseCase = updateMapTimeUseCase;
     }
 
-    public void execute(){
-        java.time.Instant maxTime = convertSliderToTime();
+    public void execute(ProgramTimeState programTimeState) {
+        java.time.Instant maxTime = convertSliderToTime(programTimeState.getTimesliderScale());
         updateMapTimeUseCase.execute(new UpdateMapTimeInputData(maxTime));
     }
 
-    public java.time.Instant convertSliderToTime(){
-        double scale = programTimeState.getTimesliderScale(); // scale from 0 - 1
+    public java.time.Instant convertSliderToTime(double scale){
         java.time.Instant currentTime = java.time.Instant.now();
         return currentTime.plus(multiplyDuration(maxForecast, scale));
     }
