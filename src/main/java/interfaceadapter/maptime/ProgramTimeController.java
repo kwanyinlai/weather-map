@@ -1,14 +1,14 @@
-package main.java.interfaceadapter.maptime;
+package interfaceadapter.maptime;
 
-import main.java.usecase.maptime.UpdateMapTimeInputData;
-import main.java.usecase.maptime.UpdateMapTimeUseCase;
+import usecase.maptime.UpdateMapTimeInputBoundary;
+import usecase.maptime.UpdateMapTimeInputData;
 
 public class ProgramTimeController {
-    private final UpdateMapTimeUseCase updateMapTimeUseCase;
+    private final UpdateMapTimeInputBoundary updateMapTimeUseCase;
     private final java.time.Duration maxForecast;
 
-    public ProgramTimeController(UpdateMapTimeUseCase updateMapTimeUseCase, java.time.Duration maxForecast) {
-        this.updateMapTimeUseCase = updateMapTimeUseCase;
+    public ProgramTimeController(UpdateMapTimeInputBoundary updateMapTimeInputBoundary, java.time.Duration maxForecast) {
+        this.updateMapTimeUseCase = updateMapTimeInputBoundary;
         this.maxForecast = maxForecast;
     }
 

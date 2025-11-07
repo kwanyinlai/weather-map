@@ -1,17 +1,19 @@
-package main.java.usecase.maptime;
+package usecase.maptime;
 
 
 import entity.ProgramTime;
-import main.java.interfaceadapter.maptime.ProgramTimePresenter;
+import interfaceadapter.maptime.ProgramTimePresenter;
 import usecase.UpdateOverlayUseCase;
-import main.java.usecase.maptime.UpdateMapTimeInputBoundary;
 
 public class UpdateMapTimeUseCase implements UpdateMapTimeInputBoundary {
     private final ProgramTime programTime;
     private final UpdateOverlayUseCase updateOverlayUseCase;
-    private final ProgramTimePresenter programTimePresenter;
+    private final UpdateMapTimeOutputBoundary programTimePresenter;
 
-    public UpdateMapTimeUseCase(ProgramTime programTime, UpdateOverlayUseCase updateOverlayUseCase, ProgramTimePresenter programTimePresenter) {
+    public UpdateMapTimeUseCase(ProgramTime programTime,
+                                UpdateOverlayUseCase updateOverlayUseCase,
+                                ProgramTimePresenter programTimePresenter
+    ) {
         this.programTime = programTime;
         this.updateOverlayUseCase = updateOverlayUseCase;
         this.programTimePresenter = programTimePresenter;

@@ -1,5 +1,6 @@
 package entity;
 
+import entity.*;
 import java.awt.*;
 import java.awt.image.*;
 import java.util.ArrayList;

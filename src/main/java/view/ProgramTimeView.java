@@ -1,9 +1,9 @@
-package main.java.view;
+package view;
 
-import main.java.interfaceadapter.maptime.ProgramTimeController;
-import main.java.interfaceadapter.maptime.ProgramTimeState;
-import main.java.interfaceadapter.maptime.ProgramTimeViewModel;
-import main.java.interfaceadapter.maptime.ProgramTimeController;
+import interfaceadapter.maptime.ProgramTimeController;
+import interfaceadapter.maptime.ProgramTimeState;
+import interfaceadapter.maptime.ProgramTimeViewModel;
+import interfaceadapter.maptime.ProgramTimeController;
 
 import javax.swing.*;
 import java.awt.*;
@@ -43,6 +43,9 @@ public class ProgramTimeView extends JPanel {
 
     public String getViewName() {
         return viewName;
+    }
+    public void setProgramTimeController(ProgramTimeController controller) {
+        this.programTimeController = controller;
     }
 
 }

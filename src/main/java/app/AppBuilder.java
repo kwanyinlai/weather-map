@@ -2,8 +2,20 @@ package app;
 
 import javax.swing.*;
 import java.awt.*;
-import main.java.view.ProgramTimeView;
-import main.java.interfaceadapter.maptime.ProgramTimeViewModel;
+import java.time.Instant;
+import entity.ProgramTime;
+import interfaceadapter.maptime.ProgramTimeController;
+import interfaceadapter.maptime.ProgramTimePresenter;
+import usecase.maptime.UpdateMapTimeInputBoundary;
+import usecase.maptime.UpdateMapTimeInputData;
+import usecase.UpdateOverlayUseCase;
+import usecase.maptime.UpdateMapTimeOutputBoundary;
+import usecase.maptime.UpdateMapTimeUseCase;
+import view.ProgramTimeView;
+import interfaceadapter.maptime.ProgramTimeViewModel;
+import dataaccessinterface.TileRepository;
+import dataaccessobjects.CachedTileRepository;
+import entity.OverlayManager;
 
 public class AppBuilder {
     private final JPanel borderPanel = new JPanel();
@@ -11,29 +23,42 @@ public class AppBuilder {
 
     private ProgramTimeView programTimeView;
     private ProgramTimeViewModel programTimeViewModel;
+    private final ProgramTime programTime = new ProgramTime(Instant.now());
+    private final TileRepository tileRepository = new CachedTileRepository(10); // TODO: change
+    private final OverlayManager overlayManager = new OverlayManager(10,10);
+    private final ProgramTimeViewModel programTimeViewModelModel = new ProgramTimeViewModel();
 
     public AppBuilder() {
         borderPanel.setLayout(borderLayout);
         borderPanel.setPreferredSize(new Dimension(800, 600));
     }
 
-//    public AppBuilder addProgramTimeView() {
-//        programTimeViewModel = new SignupViewModel();
-//        programTimeView = new SignupView(signupViewModel);
-//        borderPanel.add(programTimeView, programTimeView.getViewName());
-//        return this;
-//    }
-//
-//    public AppBuilder addUpdateMapTimeUseCase() {
-//        final UpdateMapTimeOutputBoundary updateMapTimeOutputBoundary = new UpdateMapTimePresenter(viewManagerModel,
-//                signupViewModel, loginViewModel);
-//        final UpdateMapTimeInputBoundary updateMapTimeUseCase = new UpdateMapTimeUseCase(
-//                userDataAccessObject, signupOutputBoundary);
-//
-//        ProgramTimeController controller = new ProgramTimeController(userSignupInteractor);
-//        programTimeView.setProgramTimeController(controller);
-//        return this;
-//    }
+    public AppBuilder addProgramTimeView() {
+        programTimeView = new ProgramTimeView(programTimeViewModel);
+        borderPanel.add(programTimeView, BorderLayout.CENTER);
+        return this;
+    }
+
+    public AppBuilder addUpdateMapTimeUseCase() {
+        final UpdateMapTimeOutputBoundary updateMapTimeOutputBoundary = new ProgramTimePresenter(programTimeViewModel);
+        final UpdateMapTimeInputBoundary updateMapTimeInputBoundary =
+                new UpdateMapTimeUseCase(
+                        programTime,
+                        new UpdateOverlayUseCase(
+                                overlayManager,
+                                tileRepository,
+                                programTime
+                        ),
+                        new ProgramTimePresenter(
+                                programTimeViewModel
+                        )
+                    );
+
+
+        ProgramTimeController controller = new ProgramTimeController(updateMapTimeInputBoundary, java.time.Duration.ofHours(3));
+        programTimeView.setProgramTimeController(controller);
+        return this;
+    }
 
     public JFrame build() {
         final JFrame application = new JFrame("Weather Map");
