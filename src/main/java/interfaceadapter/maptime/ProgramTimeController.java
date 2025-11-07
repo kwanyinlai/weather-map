@@ -19,8 +19,8 @@ public class ProgramTimeController {
      *
      * @param programTimeState
      */
-    public void execute(ProgramTimeState programTimeState) {
-        java.time.Instant maxTime = convertSliderToTime(programTimeState.getTimesliderScale());
+    public void execute(double sliderVal) {
+        java.time.Instant maxTime = convertSliderToTime(sliderVal);
         updateMapTimeUseCase.execute(new UpdateMapTimeInputData(maxTime));
     }
 
