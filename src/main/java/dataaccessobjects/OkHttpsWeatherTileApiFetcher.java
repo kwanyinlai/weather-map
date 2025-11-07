@@ -8,6 +8,12 @@ import dataaccessinterface.WeatherTileApiFetcher;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
 import entity.WeatherTile;
 import javax.imageio.ImageIO;
 
@@ -57,5 +63,25 @@ public class OkHttpsWeatherTileApiFetcher implements WeatherTileApiFetcher {
             throw new IOException();
         }
     }
+
+    public List<BufferedImage> getListOfWeatherTileImageData(List<WeatherTile> weatherTileList){
+        List<BufferedImage> imageList = new ArrayList<>();
+        try(ExecutorService executor = Executors.newFixedThreadPool(4)){
+        List<CompletableFuture<BufferedImage>> futures = new ArrayList<>();
+
+        for (WeatherTile tile : weatherTileList) {
+            CompletableFuture<BufferedImage> imageData =
+                    CompletableFuture.supplyAsync(() -> getWeatherTileImageData(tile), executor)
+                            .exceptionally(ex -> null);
+
+            futures.add(imageData);
+        }
+        for (CompletableFuture<BufferedImage> future : futures) {
+            imageList.add(future.join());
+        }
+        return imageList;
+        }
+    }
 }
+
 
