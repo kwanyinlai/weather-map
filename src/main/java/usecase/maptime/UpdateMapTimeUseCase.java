@@ -12,7 +12,7 @@ public class UpdateMapTimeUseCase implements UpdateMapTimeInputBoundary {
 
     public UpdateMapTimeUseCase(ProgramTime programTime,
                                 UpdateOverlayUseCase updateOverlayUseCase,
-                                ProgramTimePresenter programTimePresenter
+                                UpdateMapTimeOutputBoundary programTimePresenter
     ) {
         this.programTime = programTime;
         this.updateOverlayUseCase = updateOverlayUseCase;

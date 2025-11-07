@@ -1,11 +1,13 @@
 package app;
 
+import app.AppBuilder;
 import javax.swing.*;
 
 public class Main {
     public static void main(String[] args) {
         AppBuilder appBuilder = new AppBuilder();
         JFrame application = appBuilder
+                .addUpdateOverlayUseCase()
                 .addProgramTimeView()
                 .addUpdateMapTimeUseCase()
                 .build();

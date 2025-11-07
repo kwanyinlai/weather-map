@@ -22,11 +22,11 @@ public class AppBuilder {
     private final BorderLayout borderLayout = new BorderLayout();
 
     private ProgramTimeView programTimeView;
-    private ProgramTimeViewModel programTimeViewModel;
     private final ProgramTime programTime = new ProgramTime(Instant.now());
     private final TileRepository tileRepository = new CachedTileRepository(10); // TODO: change
     private final OverlayManager overlayManager = new OverlayManager(10,10);
-    private final ProgramTimeViewModel programTimeViewModelModel = new ProgramTimeViewModel();
+    private ProgramTimeViewModel programTimeViewModel;
+    private UpdateOverlayUseCase updateOverlayUseCase;
 
     public AppBuilder() {
         borderPanel.setLayout(borderLayout);
@@ -34,8 +34,18 @@ public class AppBuilder {
     }
 
     public AppBuilder addProgramTimeView() {
+        programTimeViewModel = new ProgramTimeViewModel();
         programTimeView = new ProgramTimeView(programTimeViewModel);
-        borderPanel.add(programTimeView, BorderLayout.CENTER);
+        borderPanel.add(programTimeView, BorderLayout.SOUTH);
+        return this;
+    }
+
+    public AppBuilder addUpdateOverlayUseCase(){
+         updateOverlayUseCase = new UpdateOverlayUseCase(
+                overlayManager,
+                tileRepository,
+                programTime
+        );
         return this;
     }
 
@@ -44,14 +54,8 @@ public class AppBuilder {
         final UpdateMapTimeInputBoundary updateMapTimeInputBoundary =
                 new UpdateMapTimeUseCase(
                         programTime,
-                        new UpdateOverlayUseCase(
-                                overlayManager,
-                                tileRepository,
-                                programTime
-                        ),
-                        new ProgramTimePresenter(
-                                programTimeViewModel
-                        )
+                        updateOverlayUseCase,
+                        updateMapTimeOutputBoundary
                     );
 
 
