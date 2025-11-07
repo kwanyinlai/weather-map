@@ -24,7 +24,6 @@ public class ProgramTimeView extends JPanel {
 
     public ProgramTimeView(ProgramTimeViewModel programTimeViewModel) {
         this.programTimeViewModel = programTimeViewModel;
-        this.programTimeViewModel.addPropertyChangeListener(this);
 
 
         timeSlider = new JSlider(SwingConstants.HORIZONTAL);
@@ -33,7 +32,7 @@ public class ProgramTimeView extends JPanel {
                 evt -> {
                     JSlider source = (JSlider) evt.getSource();
                     if (source.getValueIsAdjusting()) {
-                        final ProgramTimeState currentState = ProgramTimeViewModel.getState();
+                        final ProgramTimeState currentState = programTimeViewModel.getState();
                         this.programTimeController.execute(currentState);
                     }
                 }
