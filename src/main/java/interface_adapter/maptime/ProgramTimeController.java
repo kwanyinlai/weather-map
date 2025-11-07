@@ -5,10 +5,11 @@ import usecase.maptime.UpdateMapTimeUseCase;
 
 public class ProgramTimeController {
     private final UpdateMapTimeUseCase updateMapTimeUseCase;
-    private static final java.time.Duration maxForecast = java.time.Duration.ofHours(3);
+    private final java.time.Duration maxForecast;
 
-    public ProgramTimeController(UpdateMapTimeUseCase updateMapTimeUseCase) {
+    public ProgramTimeController(UpdateMapTimeUseCase updateMapTimeUseCase, java.time.Duration maxForecast) {
         this.updateMapTimeUseCase = updateMapTimeUseCase;
+        this.maxForecast = maxForecast;
     }
 
     public void execute(ProgramTimeState programTimeState) {
