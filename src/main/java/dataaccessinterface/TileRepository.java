@@ -1,5 +1,4 @@
 package dataaccessinterface;
-import entity.Tile;
 import entity.WeatherTile;
 import entity.WeatherType;
 
