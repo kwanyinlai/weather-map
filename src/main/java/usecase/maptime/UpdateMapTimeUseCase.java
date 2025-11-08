@@ -8,7 +8,7 @@ import usecase.UpdateOverlayUseCase;
 public class UpdateMapTimeUseCase implements UpdateMapTimeInputBoundary {
     private final ProgramTime programTime;
     private final UpdateOverlayUseCase updateOverlayUseCase;
-    private final ProgramTimePresenter programTimePresenter;
+    private final UpdateMapTimeOutputBoundary programTimePresenter;
 
     public UpdateMapTimeUseCase(ProgramTime programTime, UpdateOverlayUseCase updateOverlayUseCase, UpdateMapTimeOutputBoundary programTimePresenter) {
         this.programTime = programTime;
@@ -19,7 +19,7 @@ public class UpdateMapTimeUseCase implements UpdateMapTimeInputBoundary {
     @Override
     public void execute(UpdateMapTimeInputData updateMapTimeInputData) {
         programTime.setTime(updateMapTimeInputData.getCurrentTime());
-        updateOverlayUseCase.update();
-        programTimePresenter.updateTime();
+//        updateOverlayUseCase.update();
+        programTimePresenter.updateTime(new UpdateMapTimeOutputData(updateMapTimeInputData.getCurrentTime()));
     }
 }
