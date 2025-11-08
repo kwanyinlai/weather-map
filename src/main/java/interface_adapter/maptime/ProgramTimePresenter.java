@@ -1,6 +1,6 @@
 package interface_adapter.maptime;
 
-import usecase.maptime.UpdateMapTimeInputData;
+import usecase.maptime.UpdateMapTimeOutputData;
 import usecase.maptime.UpdateMapTimeOutputBoundary;
 
 public class ProgramTimePresenter implements UpdateMapTimeOutputBoundary {

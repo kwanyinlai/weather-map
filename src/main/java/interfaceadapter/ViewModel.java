@@ -2,7 +2,7 @@
  *
  */
 
-package interface_adapter;
+package interfaceadapter;
 
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
