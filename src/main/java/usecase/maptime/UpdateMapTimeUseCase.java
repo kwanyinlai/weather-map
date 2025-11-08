@@ -2,15 +2,18 @@ package usecase.maptime;
 
 
 import entity.ProgramTime;
-import interface_adapter.maptime.ProgramTimePresenter;
+import interfaceadapter.maptime.ProgramTimePresenter;
 import usecase.UpdateOverlayUseCase;
 
 public class UpdateMapTimeUseCase implements UpdateMapTimeInputBoundary {
     private final ProgramTime programTime;
     private final UpdateOverlayUseCase updateOverlayUseCase;
-    private final ProgramTimePresenter programTimePresenter;
+    private final UpdateMapTimeOutputBoundary programTimePresenter;
 
-    public UpdateMapTimeUseCase(ProgramTime programTime, UpdateOverlayUseCase updateOverlayUseCase, UpdateMapTimeOutputBoundary programTimePresenter) {
+    public UpdateMapTimeUseCase(ProgramTime programTime,
+                                UpdateOverlayUseCase updateOverlayUseCase,
+                                UpdateMapTimeOutputBoundary programTimePresenter
+    ) {
         this.programTime = programTime;
         this.updateOverlayUseCase = updateOverlayUseCase;
         this.programTimePresenter = programTimePresenter;
@@ -19,7 +22,7 @@ public class UpdateMapTimeUseCase implements UpdateMapTimeInputBoundary {
     @Override
     public void execute(UpdateMapTimeInputData updateMapTimeInputData) {
         programTime.setTime(updateMapTimeInputData.getCurrentTime());
-        updateOverlayUseCase.update();
-        programTimePresenter.updateTime();
+        // updateOverlayUseCase.update();
+        programTimePresenter.updateTime(new UpdateMapTimeOutputData(programTime.getCurrentTime()));
     }
 }

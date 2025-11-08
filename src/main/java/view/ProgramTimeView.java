@@ -1,9 +1,9 @@
 package view;
 
-import interface_adapter.maptime.ProgramTimeController;
-import interface_adapter.maptime.ProgramTimeState;
-import interface_adapter.maptime.ProgramTimeViewModel;
-import interface_adapter.maptime.ProgramTimeController;
+import interfaceadapter.maptime.ProgramTimeController;
+import interfaceadapter.maptime.ProgramTimeState;
+import interfaceadapter.maptime.ProgramTimeViewModel;
+import interfaceadapter.maptime.ProgramTimeController;
 
 import javax.swing.*;
 import java.awt.*;
@@ -33,7 +33,7 @@ public class ProgramTimeView extends JPanel {
                 evt -> {
                     JSlider source = (JSlider) evt.getSource();
                     if (source.getValueIsAdjusting()) {
-                        final ProgramTimeState currentState = ProgramTimeViewModel.getState();
+                        final ProgramTimeState currentState = programTimeViewModel.getState();
                         this.programTimeController.execute(currentState);
                     }
                 }
@@ -44,6 +44,9 @@ public class ProgramTimeView extends JPanel {
 
     public String getViewName() {
         return viewName;
+    }
+    public void setProgramTimeController(ProgramTimeController controller) {
+        this.programTimeController = controller;
     }
 
 }
