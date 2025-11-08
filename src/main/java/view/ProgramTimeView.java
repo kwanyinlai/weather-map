@@ -32,7 +32,7 @@ public class ProgramTimeView extends JPanel implements PropertyChangeListener {
          *
          */
         timeSlider = new JSlider(SwingConstants.HORIZONTAL, 0, 100, 0);
-        timeSlider.setPreferredSize(new Dimension(500, 50));
+        timeSlider.setPreferredSize(new Dimension(400, 50));
         timeSlider.setMajorTickSpacing(1);
         timeSlider.addChangeListener(
                 evt -> {
@@ -66,7 +66,7 @@ public class ProgramTimeView extends JPanel implements PropertyChangeListener {
     public void propertyChange(PropertyChangeEvent evt) {
         if (evt.getPropertyName().equals("time slider")) {
             final ProgramTimeState state = (ProgramTimeState) evt.getNewValue();
-            currentTimeTitleLabel.setText(state.getTime().toString());
+            currentTime.setText(state.getTime());
         }
         else{
             System.out.println(evt.getPropertyName());
