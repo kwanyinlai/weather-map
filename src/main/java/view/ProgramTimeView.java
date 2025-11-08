@@ -4,6 +4,7 @@ import interfaceadapter.maptime.ProgramTimeController;
 import interfaceadapter.maptime.ProgramTimeState;
 import interfaceadapter.maptime.ProgramTimeViewModel;
 import interfaceadapter.maptime.ProgramTimeController;
+import uielements.CustomSliderUI;
 
 import javax.swing.*;
 import java.awt.*;
@@ -32,6 +33,7 @@ public class ProgramTimeView extends JPanel implements PropertyChangeListener {
          *
          */
         timeSlider = new JSlider(SwingConstants.HORIZONTAL, 0, 100, 0);
+        timeSlider.setUI(new CustomSliderUI(timeSlider));
         timeSlider.setPreferredSize(new Dimension(400, 50));
         timeSlider.setMajorTickSpacing(1);
         timeSlider.addChangeListener(
