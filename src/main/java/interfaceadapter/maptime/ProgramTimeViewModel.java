@@ -15,7 +15,7 @@ public class ProgramTimeViewModel extends ViewModel<ProgramTimeState>{
     }
 
     public static String getCurrentTimeFormatted(){
-        return DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
+        return DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")
                     .withZone(ZoneId.systemDefault())
                     .format(java.time.LocalDateTime.now());
     }
