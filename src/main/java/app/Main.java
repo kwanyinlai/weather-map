@@ -10,6 +10,7 @@ public class Main {
                 .addUpdateOverlayUseCase()
                 .addProgramTimeView()
                 .addUpdateMapTimeUseCase()
+                .addChangeOpacityView()
                 .build();
         application.pack();
         application.setLocationRelativeTo(null);

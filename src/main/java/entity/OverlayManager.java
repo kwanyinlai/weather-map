@@ -13,9 +13,15 @@ public class OverlayManager {
 
     public OverlayManager(int x, int y){
         this.types = new ArrayList<>();
+        this.types.add(WeatherType.Tmp2m);
+        this.types.add(WeatherType.Precip);
+        this.types.add(WeatherType.Pressure);
+        this.types.add(WeatherType.Wind);
+
         this.opacity = new ArrayList<>();
         this.selected = null;
         this.overlay = new BufferedImage(x, y, BufferedImage.TYPE_INT_ARGB);
+
     }
 
     //TODO use observers to automatically update this when the viewport changes size
@@ -26,6 +32,10 @@ public class OverlayManager {
     public void addOverlayType(WeatherType type){
         this.types.add(type);
         this.opacity.add((float)0.5);
+    }
+
+    public ArrayList<WeatherType> getTypes() {
+        return types;
     }
 
     public void setSelected(WeatherType selection) throws LayerNotFoundException {

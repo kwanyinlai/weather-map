@@ -10,6 +10,7 @@ import usecase.maptime.UpdateMapTimeInputBoundary;
 import usecase.UpdateOverlayUseCase;
 import usecase.maptime.UpdateMapTimeOutputBoundary;
 import usecase.maptime.UpdateMapTimeUseCase;
+import view.ChangeOpacityView;
 import view.ProgramTimeView;
 import interfaceadapter.maptime.ProgramTimeViewModel;
 import dataaccessinterface.TileRepository;
@@ -24,6 +25,7 @@ public class AppBuilder {
     private ProgramTimeView programTimeView;
     private ProgramTimeViewModel programTimeViewModel;
     private UpdateOverlayUseCase updateOverlayUseCase;
+    private ChangeOpacityView changeOpacityView;
 
     // initialising core entities
     private final ProgramTime programTime = new ProgramTime(Instant.now());
@@ -43,6 +45,8 @@ public class AppBuilder {
     }
 
     public AppBuilder addChangeOpacityView(){
+        changeOpacityView = new ChangeOpacityView(overlayManager);
+        borderPanel.add(changeOpacityView, BorderLayout.EAST);
         return this;
     }
 

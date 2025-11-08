@@ -1,11 +1,19 @@
 package view;
 
 import entity.OverlayManager;
+import entity.WeatherType;
 
-public class ChangeOpacityView {
+import javax.swing.*;
+
+public class ChangeOpacityView extends JPanel{
     private final OverlayManager overlayManager;
+    private final JComboBox<WeatherType> dropdown;
 
     public ChangeOpacityView(OverlayManager OM){
-        this.overlayManager = OM;
+        overlayManager = OM;
+        dropdown = new JComboBox<>(WeatherType.values());
+        this.add(dropdown);
     }
+
+    //TODO add action listener to update OM
 }
