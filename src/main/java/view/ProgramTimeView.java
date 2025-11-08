@@ -15,7 +15,7 @@ import java.beans.PropertyChangeListener;
 /**
  * The View for the Program Time slider
  */
-public class ProgramTimeView extends JPanel {
+public class ProgramTimeView extends JPanel implements PropertyChangeListener {
 
     private final String viewName = "program time";
     private final ProgramTimeViewModel programTimeViewModel;
@@ -49,4 +49,8 @@ public class ProgramTimeView extends JPanel {
         this.programTimeController = controller;
     }
 
+    @Override
+    public void propertyChange(PropertyChangeEvent evt) {
+
+    }
 }
