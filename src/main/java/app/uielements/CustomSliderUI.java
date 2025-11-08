@@ -23,15 +23,22 @@ public class CustomSliderUI extends BasicSliderUI {
         int arrowHeight = 10;
         int defaultThumbCentreX = thumbRect.x + thumbRect.width / 2;
         int defaultThumbCentreY = thumbRect.y + thumbRect.height / 2;
-        int arrowPointOffset = defaultThumbCentreY - arrowHeight / 2;
+        int arrowPointOffset = defaultThumbCentreY - arrowHeight * 2;
 
         Polygon triangle = new Polygon();
-        triangle.addPoint(defaultThumbCentreX, defaultThumbCentreY + arrowHeight);
-        triangle.addPoint(defaultThumbCentreX-arrowWidth/2, arrowPointOffset);
+        triangle.addPoint(defaultThumbCentreX, arrowPointOffset + arrowHeight);
+        triangle.addPoint(defaultThumbCentreX - arrowWidth/2, arrowPointOffset);
         triangle.addPoint(defaultThumbCentreX + arrowWidth/2, arrowPointOffset);
         g2d.setColor(Color.black);
         g2d.fill(triangle);
         g2d.draw(triangle);
         g2d.dispose();
+    }
+    protected Dimension getThumbSize() {
+        return new Dimension(40,40);
+    }
+    @Override
+    public void paintFocus(Graphics g){
+        return;
     }
 }
