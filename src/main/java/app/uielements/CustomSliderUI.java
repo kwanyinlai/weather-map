@@ -9,10 +9,23 @@ public class CustomSliderUI extends BasicSliderUI {
         super(slider);
     }
 
-//    @Override
-//    public void paintTrack(Graphics g){
-//
-//    }
+    @Override
+    public void paintTrack(Graphics g){
+        Graphics2D g2d = (Graphics2D) g.create();
+        g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+
+        GradientPaint gradientPaint = new GradientPaint(trackRect.x, 0 ,Color.BLUE,
+                trackRect.x + trackRect.width, 0, Color.ORANGE);
+        g2d.setPaint(gradientPaint);
+        g2d.fillRoundRect(
+                trackRect.x,
+                trackRect.y + 10,
+                trackRect.width,
+                15,
+                20,
+                20);
+        g2d.dispose();
+    }
 
     @Override
     public void paintThumb(Graphics g){
