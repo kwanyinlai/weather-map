@@ -19,6 +19,14 @@ public final class UpdateOverlayUseCase {
         this.viewport = vp;
     }
 
+    //legacy NOT INTENDED FOR USE
+    public UpdateOverlayUseCase(OverlayManager om, TileRepository tCache, ProgramTime time){
+        this.overlayManager = om;
+        this.tileCache = tCache;
+        this.time = time;
+        this.viewport = new Viewport(0,0,0,0,0,0,0);
+    }
+
 
     public void update(){
 
