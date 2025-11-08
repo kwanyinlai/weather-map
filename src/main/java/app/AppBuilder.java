@@ -42,6 +42,10 @@ public class AppBuilder {
         return this;
     }
 
+    public AppBuilder addChangeOpacityView(){
+        return this;
+    }
+
     public AppBuilder addUpdateOverlayUseCase(){
          updateOverlayUseCase = new UpdateOverlayUseCase(
                 overlayManager,
