@@ -2,14 +2,15 @@ package usecase.weatherLayers;
 
 import entity.OverlayManager;
 
-public class ChangeOpacityUseCase {
+public class ChangeOpacityUseCase implements ChangeOpacityInputboundary{
     private final OverlayManager overlayManager;
 
     public ChangeOpacityUseCase(OverlayManager OM){
         this.overlayManager = OM;
     }
 
-    public void changeOpacity(double alpha){
-        this.overlayManager.setSelectedOpacity((float)alpha);
+    @Override
+    public void change(ChangeOpacityInputData data){
+        this.overlayManager.setSelectedOpacity(data.getOpacity());
     }
 }

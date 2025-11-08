@@ -1,9 +1,9 @@
 package entity;
 
-import entity.*;
 import java.awt.*;
 import java.awt.image.*;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 public class OverlayManager {
     private final ArrayList<WeatherType> types;
@@ -17,8 +17,7 @@ public class OverlayManager {
         this.types.add(WeatherType.Precip);
         this.types.add(WeatherType.Pressure);
         this.types.add(WeatherType.Wind);
-
-        this.opacity = new ArrayList<>();
+        this.opacity = new ArrayList<>(Arrays.asList((float)0.5, (float)0.5, (float)0.5, (float)0.5));
         this.selected = null;
         this.overlay = new BufferedImage(x, y, BufferedImage.TYPE_INT_ARGB);
 
@@ -29,14 +28,6 @@ public class OverlayManager {
         this.overlay = new BufferedImage(x, y, BufferedImage.TYPE_INT_ARGB);
     }
 
-    public void addOverlayType(WeatherType type){
-        this.types.add(type);
-        this.opacity.add((float)0.5);
-    }
-
-    public ArrayList<WeatherType> getTypes() {
-        return types;
-    }
 
     public void setSelected(WeatherType selection) throws LayerNotFoundException {
         // Change the selected layer. Raise LayerNotFoundException if selection is not an added overlay type.

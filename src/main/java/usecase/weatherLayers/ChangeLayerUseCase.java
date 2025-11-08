@@ -7,21 +7,17 @@ import interfaceadapter.weatherLayers.WeatherLayersPresenter;
 
 public class ChangeLayerUseCase implements ChangeLayerInputBoundary{
     private final OverlayManager overlayManager;
-    private final WeatherLayersPresenter layersPresenter;
+    private final ChangeLayerOutputBoundary layersPresenter;
 
-    public ChangeLayerUseCase(OverlayManager OM, WeatherLayersPresenter presenter){
+    public ChangeLayerUseCase(OverlayManager OM, ChangeLayerOutputBoundary presenter){
         this.overlayManager = OM;
         this.layersPresenter = presenter;
     }
 
     @Override
-    public void change(ChangeLayerInputData data){
-        try {
+    public void change(ChangeLayerInputData data) throws LayerNotFoundException{
             this.overlayManager.setSelected(data.getType());
             layersPresenter.updateOpacity(new ChangeLayersOutputData(overlayManager.getSelectedOpacity()));
-        } catch (LayerNotFoundException e) {
-            layersPresenter.updateOpacity(new ChangeLayersOutputData(-1));
-        }
     }
 }
 
