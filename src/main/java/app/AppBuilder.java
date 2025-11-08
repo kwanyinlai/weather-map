@@ -59,10 +59,7 @@ public class AppBuilder {
                         updateOverlayUseCase,
                         updateMapTimeOutputBoundary
                     );
-        ProgramTimeController controller = new ProgramTimeController(
-                updateMapTimeInputBoundary,
-                java.time.Duration.ofDays(3)
-        );
+        ProgramTimeController controller = new ProgramTimeController(updateMapTimeInputBoundary, java.time.Duration.ofHours(3));
         programTimeView.setProgramTimeController(controller);
         return this;
     }

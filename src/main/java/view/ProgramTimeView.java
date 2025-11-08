@@ -66,7 +66,7 @@ public class ProgramTimeView extends JPanel implements PropertyChangeListener {
     public void propertyChange(PropertyChangeEvent evt) {
         if (evt.getPropertyName().equals("time slider")) {
             final ProgramTimeState state = (ProgramTimeState) evt.getNewValue();
-            currentTime.setText(state.getTime());
+            currentTimeTitleLabel.setText(state.getTime().toString());
         }
         else{
             System.out.println(evt.getPropertyName());
