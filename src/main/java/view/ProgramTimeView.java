@@ -48,7 +48,7 @@ public class ProgramTimeView extends JPanel implements PropertyChangeListener {
          */
         currentTimeTitleLabel = new JLabel(ProgramTimeViewModel.CURRENT_TIME_LABEL);
         currentTimeTitleLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
-        currentTime = new JLabel();
+        currentTime = new JLabel(ProgramTimeViewModel.getCurrentTimeFormatted());
 
         this.add(timeSlider);
         this.add(currentTimeTitleLabel);
