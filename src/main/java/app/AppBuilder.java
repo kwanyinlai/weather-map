@@ -7,7 +7,6 @@ import entity.ProgramTime;
 import interfaceadapter.maptime.ProgramTimeController;
 import interfaceadapter.maptime.ProgramTimePresenter;
 import usecase.maptime.UpdateMapTimeInputBoundary;
-import usecase.maptime.UpdateMapTimeInputData;
 import usecase.UpdateOverlayUseCase;
 import usecase.maptime.UpdateMapTimeOutputBoundary;
 import usecase.maptime.UpdateMapTimeUseCase;
@@ -21,12 +20,15 @@ public class AppBuilder {
     private final JPanel borderPanel = new JPanel();
     private final BorderLayout borderLayout = new BorderLayout();
 
+
     private ProgramTimeView programTimeView;
-    private final ProgramTime programTime = new ProgramTime(Instant.now());
-    private final TileRepository tileRepository = new CachedTileRepository(10); // TODO: change
-    private final OverlayManager overlayManager = new OverlayManager(10,10);
     private ProgramTimeViewModel programTimeViewModel;
     private UpdateOverlayUseCase updateOverlayUseCase;
+
+    // initialising core entities
+    private final ProgramTime programTime = new ProgramTime(Instant.now());
+    private final TileRepository tileRepository = new CachedTileRepository(10); // TODO: change cache size
+    private final OverlayManager overlayManager = new OverlayManager(10,10);
 
     public AppBuilder() {
         borderPanel.setLayout(borderLayout);
@@ -57,9 +59,7 @@ public class AppBuilder {
                         updateOverlayUseCase,
                         updateMapTimeOutputBoundary
                     );
-
-
-        ProgramTimeController controller = new ProgramTimeController(updateMapTimeInputBoundary, java.time.Duration.ofHours(3));
+        ProgramTimeController controller = new ProgramTimeController(updateMapTimeInputBoundary, java.time.Duration.ofDays(3));
         programTimeView.setProgramTimeController(controller);
         return this;
     }

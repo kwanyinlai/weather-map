@@ -7,7 +7,7 @@ public class ProgramTimeState {
         return timesliderScale;
     }
 
-    public double setTimesliderScale(double timesliderScale) {
+    public void setTimesliderScale(double timesliderScale) {
         this.timesliderScale = timesliderScale;
     }
 }
