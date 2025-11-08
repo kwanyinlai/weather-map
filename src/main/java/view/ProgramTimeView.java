@@ -24,6 +24,9 @@ public class ProgramTimeView extends JPanel {
 
     public ProgramTimeView(ProgramTimeViewModel programTimeViewModel) {
         this.programTimeViewModel = programTimeViewModel;
+        this.programTimeViewModel.addPropertyChangeListener(this);
+
+
         timeSlider = new JSlider(SwingConstants.HORIZONTAL);
         timeSlider.setMajorTickSpacing(1);
         timeSlider.addChangeListener(
