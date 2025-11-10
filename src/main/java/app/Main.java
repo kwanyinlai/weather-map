@@ -10,6 +10,8 @@ public class Main {
                 .addUpdateOverlayUseCase()
                 .addProgramTimeView()
                 .addUpdateMapTimeUseCase()
+                .addChangeOpacityView()
+                .addWeatherLayersUseCase()
                 .build();
         application.pack();
         application.setLocationRelativeTo(null);
