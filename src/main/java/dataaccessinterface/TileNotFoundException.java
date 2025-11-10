@@ -9,8 +9,8 @@ import java.io.IOException;
 public class TileNotFoundException extends IOException {
 
     public TileNotFoundException(WeatherTile tile) {
-        super("The parameters x=" + tile.getCoordinates().x + ",y="+tile.getCoordinates().y+
-                ",zoom="+tile.GetCoordinates().zoom+",time="+tile.getTimeStamp()+" do not " +
+        super("The parameters x=" + tile.getCoordinates().getY() + ",y="+tile.getCoordinates().getY()+
+                ",zoom="+tile.getCoordinates().getZoom()+",time="+tile.getTimestamp()+" do not " +
                 "correspond to a valid tile.");
     }
 

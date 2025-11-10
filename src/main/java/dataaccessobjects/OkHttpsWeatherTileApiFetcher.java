@@ -66,20 +66,31 @@ public class OkHttpsWeatherTileApiFetcher implements WeatherTileApiFetcher {
 
     public List<BufferedImage> getListOfWeatherTileImageData(List<WeatherTile> weatherTileList){
         List<BufferedImage> imageList = new ArrayList<>();
-        try(ExecutorService executor = Executors.newFixedThreadPool(4)){
-        List<CompletableFuture<BufferedImage>> futures = new ArrayList<>();
+        ExecutorService executor = Executors.newFixedThreadPool(4);
+        try{
 
-        for (WeatherTile tile : weatherTileList) {
-            CompletableFuture<BufferedImage> imageData =
-                    CompletableFuture.supplyAsync(() -> getWeatherTileImageData(tile), executor)
-                            .exceptionally(ex -> null);
+            List<CompletableFuture<BufferedImage>> futures = new ArrayList<>();
 
-            futures.add(imageData);
-        }
-        for (CompletableFuture<BufferedImage> future : futures) {
-            imageList.add(future.join());
-        }
-        return imageList;
+            for (WeatherTile tile : weatherTileList) {
+                CompletableFuture<BufferedImage> imageData =
+                        CompletableFuture.supplyAsync(() -> {
+                                    try {
+                                        return getWeatherTileImageData(tile);
+                                    } catch (TileNotFoundException e) {
+                                        return null;
+                                    }
+                                }, executor)
+                                .exceptionally(ex -> null);
+
+                futures.add(imageData);
+            }
+            for (CompletableFuture<BufferedImage> future : futures) {
+                imageList.add(future.join());
+            }
+            return imageList;
+            }
+        finally{
+            executor.shutdown();
         }
     }
 }
