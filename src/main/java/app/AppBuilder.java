@@ -17,6 +17,7 @@ import usecase.weatherLayers.UpdateOverlayUseCase;
 import usecase.maptime.UpdateMapTimeOutputBoundary;
 import usecase.maptime.UpdateMapTimeUseCase;
 import view.ChangeWeatherLayersView;
+import view.MapOverlayStructureView;
 import view.ProgramTimeView;
 import interfaceadapter.maptime.ProgramTimeViewModel;
 import dataaccessinterface.TileRepository;
@@ -37,6 +38,8 @@ public class AppBuilder {
     private ChangeWeatherLayersView changeWeatherView;
     private ChangeOpacityUseCase changeOpacityUseCase;
     private ChangeLayerUseCase changeLayerUseCase;
+
+    private MapOverlayStructureView mapOverlayStructure;
 
     // initialising core entities
     private final ProgramTime programTime = new ProgramTime(Instant.now());
@@ -59,6 +62,16 @@ public class AppBuilder {
         weatherLayersviewModel = new WeatherLayersViewModel(0.5);
         changeWeatherView = new ChangeWeatherLayersView(weatherLayersviewModel);
         borderPanel.add(changeWeatherView, BorderLayout.EAST);
+        return this;
+    }
+
+    public AppBuilder addMapOverlayView(){
+        //TODO implement overlayComponent and MapComponent (temp name only)
+        //overlayComponent = new OverlayView(..., ...);
+        //mapComponent = new MapComponent(..., ...);
+        mapOverlayStructure = new MapOverlayStructureView();
+        //mapOverlayStructure.addMap(mapComponent);
+        //mapOverlayStructure.addMap(overlayComponent);
         return this;
     }
 
