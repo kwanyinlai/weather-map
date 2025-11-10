@@ -1,4 +1,4 @@
-package usecase;
+package usecase.weatherLayers;
 
 import dataaccessinterface.TileNotFoundException;
 import dataaccessinterface.TileRepository;

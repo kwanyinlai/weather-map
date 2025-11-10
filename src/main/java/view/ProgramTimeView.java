@@ -34,6 +34,7 @@ public class ProgramTimeView extends JPanel implements PropertyChangeListener {
         timeSlider = new JSlider(SwingConstants.HORIZONTAL, 0, 100, 0);
         timeSlider.setPreferredSize(new Dimension(400, 50));
         timeSlider.setMajorTickSpacing(1);
+        //timeSlider.setPaintTicks(true); << need this to show ticks
         timeSlider.addChangeListener(
                 evt -> {
                     JSlider source = (JSlider) evt.getSource();
