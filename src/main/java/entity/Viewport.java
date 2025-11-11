@@ -45,8 +45,16 @@ public class Viewport {
         double lat = mercator.yToLat((int) pixelCenterY, zoomLevel);
         return new Location(lat, lon);
     }
+    public boolean isZoomValid(int newZoom) {
+        return newZoom >= minZoom && newZoom <= maxZoom;
+    }
+    public void setZoomLevel(int zoomLevel) { this.zoomLevel = zoomLevel; }
+    public int getMaxZoom() { return maxZoom; }
+    public int getMinZoom() { return minZoom; }
+    public void setPixelCenterX(double pixelCenterX) { this.pixelCenterX = pixelCenterX; }
+    public void setPixelCenterY(double pixelCenterY) { this.pixelCenterY = pixelCenterY; }
 
-    public float getZoomLevel() {
+    public int getZoomLevel() {
         return this.zoomLevel;
     }
     public double getPixelCenterX() {
