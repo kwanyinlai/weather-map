@@ -5,9 +5,9 @@ import java.util.List;
 
 public interface BookmarkedLocationStorage {
     // Get the list of all bookmarked locations.
-    List<BookmarkedLocation> getBookmarkedLocation();
+    List<BookmarkedLocation> getBookmarkedLocations();
 
     // Add the bookmarked location.
-    void bookmarkLocation(BookmarkedLocation bookmarkedLocation);
+    void addBookmarkedLocation(BookmarkedLocation bookmarkedLocation);
 
 }
