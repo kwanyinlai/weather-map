@@ -34,7 +34,7 @@ public class AppBuilder {
 
     private UpdateOverlayUseCase updateOverlayUseCase;
 
-    private WeatherLayersViewModel weatherLayersviewModel;
+    private WeatherLayersViewModel weatherLayersViewModel;
     private ChangeWeatherLayersView changeWeatherView;
     private ChangeOpacityUseCase changeOpacityUseCase;
     private ChangeLayerUseCase changeLayerUseCase;
@@ -59,24 +59,26 @@ public class AppBuilder {
     }
 
     public AppBuilder addChangeOpacityView(){
-        weatherLayersviewModel = new WeatherLayersViewModel(0.5);
-        changeWeatherView = new ChangeWeatherLayersView(weatherLayersviewModel);
+        weatherLayersViewModel = new WeatherLayersViewModel(0.5);
+        changeWeatherView = new ChangeWeatherLayersView(weatherLayersViewModel);
         borderPanel.add(changeWeatherView, BorderLayout.EAST);
         return this;
     }
 
     public AppBuilder addMapOverlayView(){
-        //TODO implement overlayComponent and MapComponent (temp name only)
+        //TODO implement overlayComponent, MapComponent and other panels to be layered onto the map (temp names only)
         //overlayComponent = new OverlayView(..., ...);
         //mapComponent = new MapComponent(..., ...);
+        //infoPanel = ...
         mapOverlayStructure = new MapOverlayStructureView();
-        //mapOverlayStructure.addMap(mapComponent);
-        //mapOverlayStructure.addMap(overlayComponent);
+        //mapOverlayStructure.addComponent(mapComponent, 1);
+        //mapOverlayStructure.addComponent(overlayComponent, 2);
+        //...
         return this;
     }
 
     public AppBuilder addWeatherLayersUseCase(){
-        ChangeLayerOutputBoundary layerOutputBoundary = new WeatherLayersPresenter(weatherLayersviewModel);
+        ChangeLayerOutputBoundary layerOutputBoundary = new WeatherLayersPresenter(weatherLayersViewModel);
         changeLayerUseCase = new ChangeLayerUseCase(overlayManager, layerOutputBoundary);
         changeOpacityUseCase = new ChangeOpacityUseCase(overlayManager);
         WeatherLayersController cont = new WeatherLayersController(changeLayerUseCase, changeOpacityUseCase);

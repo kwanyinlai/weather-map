@@ -9,11 +9,10 @@ public class MapOverlayStructureView extends JPanel {
         this.add(mapLayers);
     }
 
-    public addMap(JPanel map){
-        mapLayers.add(map, new Integer(1));
+    public void addComponent(JPanel component, int layer){
+        mapLayers.add(component, new Integer(layer));
+        //new Integer object required as specified in docs
+        //https://docs.oracle.com/javase/8/docs/api/javax/swing/JLayeredPane.html
     }
 
-    public addOverlay(JPanel Overlay){
-        mapLayers.add(Overlay, new Integer(2));
-    }
 }
