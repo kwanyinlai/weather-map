@@ -23,9 +23,8 @@ public class OverlayManager {
 
     }
 
-    //TODO use observers to automatically update this when the viewport changes size
-    public void changeSize(int x, int y){
-        this.overlay = new BufferedImage(x, y, BufferedImage.TYPE_INT_ARGB);
+    public void changeSize(Dimension size){
+        this.overlay = new BufferedImage(size.width, size.height, BufferedImage.TYPE_INT_ARGB);
     }
 
 

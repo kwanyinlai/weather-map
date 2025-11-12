@@ -1,4 +1,4 @@
-package usecase.weatherLayers;
+package usecase.weatherLayers.layers;
 
 public class ChangeLayersOutputData {
     private final double opacity;

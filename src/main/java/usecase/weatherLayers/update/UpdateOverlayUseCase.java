@@ -1,4 +1,4 @@
-package usecase.weatherLayers;
+package usecase.weatherLayers.update;
 
 import dataaccessinterface.TileNotFoundException;
 import dataaccessinterface.TileRepository;
@@ -6,11 +6,12 @@ import entity.*;
 
 import java.awt.image.BufferedImage;
 
-public final class UpdateOverlayUseCase {
+public final class UpdateOverlayUseCase implements UpdateOverlayInputBoundary{
     private final OverlayManager overlayManager;
     private final TileRepository tileCache;
     private final ProgramTime time;
     private final Viewport viewport;
+    //TODO add presenter
 
     public UpdateOverlayUseCase(OverlayManager om, TileRepository tCache, ProgramTime time, Viewport vp){
         this.overlayManager = om;
