@@ -7,7 +7,6 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.*;
-import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -88,7 +87,7 @@ public final class InDiskBookmarkStorage implements BookmarkedLocationStorage {
             return new JSONArray(json);
 
         } catch (IOException e) {
-            // Fail safe on read: treat as empty array
+            // Fail-safe on read: treat as empty array
             return new JSONArray();
         }
     }
@@ -98,7 +97,7 @@ public final class InDiskBookmarkStorage implements BookmarkedLocationStorage {
      * directories as needed.
      *
      * @param arr The {@link JSONArray} representing all bookmarks to persist.
-     * @throws RuntimeException If an I/O error prevents saving the file.
+     * @throws dataaccessobjects.BookmarkPersistenceException if saving fails.
      */
     private void writeArray(JSONArray arr) {
 
@@ -111,7 +110,7 @@ public final class InDiskBookmarkStorage implements BookmarkedLocationStorage {
             Files.move(tmp, filePath, StandardCopyOption.REPLACE_EXISTING, StandardCopyOption.ATOMIC_MOVE);
 
         } catch (IOException e) {
-            throw new RuntimeException("Failed to persist bookmarks to " + filePath, e);
+            throw new BookmarkPersistenceException("Failed to persist bookmarks to " + filePath, e);
         }
     }
 
@@ -127,9 +126,8 @@ public final class InDiskBookmarkStorage implements BookmarkedLocationStorage {
         JSONObject obj = new JSONObject();
 
         obj.put("name", b.getName());
-        obj.put("latitude", b.getNormalizedLocation().getLatitude());
-        obj.put("longitude", b.getNormalizedLocation().getLongitude());
-        obj.put("savedTime", b.getSavedTime().toString());
+        obj.put("latitude", b.getLatitude());
+        obj.put("longitude", b.getLongitude());
 
         return obj;
     }
@@ -149,9 +147,8 @@ public final class InDiskBookmarkStorage implements BookmarkedLocationStorage {
         double lat = obj.getDouble("latitude");
         double lon = obj.getDouble("longitude");
         String name = obj.getString("name");
-        Instant savedTime = Instant.parse(obj.getString("savedTime"));
 
-        return new BookmarkedLocation(name, lat, lon, savedTime);
+        return new BookmarkedLocation(name, lat, lon);
     }
 
 }
