@@ -4,6 +4,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.time.Instant;
 import entity.ProgramTime;
+import entity.Viewport;
 import interfaceadapter.maptime.ProgramTimeController;
 import interfaceadapter.maptime.ProgramTimePresenter;
 import interfaceadapter.weatherLayers.WeatherLayersController;
@@ -42,6 +43,8 @@ public class AppBuilder {
     private final ProgramTime programTime = new ProgramTime(Instant.now());
     private final TileRepository tileRepository = new CachedTileRepository(10); // TODO: change cache size
     private final OverlayManager overlayManager = new OverlayManager(10,10);
+    private final Viewport viewport = new Viewport(0,0,600,
+            0, 6, 0, 600);
 
     public AppBuilder() {
         borderPanel.setLayout(borderLayout);
@@ -75,7 +78,8 @@ public class AppBuilder {
          updateOverlayUseCase = new UpdateOverlayUseCase(
                 overlayManager,
                 tileRepository,
-                programTime
+                programTime,
+                 viewport
         );
         return this;
     }

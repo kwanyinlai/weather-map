@@ -10,22 +10,22 @@ public final class UpdateOverlayUseCase {
     private final OverlayManager overlayManager;
     private final TileRepository tileCache;
     private final ProgramTime time;
+    private final Viewport viewport;
 
-    public UpdateOverlayUseCase(OverlayManager om, TileRepository tCache, ProgramTime time){
+    public UpdateOverlayUseCase(OverlayManager om, TileRepository tCache, ProgramTime time, Viewport vp){
         this.overlayManager = om;
         this.tileCache = tCache;
         this.time = time;
+        this.viewport = vp;
     }
 
-
-    public void update(Viewport vp){
-
+    public void update(){
         if (this.overlayManager.getSelectedOpacity() == 0){
             return;
         }
 
-        int zoom = vp.getBounedZoom();
-        BoundingBox bBox = vp.calculateBBox();
+        int zoom = this.viewport.getBounedZoom();
+        BoundingBox bBox = this.viewport.calculateBBox();
 
         //Convert to tile coords,
         //lat lon as bounding box, convert lat lon to 0-1. //Move this to boundingbox entity?
