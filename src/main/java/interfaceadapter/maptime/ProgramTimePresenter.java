@@ -24,7 +24,7 @@ public class ProgramTimePresenter implements UpdateMapTimeOutputBoundary {
         programTimeViewModel.firePropertyChange("time slider");
     }
     private String formatTimeInstant(java.time.Instant instant) {
-        return DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
+        return DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")
                 .withZone(ZoneId.systemDefault())
                 .format(instant);
     }

@@ -3,6 +3,10 @@ package interfaceadapter.maptime;
 import usecase.maptime.UpdateMapTimeInputBoundary;
 import usecase.maptime.UpdateMapTimeInputData;
 
+import javax.swing.*;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+
 /** Class that centrally modifies the current program time state
  *
  */
@@ -41,6 +45,6 @@ public class ProgramTimeController {
      * @return duration * scale correct to the nearest minute
      */
     private java.time.Duration multiplyDuration(java.time.Duration duration, double scale) {
-        return java.time.Duration.ofMinutes(Math.round(duration.toMinutes() * scale));
+        return java.time.Duration.ofHours(Math.round(duration.toHours() * scale));
     }
 }
