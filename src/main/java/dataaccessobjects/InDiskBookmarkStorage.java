@@ -35,7 +35,7 @@ public final class InDiskBookmarkStorage implements BookmarkedLocationStorage {
      * Loads all bookmarked locations from disk.
      *
      * @return An immutable list of {@link BookmarkedLocation} reconstructed from
-     *         the JSON file; returns an empty list if the file is missing or empty.
+     * the JSON file; returns an empty list if the file is missing or empty.
      * @throws org.json.JSONException If the on-disk JSON is malformed.
      */
     @Override
@@ -62,6 +62,30 @@ public final class InDiskBookmarkStorage implements BookmarkedLocationStorage {
         writeArray(arr);
     }
 
+    /**
+     * Removes the first persisted bookmark that matches the given entity by name and
+     * latitude/longitude, then persists the updated collection.
+     *
+     * @param b The bookmark to remove.
+     * @return {@code true} if a matching bookmark was found and removed; {@code false} otherwise.
+     * @throws dataaccessobjects.BookmarkPersistenceException If writing to disk fails.
+     */
+    @Override
+    public synchronized boolean removeBookmarkedLocation(BookmarkedLocation b) {
+        JSONArray arr = readArray();
+
+        for (int i = 0; i < arr.length(); i++) {
+            JSONObject obj = arr.getJSONObject(i);
+
+            if (jsonMatchesBookmark(obj, b)) {
+                arr.remove(i);
+                writeArray(arr);
+                return true;
+            }
+        }
+        return false;
+    }
+
 
     // ---------- Helper Methods ----------
 
@@ -69,7 +93,7 @@ public final class InDiskBookmarkStorage implements BookmarkedLocationStorage {
      * Reads the JSON array of bookmarks from the persistence file.
      *
      * @return A {@link JSONArray} of bookmarks, or an empty array if the file
-     *         does not exist or contains no data.
+     * does not exist or contains no data.
      * @throws org.json.JSONException If the file contains malformed JSON.
      */
     private JSONArray readArray() {
@@ -120,7 +144,7 @@ public final class InDiskBookmarkStorage implements BookmarkedLocationStorage {
      *
      * @param b The bookmark to serialize.
      * @return A {@link JSONObject} with fields: {@code name}, {@code latitude},
-     *         {@code longitude}, and {@code savedTime}.
+     * {@code longitude}, and {@code savedTime}.
      */
     private JSONObject convertBookmarkToJsonEntry(BookmarkedLocation b) {
         JSONObject obj = new JSONObject();
@@ -138,9 +162,8 @@ public final class InDiskBookmarkStorage implements BookmarkedLocationStorage {
      *
      * @param obj A {@link JSONObject} containing fields: {@code name},
      *            {@code latitude}, {@code longitude}, and {@code savedTime}.
-     *
      * @return A reconstructed {@link BookmarkedLocation}.
-     * @throws org.json.JSONException If required fields are missing or of the wrong type.
+     * @throws org.json.JSONException                  If required fields are missing or of the wrong type.
      * @throws java.time.format.DateTimeParseException If {@code savedTime} cannot be parsed.
      */
     private BookmarkedLocation convertJsonEntryToBookmark(JSONObject obj) {
@@ -151,4 +174,22 @@ public final class InDiskBookmarkStorage implements BookmarkedLocationStorage {
         return new BookmarkedLocation(name, lat, lon);
     }
 
+    /**
+     * Checks whether a persisted JSON object corresponds to the given entity by
+     * comparing name and coordinates.
+     *
+     * @param obj The JSON object from storage.
+     * @param b   The in-memory bookmark to match.
+     * @return {@code true} if both name and coordinates match; {@code false} otherwise.
+     */
+    private boolean jsonMatchesBookmark(JSONObject obj, BookmarkedLocation b) {
+        String name = obj.optString("name", "");
+        double lat = obj.optDouble("latitude", Double.NaN);
+        double lon = obj.optDouble("longitude", Double.NaN);
+
+        return name.equals(b.getName())
+                && Double.compare(lat, b.getLatitude()) == 0
+                && Double.compare(lon, b.getLongitude()) == 0;
+
+    }
 }
