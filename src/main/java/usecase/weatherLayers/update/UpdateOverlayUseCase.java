@@ -11,13 +11,15 @@ public final class UpdateOverlayUseCase implements UpdateOverlayInputBoundary{
     private final TileRepository tileCache;
     private final ProgramTime time;
     private final Viewport viewport;
-    //TODO add presenter
+    private final UpdateOverlayOutputBoundary output;
 
-    public UpdateOverlayUseCase(OverlayManager om, TileRepository tCache, ProgramTime time, Viewport vp){
+    public UpdateOverlayUseCase(OverlayManager om, TileRepository tCache, ProgramTime time, Viewport vp,
+                                UpdateOverlayOutputBoundary output){
         this.overlayManager = om;
         this.tileCache = tCache;
         this.time = time;
         this.viewport = vp;
+        this.output = output;
     }
 
     public void update(){
@@ -67,8 +69,9 @@ public final class UpdateOverlayUseCase implements UpdateOverlayInputBoundary{
                 }
             }
         }
+        output.updateImage(new UpdateOverlayOutputData(overlayManager.getOverlay()));
     }
-        //output.setoverlay(this.overlayManager.getOverlay());
+
 }
 
 

@@ -7,13 +7,12 @@ import entity.ProgramTime;
 import entity.Viewport;
 import interfaceadapter.maptime.ProgramTimeController;
 import interfaceadapter.maptime.ProgramTimePresenter;
-import interfaceadapter.weatherLayers.WeatherLayersController;
-import interfaceadapter.weatherLayers.WeatherLayersPresenter;
-import interfaceadapter.weatherLayers.WeatherLayersViewModel;
+import interfaceadapter.weatherLayers.*;
 import usecase.maptime.UpdateMapTimeInputBoundary;
 import usecase.weatherLayers.layers.ChangeLayerOutputBoundary;
 import usecase.weatherLayers.layers.ChangeLayerUseCase;
 import usecase.weatherLayers.layers.ChangeOpacityUseCase;
+import usecase.weatherLayers.update.UpdateOverlayOutputBoundary;
 import usecase.weatherLayers.update.UpdateOverlayUseCase;
 import usecase.maptime.UpdateMapTimeOutputBoundary;
 import usecase.maptime.UpdateMapTimeUseCase;
@@ -31,6 +30,8 @@ public class AppBuilder {
 
     private ProgramTimeView programTimeView;
     private ProgramTimeViewModel programTimeViewModel;
+
+    private UpdateOverlayViewModel overlayViewModel;
 
     private UpdateOverlayUseCase updateOverlayUseCase;
 
@@ -74,12 +75,19 @@ public class AppBuilder {
         return this;
     }
 
+    public AppBuilder addOverlayView(){
+        overlayViewModel = new UpdateOverlayViewModel();
+        //view...
+        return this;
+    }
     public AppBuilder addUpdateOverlayUseCase(){
+        final UpdateOverlayOutputBoundary output = new UpdateOverlayPresenter(overlayViewModel);
          updateOverlayUseCase = new UpdateOverlayUseCase(
                 overlayManager,
                 tileRepository,
                 programTime,
-                 viewport
+                 viewport,
+                 output
         );
         return this;
     }
