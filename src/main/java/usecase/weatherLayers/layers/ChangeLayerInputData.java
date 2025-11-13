@@ -1,4 +1,4 @@
-package usecase.weatherLayers;
+package usecase.weatherLayers.layers;
 
 import entity.WeatherType;
 

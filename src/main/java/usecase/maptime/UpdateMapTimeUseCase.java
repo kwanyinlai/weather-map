@@ -2,7 +2,7 @@ package usecase.maptime;
 
 
 import entity.ProgramTime;
-import usecase.weatherLayers.UpdateOverlayUseCase;
+import usecase.weatherLayers.update.UpdateOverlayUseCase;
 
 public class UpdateMapTimeUseCase implements UpdateMapTimeInputBoundary {
     private final ProgramTime programTime;

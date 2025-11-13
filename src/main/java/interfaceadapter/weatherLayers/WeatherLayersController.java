@@ -2,10 +2,10 @@ package interfaceadapter.weatherLayers;
 
 import entity.LayerNotFoundException;
 import entity.WeatherType;
-import usecase.weatherLayers.ChangeLayerInputBoundary;
-import usecase.weatherLayers.ChangeLayerInputData;
-import usecase.weatherLayers.ChangeOpacityInputData;
-import usecase.weatherLayers.ChangeOpacityInputboundary;
+import usecase.weatherLayers.layers.ChangeLayerInputBoundary;
+import usecase.weatherLayers.layers.ChangeLayerInputData;
+import usecase.weatherLayers.layers.ChangeOpacityInputData;
+import usecase.weatherLayers.layers.ChangeOpacityInputboundary;
 
 public class WeatherLayersController {
     private final ChangeLayerInputBoundary layerInput;

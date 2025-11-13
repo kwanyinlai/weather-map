@@ -1,9 +1,7 @@
-package usecase.weatherLayers;
+package usecase.weatherLayers.layers;
 
 import entity.LayerNotFoundException;
 import entity.OverlayManager;
-import entity.WeatherType;
-import interfaceadapter.weatherLayers.WeatherLayersPresenter;
 
 public class ChangeLayerUseCase implements ChangeLayerInputBoundary{
     private final OverlayManager overlayManager;
