@@ -47,13 +47,13 @@ public class CustomSliderUI extends BasicSliderUI {
 
     @Override
     public void paintThumb(Graphics g){
+
         Graphics2D g2d = (Graphics2D) g.create();
         g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-
+        g2d.setComposite(AlphaComposite.Src);
+        g2d.setColor(new Color(0, 0, 0, 0));
         int defaultThumbCentreX = thumbRect.x + thumbRect.width / 2;
         int defaultThumbCentreY = thumbRect.y + thumbRect.height / 2;
-
-
         int arrowOffset = defaultThumbCentreY - DEFAULT_ARROW_HEIGHT * 2;
         Polygon triangle = new Polygon();
         triangle.addPoint(defaultThumbCentreX, arrowOffset + DEFAULT_ARROW_HEIGHT);
@@ -65,10 +65,22 @@ public class CustomSliderUI extends BasicSliderUI {
         g2d.dispose();
     }
     protected Dimension getThumbSize() {
-        return new Dimension(50,50);
+        return new Dimension(20,50);
     }
     @Override
     public void paintFocus(Graphics g){
         return;
     }
+
+    @Override
+    protected void calculateTrackRect() {
+        int trackHeight = 10;
+        int verticalOffset = 0;
+        trackRect.y = verticalOffset;
+        trackRect.height = trackHeight;
+        // trying to realign track
+
+    }
+
+
 }
