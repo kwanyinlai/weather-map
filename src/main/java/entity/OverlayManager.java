@@ -18,7 +18,7 @@ public class OverlayManager {
         this.types.add(WeatherType.Pressure);
         this.types.add(WeatherType.Wind);
         this.opacity = new ArrayList<>(Arrays.asList((float)0.5, (float)0.5, (float)0.5, (float)0.5));
-        this.selected = null;
+        this.selected = WeatherType.Tmp2m;
         this.overlay = new BufferedImage(x, y, BufferedImage.TYPE_INT_ARGB);
 
     }
@@ -85,13 +85,13 @@ public class OverlayManager {
         // each tile png is 256x256.
         // (theoratical) "scale" the image to fit onto the UV tile grid, then scale by c.
         // same as c * "scale" = c / (2^zoom * 256)
-        double pngToTileFactor = scaleToOvl / (Math.pow(2,tile.getCoordinates().getZoom()) * 256) ;
+        double pngToTileFactor = scaleToOvl / 256 ;
         //apply scale to the tile image.
-        Image scaledTileImg = tileImg.getScaledInstance((int)(256*pngToTileFactor), -1, Image.SCALE_FAST);
+        Image scaledTileImg = tileImg.getScaledInstance((int)(256*pngToTileFactor), -1, Image.SCALE_AREA_AVERAGING);
 
         //draw tile image onto overlay with selected layer's opacity.
         Graphics2D g = this.overlay.createGraphics();
-        AlphaComposite alphaComposite = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, getSelectedOpacity());
+        AlphaComposite alphaComposite = AlphaComposite.getInstance(AlphaComposite.SRC, getSelectedOpacity());
         g.setComposite(alphaComposite);
         g.drawImage(scaledTileImg, (int)tileCoord.x, (int)tileCoord.y, null);
         g.dispose();

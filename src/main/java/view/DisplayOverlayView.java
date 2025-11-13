@@ -1,5 +1,9 @@
 package view;
 
+import interfaceadapter.weatherLayers.UpdateOverlayController;
+import interfaceadapter.weatherLayers.UpdateOverlaySizeController;
+import interfaceadapter.weatherLayers.UpdateOverlayViewModel;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.image.BufferedImage;
@@ -8,14 +12,33 @@ import java.beans.PropertyChangeListener;
 import java.util.Objects;
 
 public class DisplayOverlayView extends JPanel implements PropertyChangeListener {
+    private final UpdateOverlayViewModel view;
+    private final UpdateOverlaySizeController sizeController;
+    private final ImageIcon imageIcon;
 
+    public DisplayOverlayView(UpdateOverlaySizeController sizeCont,
+                              UpdateOverlayViewModel vm){
+        view = vm;
+        view.addPropertyChangeListener(this);
+
+        sizeController = sizeCont;
+
+        imageIcon = new ImageIcon();
+        JLabel label = new JLabel();
+        label.setIcon(imageIcon);
+        this.add(label);
+        this.setBounds(0,0,600,600);
+    }
 
     @Override
     public void propertyChange(PropertyChangeEvent evt) {
+        //Listener listening to size change in MapOverlayStructureView and listening to viewmodel's change.
         if(Objects.equals(evt.getPropertyName(), "size")) {
             this.setBounds(new Rectangle((Dimension) evt.getNewValue()));
-        } else {
-            //overlay change
+            sizeController.changeSize((Dimension) evt.getNewValue());
+        } else { //overlay update
+            imageIcon.setImage(view.getState().getImage());
+            this.repaint();
         }
     }
 

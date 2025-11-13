@@ -25,16 +25,17 @@ public class OkHttpsWeatherTileApiFetcher implements WeatherTileApiFetcher {
     private final OkHttpClient client = new OkHttpClient();
 
     public BufferedImage getWeatherTileImageData(WeatherTile tile) throws TileNotFoundException {
-        String url = "https://weathermaps.weatherapi.com/";
+        String url = "https://weathermaps.weatherapi.com";
         final Request request = new Request.Builder()
-                .url(String.format("%s/%s/tiles/%s/%s/%s/%s/%s.png",
+                .url(String.format("%s/%s/tiles/%s%s/%s/%s/%s.png",
                         url,
                         tile.getWeatherType().name().toLowerCase(),
                         tile.getUtcDateAsString(),
                         tile.getUtcHourAsString(),
+                        tile.getCoordinates().zoom,
                         tile.getCoordinates().x,
-                        tile.getCoordinates().y,
-                        tile.getCoordinates().zoom))
+                        tile.getCoordinates().y
+                        ))
                 .build();
 
         try (Response response = client.newCall(request).execute()){

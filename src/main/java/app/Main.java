@@ -8,10 +8,12 @@ public class Main {
         AppBuilder appBuilder = new AppBuilder();
         JFrame application = appBuilder
                 .addUpdateOverlayUseCase()
-                .addProgramTimeView()
-                .addUpdateMapTimeUseCase()
+                .createOverlayView()
+                .addMapOverlayView()
                 .addChangeOpacityView()
                 .addWeatherLayersUseCase()
+                .addProgramTimeView()
+                .addUpdateMapTimeUseCase()
                 .build();
         application.pack();
         application.setLocationRelativeTo(null);

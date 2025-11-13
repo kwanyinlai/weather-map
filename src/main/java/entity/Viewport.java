@@ -1,6 +1,8 @@
 package entity;
 import org.openstreetmap.gui.jmapviewer.OsmMercator;
 
+import java.awt.*;
+
 public class Viewport {
     private double pixelCenterX;
     private double pixelCenterY;
@@ -65,7 +67,12 @@ public class Viewport {
         return viewHeight;
     }
 
-    public int getBounedZoom(){
-        return Math.max(this.minZoom, Math.min(this.maxZoom, this.zoomLevel));
+    public void setViewSize(Dimension data){
+        viewWidth = data.width;
+        viewHeight = data.height;
+    }
+
+    public int getBounedZoom(int offset){
+        return Math.max(this.minZoom, Math.min(this.maxZoom, this.zoomLevel + offset));
     }
 }

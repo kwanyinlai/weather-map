@@ -30,11 +30,11 @@ public class Location {
 
     // convert both lat and lon to a value between 0-1, 0 being -180 or -90, 1 being 180 or 90.
     public double getNormalizedLatitude(){
-        return (this.latitude + 180) / 360;
+        return (this.latitude + 90) / 180;
     }
 
     public double getNormalizedLongitude(){
-        return (this.longitude + 90) / 180;
+        return (this.longitude + 180) / 360;
     }
 
     public Location getNormalizedLoation(){
