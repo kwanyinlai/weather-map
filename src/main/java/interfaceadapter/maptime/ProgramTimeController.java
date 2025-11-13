@@ -3,10 +3,6 @@ package interfaceadapter.maptime;
 import usecase.maptime.UpdateMapTimeInputBoundary;
 import usecase.maptime.UpdateMapTimeInputData;
 
-import javax.swing.*;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-
 /** Class that centrally modifies the current program time state
  *
  */
