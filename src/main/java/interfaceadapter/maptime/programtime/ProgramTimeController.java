@@ -1,4 +1,4 @@
-package interfaceadapter.maptime;
+package interfaceadapter.maptime.programtime;
 
 import usecase.maptime.UpdateMapTimeInputBoundary;
 import usecase.maptime.UpdateMapTimeInputData;
@@ -15,13 +15,24 @@ public class ProgramTimeController {
         this.maxForecast = maxForecast;
     }
 
+    // TODO: Add a timer to tick maybe every 10 minutes and force update time.
+
     /**
      *
      * @param programTimeState
      */
-    public void execute(double sliderVal) {
+    public void updateTime(double sliderVal) {
         java.time.Instant maxTime = convertSliderToTime(sliderVal);
         updateMapTimeUseCase.execute(new UpdateMapTimeInputData(maxTime));
+    }
+
+    /** Increment by a fixed value
+     *
+     */
+    public void updateTime(int ticks){
+        // TODO: contain reset loop logic
+        TickMapTimeInputData in = new TickMapTimeInputData(1);
+        updateMapTimeUseCase.execute(in);
     }
 
     /** Converts the slider value to a java.time.Instant

@@ -1,5 +1,7 @@
-package interfaceadapter.maptime;
+package interfaceadapter.maptime.timeanimation;
 
+
+import interfaceadapter.maptime.programtime.ProgramTimeController;
 
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -12,15 +14,17 @@ public class TimeAnimationController {
     private ScheduledExecutorService scheduler;
     private final ProgramTimeController programTimeController;
     private volatile boolean playing;
+    private final int tickLength; // number of ms between ticks
 
     public TimeAnimationController(TimeAnimationInputBoundary timeAnimationInputBoundary,
-                                   ProgramTimeController programTimeController) {
+                                   ProgramTimeController programTimeController,
+                                   int tickLength
+    ) {
 //        this.timeAnimationUseCase = timeAnimationInputBoundary;
         this.programTimeController = programTimeController;
         this.scheduler = Executors.newScheduledThreadPool(1);
         playing = false;
     }
-
 
     public synchronized void play() {
         if (playing){
@@ -30,7 +34,6 @@ public class TimeAnimationController {
         if (scheduler == null) {
             scheduler = Executors.newScheduledThreadPool(1);
         }
-
         scheduler.scheduleAtFixedRate(() -> {
             try {
                 tick();
@@ -38,7 +41,7 @@ public class TimeAnimationController {
                 // TODO: log?
                 pause();
             }
-        }, 0, tickMillis, Time.Unit.Milliseconds);
+        }, 0, tickLength, Time.Unit.Milliseconds);
     }
 
 
@@ -48,6 +51,6 @@ public class TimeAnimationController {
     }
 
     private void tick(){
-        return;
+        programTimeController.updateTime(1);
     }
 }

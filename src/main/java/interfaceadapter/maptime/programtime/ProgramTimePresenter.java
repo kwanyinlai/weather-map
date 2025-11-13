@@ -1,4 +1,4 @@
-package interfaceadapter.maptime;
+package interfaceadapter.maptime.programtime;
 
 import usecase.maptime.UpdateMapTimeOutputData;
 import usecase.maptime.UpdateMapTimeOutputBoundary;

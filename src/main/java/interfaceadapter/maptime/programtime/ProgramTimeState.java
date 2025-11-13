@@ -1,4 +1,4 @@
-package interfaceadapter.maptime;
+package interfaceadapter.maptime.programtime;
 
 public class ProgramTimeState {
     private String time;

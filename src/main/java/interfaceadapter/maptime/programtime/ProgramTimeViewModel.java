@@ -1,7 +1,6 @@
-package interfaceadapter.maptime;
+package interfaceadapter.maptime.programtime;
 
 import interfaceadapter.ViewModel;
-import interfaceadapter.maptime.ProgramTimeState;
 
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
