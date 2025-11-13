@@ -8,7 +8,7 @@ public class ProgramTime {
     /** the time which is represented */
     private java.time.Instant currentTime;
     /** the minimum interval in which program time can be incremented */
-    private static java.time.Duration timeIncrement;
+    public static final java.time.Duration TIME_INCREMENT = java.time.Duration.ofHours(1);
 
     public ProgramTime(java.time.Instant currentTime) {
         this.currentTime = currentTime;
@@ -18,7 +18,7 @@ public class ProgramTime {
      *
      */
     public void incrementTime(){
-        currentTime = currentTime.plus(timeIncrement);
+        currentTime = currentTime.plus(TIME_INCREMENT);
     }
 
     /** Increment time by amount of <code>duration</code>

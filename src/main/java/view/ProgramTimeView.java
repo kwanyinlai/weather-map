@@ -1,8 +1,8 @@
 package view;
 
-import interfaceadapter.maptime.ProgramTimeController;
-import interfaceadapter.maptime.ProgramTimeState;
-import interfaceadapter.maptime.ProgramTimeViewModel;
+import interfaceadapter.maptime.programtime.ProgramTimeController;
+import interfaceadapter.maptime.programtime.ProgramTimeState;
+import interfaceadapter.maptime.programtime.ProgramTimeViewModel;
 import uielements.CustomSliderUI;
 import uielements.DefaultThemes;
 
@@ -37,10 +37,13 @@ public class ProgramTimeView extends JPanel implements PropertyChangeListener {
                 evt -> {
                     JSlider source = (JSlider) evt.getSource();
                     if (source.getValueIsAdjusting()) {
-                        this.programTimeController.execute(source.getValue());
+                        this.programTimeController.updateTime(source.getValue());
                     }
                 }
         );
+        timeSlider.setOpaque(false);
+        timeSlider.setMajorTickSpacing(5);
+        timeSlider.setPaintTicks(true);
 
         /** Adding current time label
          *
