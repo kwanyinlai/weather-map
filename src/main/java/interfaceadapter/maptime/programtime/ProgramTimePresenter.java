@@ -23,6 +23,12 @@ public class ProgramTimePresenter implements UpdateMapTimeOutputBoundary {
         programTimeState.setTime(formatTimeInstant(newTime.getStamp()));
         programTimeViewModel.firePropertyChange("time slider");
     }
+
+    @Override
+    public void incrementTime() {
+        return;
+    }
+
     private String formatTimeInstant(java.time.Instant instant) {
         return DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")
                 .withZone(ZoneId.systemDefault())

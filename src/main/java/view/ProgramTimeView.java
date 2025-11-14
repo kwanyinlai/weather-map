@@ -7,6 +7,7 @@ import interfaceadapter.maptime.programtime.ProgramTimeState;
 import interfaceadapter.maptime.programtime.ProgramTimeViewModel;
 import uielements.CustomSliderUI;
 import uielements.DefaultThemes;
+import java.awt.event.ActionEvent;
 
 import javax.swing.*;
 import java.awt.*;
@@ -29,13 +30,15 @@ public class ProgramTimeView extends JPanel implements PropertyChangeListener {
     public ProgramTimeView(ProgramTimeViewModel programTimeViewModel) {
         this.programTimeViewModel = programTimeViewModel;
         programTimeViewModel.addPropertyChangeListener(this);
+        this.setLayout(new BoxLayout(this, BoxLayout.LINE_AXIS));
 
         /** Adding JSlider
          *
          */
         timeSlider = new JSlider(SwingConstants.HORIZONTAL, 0, 100, 0);
         timeSlider.setUI(new CustomSliderUI(timeSlider));
-        timeSlider.setPreferredSize(new Dimension(400, 50));
+        timeSlider.setPreferredSize(new Dimension(100, 10));
+        timeSlider.setPaintTicks(false);
         timeSlider.addChangeListener(
                 evt -> {
                     JSlider source = (JSlider) evt.getSource();
@@ -45,21 +48,21 @@ public class ProgramTimeView extends JPanel implements PropertyChangeListener {
                 }
         );
         timeSlider.setOpaque(false);
-        timeSlider.setMajorTickSpacing(5);
-        timeSlider.setPaintTicks(true);
+        timeSlider.setPaintTicks(false);
+        timeSlider.setPreferredSize(new Dimension(400, 50));
 
 
         /** Pause play button
          *
          */
-        playPauseButton = new JButton(new PlayIcon(20,20, Color.ORANGE));
+        playPauseButton = new JButton(new PlayIcon(20,17, Color.ORANGE));
         playPauseButton.addActionListener((ActionEvent e) -> {
             Icon current = playPauseButton.getIcon();
             if (current instanceof PlayIcon ) {
-                button.setIcon(new PauseIcon(20,20, Color.ORANGE));
+                playPauseButton.setIcon(new PauseIcon(17,20, Color.ORANGE));
             }
             else{
-                button.setIcon(new PlayIcon(20,20, Color.ORANGE));
+                playPauseButton.setIcon(new PlayIcon(20,17, Color.ORANGE));
             }
         });
 

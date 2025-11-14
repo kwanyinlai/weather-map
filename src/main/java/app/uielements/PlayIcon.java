@@ -33,6 +33,6 @@ public class PlayIcon implements Icon {
 
     @Override
     public int getIconHeight() {
-        return heigt;
+        return height;
     }
 }

@@ -72,15 +72,4 @@ public class CustomSliderUI extends BasicSliderUI {
         return;
     }
 
-    @Override
-    protected void calculateTrackRect() {
-        int trackHeight = 10;
-        int verticalOffset = 0;
-        trackRect.y = verticalOffset;
-        trackRect.height = trackHeight;
-        // trying to realign track
-
-    }
-
-
 }

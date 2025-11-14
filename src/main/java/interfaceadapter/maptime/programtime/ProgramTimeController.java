@@ -29,11 +29,11 @@ public class ProgramTimeController {
     /** Increment by a fixed value
      *
      */
-    public void updateTime(int ticks){
-        // TODO: contain reset loop logic
-        TickMapTimeInputData in = new TickMapTimeInputData(1);
-        updateMapTimeUseCase.execute(in);
-    }
+//    public void updateTime(int ticks){
+//        // TODO: contain reset loop logic
+//        TickMapTimeInputData in = new TickMapTimeInputData(1);
+//        updateMapTimeUseCase.execute(in);
+//    }
 
     /** Converts the slider value to a java.time.Instant
      *
