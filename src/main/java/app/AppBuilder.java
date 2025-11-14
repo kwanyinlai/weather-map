@@ -7,6 +7,7 @@ import entity.ProgramTime;
 import entity.Viewport;
 import interfaceadapter.maptime.programtime.ProgramTimeController;
 import interfaceadapter.maptime.programtime.ProgramTimePresenter;
+import interfaceadapter.maptime.timeanimation.TimeAnimationController;
 import interfaceadapter.weatherLayers.*;
 import usecase.maptime.UpdateMapTimeInputBoundary;
 import usecase.weatherLayers.layers.ChangeLayerOutputBoundary;
@@ -115,8 +116,10 @@ public class AppBuilder {
                         updateOverlayUseCase,
                         updateMapTimeOutputBoundary
                     );
-        ProgramTimeController controller = new ProgramTimeController(updateMapTimeInputBoundary, java.time.Duration.ofDays(3));
-        programTimeView.setProgramTimeController(controller);
+        ProgramTimeController programTimeController = new ProgramTimeController(updateMapTimeInputBoundary, java.time.Duration.ofDays(3));
+        TimeAnimationController timeAnimationController = new TimeAnimationController(programTimeController, 500);
+        programTimeView.setProgramTimeController(programTimeController);
+        programTimeView.setTimeAnimationController(timeAnimationController);
         return this;
     }
 

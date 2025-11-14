@@ -5,6 +5,7 @@ import app.uielements.PlayIcon;
 import interfaceadapter.maptime.programtime.ProgramTimeController;
 import interfaceadapter.maptime.programtime.ProgramTimeState;
 import interfaceadapter.maptime.programtime.ProgramTimeViewModel;
+import interfaceadapter.maptime.timeanimation.TimeAnimationController;
 import uielements.CustomSliderUI;
 import uielements.DefaultThemes;
 import java.awt.event.ActionEvent;
@@ -22,6 +23,7 @@ public class ProgramTimeView extends JPanel implements PropertyChangeListener {
     private final String viewName = "program time";
     private final ProgramTimeViewModel programTimeViewModel;
     private ProgramTimeController programTimeController;
+    private TimeAnimationController timeAnimationController;
     private final JSlider timeSlider;
     private final JButton playPauseButton;
     private final JLabel currentTimeTitleLabel;
@@ -60,9 +62,11 @@ public class ProgramTimeView extends JPanel implements PropertyChangeListener {
             Icon current = playPauseButton.getIcon();
             if (current instanceof PlayIcon ) {
                 playPauseButton.setIcon(new PauseIcon(17,20, Color.ORANGE));
+                timeAnimationController.play();
             }
             else{
                 playPauseButton.setIcon(new PlayIcon(20,17, Color.ORANGE));
+                timeAnimationController.pause();
             }
         });
 
@@ -87,6 +91,10 @@ public class ProgramTimeView extends JPanel implements PropertyChangeListener {
     }
     public void setProgramTimeController(ProgramTimeController controller) {
         this.programTimeController = controller;
+    }
+
+    public void setTimeAnimationController(TimeAnimationController controller) {
+        this.timeAnimationController = controller;
     }
 
     @Override
