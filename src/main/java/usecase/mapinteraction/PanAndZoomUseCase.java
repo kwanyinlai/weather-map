@@ -1,59 +1,36 @@
 package usecase.mapinteraction;
-import entity.BoundingBox;
-import entity.Location;
 import entity.Viewport;
 
 public class PanAndZoomUseCase implements PanAndZoomInputBoundary {
-    private final BoundingBox globalBBox = new BoundingBox(
-            new Location(90, -180),
-            new Location(-90, 180)
-    );
-
+    private final Viewport sharedViewport;
+    public PanAndZoomUseCase(Viewport sharedViewport) {
+        this.sharedViewport = sharedViewport;
+    }
     @Override
     public PanAndZoomOutputData handleZoom(PanAndZoomInputData input) {
-        Viewport currentViewport = input.getCurrentViewport();
-        int newZoom = currentViewport.getZoomLevel() + input.getZoomIncrement();
-        if (!currentViewport.isZoomValid(newZoom)) {
-            String feedback;
-            if (input.getZoomIncrement() > 0) {
-                feedback = "Reach maximum zoom level";
-            } else {
-                feedback = "Reach minimum zoom level";
-            }
-            return new PanAndZoomOutputData(currentViewport, feedback, false);
-        }
-        currentViewport.setZoomLevel(newZoom);
-        return new PanAndZoomOutputData(currentViewport, "Zoom is successful", true);
+        int newZoom = sharedViewport.getZoomLevel() + input.getZoomIncrement();
+        sharedViewport.setZoomLevel(newZoom);
+        return new PanAndZoomOutputData(sharedViewport, true);
     }
-
+    public PanAndZoomOutputData getBoundedZoom(PanAndZoomInputData input) throws ZoomOutOfBoundsException {
+        int newZoom = sharedViewport.getZoomLevel() + input.getZoomIncrement();
+        if (newZoom < sharedViewport.getMinZoom() || newZoom > sharedViewport.getMaxZoom()) {
+            throw new ZoomOutOfBoundsException(
+                    input.getZoomIncrement() > 0 ? "Reaches Maximum ZoomLevel" : "Reaches Minimum ZoomLevel"
+            );
+        }
+        sharedViewport.setZoomLevel(newZoom);
+        return new PanAndZoomOutputData(sharedViewport, true);
+    }
     @Override
     public PanAndZoomOutputData handlePan(PanAndZoomInputData input) {
-        Viewport currentViewport = input.getCurrentViewport();
-        double dx = input.getDx();
-        double dy = input.getDy();
-        double newPixelX = currentViewport.getPixelCenterX() + dx;
-        double newPixelY = currentViewport.getPixelCenterY() + dy;
-        Viewport tempViewport = new Viewport(
-                newPixelX, newPixelY,
-                currentViewport.getViewWidth(),
-                currentViewport.getViewHeight(),
-                currentViewport.getZoomLevel(),
-                currentViewport.getMaxZoom(),
-                currentViewport.getMinZoom()
-        );
-        BoundingBox newViewBBox = tempViewport.calculateBBox();
-        Location topLeft = newViewBBox.getTopLeft();
-        Location bottomRight = newViewBBox.getBottomRight();
-        double centerLat = topLeft.getLatitude() - (topLeft.getLatitude() - bottomRight.getLatitude()) / 2;
-        double centerLon = topLeft.getLongitude() + (bottomRight.getLongitude() - topLeft.getLongitude()) / 2;
-        Location newCenter = new Location(centerLat, centerLon);
-        boolean isWithinGlobal = globalBBox.locationInBBox(newCenter);
-        if (!isWithinGlobal) {
-            return new PanAndZoomOutputData(currentViewport, "Reaches the boundary of map", false);
-        }
-        currentViewport.setPixelCenterX(newPixelX);
-        currentViewport.setPixelCenterY(newPixelY);
-        return new PanAndZoomOutputData(currentViewport, "Pan is successful", true);
+        double newPixelX = sharedViewport.getPixelCenterX() + input.getDx();
+        double newPixelY = sharedViewport.getPixelCenterY() + input.getDy();
+        sharedViewport.setPixelCenterX(newPixelX);
+        sharedViewport.setPixelCenterY(newPixelY);
+        return new PanAndZoomOutputData(sharedViewport, true);
     }
+
+
 
 }
