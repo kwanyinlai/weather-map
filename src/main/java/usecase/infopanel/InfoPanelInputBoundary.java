@@ -1,5 +1,5 @@
 package usecase.infopanel;
 
 public interface InfoPanelInputBoundary {
-    void execute(InfoPanelRequestModel req);
+    void execute(InfoPanelInputData req);
 }

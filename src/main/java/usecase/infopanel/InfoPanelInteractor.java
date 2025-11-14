@@ -1,6 +1,8 @@
 package usecase.infopanel;
 
 import dataaccessinterface.WeatherGateway;
+import entity.WeatherData;
+import java.time.Instant;
 
 public class InfoPanelInteractor implements InfoPanelInputBoundary {
     private final WeatherGateway weatherGateway;
@@ -8,37 +10,25 @@ public class InfoPanelInteractor implements InfoPanelInputBoundary {
     private final int zoomThreshold;
 
     public InfoPanelInteractor(WeatherGateway weatherGateway,
-                                   InfoPanelOutputBoundary presenter,
-                                   int zoomThreshold) {
+                               InfoPanelOutputBoundary presenter,
+                               int zoomThreshold) {
         this.weatherGateway = weatherGateway;
         this.presenter = presenter;
         this.zoomThreshold = zoomThreshold;
     }
 
     @Override
-    public void execute(InfoPanelRequestModel req) {
+    public void execute(InfoPanelInputData req) {
         if (req.getZoom() < zoomThreshold) {
-            presenter.presentError("Zoom in to view local weather.");
+            presenter.presentError(InfoPanelError.ZOOM_TOO_LOW);
             return;
         }
-
         presenter.presentLoading();
-
         try {
-            WeatherGateway.Result r =
-                    weatherGateway.fetchCurrentAndHourly(req.getCenterLat(), req.getCenterLon());
-            long fetchedAtEpoch = System.currentTimeMillis() / 1000;
-            InfoPanelResponseModel out = new InfoPanelResponseModel(
-                    r.place,
-                    r.curTemp,
-                    r.condition,
-                    r.fTemps,
-                    fetchedAtEpoch);
-
-            presenter.present(out);
-
+            WeatherData wd = weatherGateway.fetchCurrentAndHourly(req.getCenterLat(), req.getCenterLon());
+            presenter.present(InfoPanelOutputData.fromWeatherData(wd, Instant.now()));
         } catch (Exception e) {
-            presenter.presentError("Unable to load weather. Retry.");
+            presenter.presentError(InfoPanelError.FETCH_FAILED);
         }
     }
 }

@@ -1,7 +1,7 @@
 package usecase.infopanel;
 
 public interface InfoPanelOutputBoundary {
-        void present(InfoPanelResponseModel res);
-        void presentLoading();
-        void presentError(String message);
-    }
+    void presentLoading();
+    void present(InfoPanelOutputData data);
+    void presentError(InfoPanelError error);
+}
