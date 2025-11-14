@@ -1,5 +1,7 @@
 package view;
 
+import app.uielements.PauseIcon;
+import app.uielements.PlayIcon;
 import interfaceadapter.maptime.programtime.ProgramTimeController;
 import interfaceadapter.maptime.programtime.ProgramTimeState;
 import interfaceadapter.maptime.programtime.ProgramTimeViewModel;
@@ -20,6 +22,7 @@ public class ProgramTimeView extends JPanel implements PropertyChangeListener {
     private final ProgramTimeViewModel programTimeViewModel;
     private ProgramTimeController programTimeController;
     private final JSlider timeSlider;
+    private final JButton playPauseButton;
     private final JLabel currentTimeTitleLabel;
     private final JLabel currentTime;
 
@@ -45,6 +48,23 @@ public class ProgramTimeView extends JPanel implements PropertyChangeListener {
         timeSlider.setMajorTickSpacing(5);
         timeSlider.setPaintTicks(true);
 
+
+        /** Pause play button
+         *
+         */
+        playPauseButton = new JButton(new PlayIcon(20,20, Color.ORANGE));
+        playPauseButton.addActionListener((ActionEvent e) -> {
+            Icon current = playPauseButton.getIcon();
+            if (current instanceof PlayIcon ) {
+                button.setIcon(new PauseIcon(20,20, Color.ORANGE));
+            }
+            else{
+                button.setIcon(new PlayIcon(20,20, Color.ORANGE));
+            }
+        });
+
+
+
         /** Adding current time label
          *
          */
@@ -53,7 +73,7 @@ public class ProgramTimeView extends JPanel implements PropertyChangeListener {
         currentTime = new JLabel(ProgramTimeViewModel.getCurrentTimeFormatted());
         currentTime.setFont(DefaultThemes.NORMAL_BODY_FONT);
         currentTimeTitleLabel.setFont(DefaultThemes.BOLD_BODY_FONT);
-
+        this.add(playPauseButton);
         this.add(timeSlider);
         this.add(currentTimeTitleLabel);
         this.add(currentTime);
