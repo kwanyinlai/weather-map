@@ -1,5 +1,7 @@
 package view;
 
+import constants.Constants;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ComponentAdapter;
@@ -8,12 +10,11 @@ import java.beans.PropertyChangeSupport;
 import java.beans.PropertyChangeListener;
 
 public class MapOverlayStructureView extends JLayeredPane{
-    private PropertyChangeSupport support;
-    private Dimension size;
+    private final PropertyChangeSupport support;
 
     public MapOverlayStructureView(){
 
-        this.setPreferredSize(new Dimension(600,600));
+        this.setPreferredSize(new Dimension(Constants.DEFAULT_MAP_WIDTH, Constants.DEFAULT_MAP_HEIGHT));
 
         //Components in JLayeredPane do not automatically resize, and requires an observer method
         support = new PropertyChangeSupport(this);

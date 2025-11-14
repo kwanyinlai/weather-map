@@ -3,6 +3,8 @@ package app;
 import javax.swing.*;
 import java.awt.*;
 import java.time.Instant;
+
+import constants.Constants;
 import entity.ProgramTime;
 import entity.Viewport;
 import interfaceadapter.maptime.ProgramTimeController;
@@ -51,13 +53,14 @@ public class AppBuilder {
     // initialising core entities
     private final ProgramTime programTime = new ProgramTime(Instant.now());
     private final TileRepository tileRepository = new CachedTileRepository(100); // TODO: change cache size
-    private final OverlayManager overlayManager = new OverlayManager(600,600);
-    private final Viewport viewport = new Viewport(300,300,600,
-            0, 6, 0, 600);
+    private final OverlayManager overlayManager = new OverlayManager(Constants.DEFAULT_MAP_WIDTH,
+            Constants.DEFAULT_MAP_HEIGHT);
+    private final Viewport viewport = new Viewport(300,300,Constants.DEFAULT_MAP_WIDTH,
+            0, 6, 0, Constants.DEFAULT_MAP_HEIGHT);
 
     public AppBuilder() {
         borderPanel.setLayout(borderLayout);
-        borderPanel.setPreferredSize(new Dimension(800, 600));
+        borderPanel.setPreferredSize(new Dimension(Constants.DEFAULT_PROGRAM_WIDTH, Constants.DEFAULT_PROGRAM_HEIGHT));
     }
 
     public AppBuilder addProgramTimeView() {
@@ -100,8 +103,8 @@ public class AppBuilder {
         ChangeLayerOutputBoundary layerOutputBoundary = new WeatherLayersPresenter(weatherLayersViewModel);
         changeLayerUseCase = new ChangeLayerUseCase(overlayManager, layerOutputBoundary);
         changeOpacityUseCase = new ChangeOpacityUseCase(overlayManager);
-        WeatherLayersController cont = new WeatherLayersController(changeLayerUseCase, changeOpacityUseCase);
-        changeWeatherView.addLayerController(cont);
+        WeatherLayersController layersController = new WeatherLayersController(changeLayerUseCase, changeOpacityUseCase);
+        changeWeatherView.addLayerController(layersController);
         UpdateOverlayController updateCont = new UpdateOverlayController(updateOverlayUseCase);
         changeWeatherView.addUpdateController(updateCont);
         return this;

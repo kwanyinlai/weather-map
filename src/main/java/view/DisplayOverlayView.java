@@ -1,5 +1,6 @@
 package view;
 
+import constants.Constants;
 import interfaceadapter.weatherLayers.UpdateOverlayController;
 import interfaceadapter.weatherLayers.UpdateOverlaySizeController;
 import interfaceadapter.weatherLayers.UpdateOverlayViewModel;
@@ -27,7 +28,7 @@ public class DisplayOverlayView extends JPanel implements PropertyChangeListener
         JLabel label = new JLabel();
         label.setIcon(imageIcon);
         this.add(label);
-        this.setBounds(0,0,600,600);
+        this.setBounds(0,0, Constants.DEFAULT_MAP_WIDTH, Constants.DEFAULT_MAP_HEIGHT);
     }
 
     @Override

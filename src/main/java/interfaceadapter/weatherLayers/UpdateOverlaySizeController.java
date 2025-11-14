@@ -10,9 +10,9 @@ public class UpdateOverlaySizeController {
     private final UpdateOverlaySizeInputBoundary input;
     private final UpdateOverlayInputBoundary updateInput;
 
-    public UpdateOverlaySizeController(UpdateOverlaySizeInputBoundary in, UpdateOverlayInputBoundary updateIn){
-        updateInput = updateIn;
-        this.input = in;
+    public UpdateOverlaySizeController(UpdateOverlaySizeInputBoundary sizeInput, UpdateOverlayInputBoundary updateInput){
+        this.updateInput = updateInput;
+        this.input = sizeInput;
     }
 
     public void changeSize(Dimension size){
