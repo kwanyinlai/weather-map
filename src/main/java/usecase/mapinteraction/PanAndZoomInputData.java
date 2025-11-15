@@ -4,6 +4,7 @@ public class PanAndZoomInputData {
     private final Integer zoomIncrement;
     private final Double dx;
     private final Double dy;
+    // dx == null if the user doesn't pan, and dx == 0 if the user pans back to the same location
     public PanAndZoomInputData(Integer zoomIncrement) {
         this.zoomIncrement = zoomIncrement;
         this.dx = null;

@@ -3,16 +3,19 @@ import entity.Viewport;
 
 public class PanAndZoomUseCase implements PanAndZoomInputBoundary {
     private final Viewport sharedViewport;
-    public PanAndZoomUseCase(Viewport sharedViewport) {
+    private final PanAndZoomOutputBoundary outputBoundary;
+    public PanAndZoomUseCase(Viewport sharedViewport, PanAndZoomOutputBoundary outputBoundary) {
         this.sharedViewport = sharedViewport;
+        this.outputBoundary = outputBoundary;
     }
     @Override
-    public PanAndZoomOutputData handleZoom(PanAndZoomInputData input) {
+    public void handleZoom(PanAndZoomInputData input) {
         int newZoom = sharedViewport.getZoomLevel() + input.getZoomIncrement();
         sharedViewport.setZoomLevel(newZoom);
-        return new PanAndZoomOutputData(sharedViewport, true);
+        outputBoundary.presentSuccess(new PanAndZoomOutputData(sharedViewport, true));
     }
-    public PanAndZoomOutputData getBoundedZoom(PanAndZoomInputData input) throws ZoomOutOfBoundsException {
+    @Override
+    public void getBoundedZoom(PanAndZoomInputData input) throws ZoomOutOfBoundsException {
         int newZoom = sharedViewport.getZoomLevel() + input.getZoomIncrement();
         if (newZoom < sharedViewport.getMinZoom() || newZoom > sharedViewport.getMaxZoom()) {
             throw new ZoomOutOfBoundsException(
@@ -20,15 +23,15 @@ public class PanAndZoomUseCase implements PanAndZoomInputBoundary {
             );
         }
         sharedViewport.setZoomLevel(newZoom);
-        return new PanAndZoomOutputData(sharedViewport, true);
+        outputBoundary.presentSuccess(new PanAndZoomOutputData(sharedViewport, true));
     }
     @Override
-    public PanAndZoomOutputData handlePan(PanAndZoomInputData input) {
+    public void handlePan(PanAndZoomInputData input) {
         double newPixelX = sharedViewport.getPixelCenterX() + input.getDx();
         double newPixelY = sharedViewport.getPixelCenterY() + input.getDy();
         sharedViewport.setPixelCenterX(newPixelX);
         sharedViewport.setPixelCenterY(newPixelY);
-        return new PanAndZoomOutputData(sharedViewport, true);
+        outputBoundary.presentSuccess(new PanAndZoomOutputData(sharedViewport, true));
     }
 
 
