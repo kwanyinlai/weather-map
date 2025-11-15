@@ -2,6 +2,9 @@ package interfaceadapter.maptime.timeanimation;
 
 
 import interfaceadapter.maptime.programtime.ProgramTimeController;
+import usecase.maptime.TickMapTimeInputData;
+import usecase.maptime.UpdateMapTimeInputBoundary;
+
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -11,13 +14,13 @@ import java.util.concurrent.TimeUnit;
  */
 public class TimeAnimationController {
     private ScheduledExecutorService scheduler;
-    private final ProgramTimeController programTimeController;
+    private final UpdateMapTimeInputBoundary  updateMapTimeInputBoundary;
     private volatile boolean playing;
     private final int tickLength; // number of ms between ticks
 
-    public TimeAnimationController(ProgramTimeController programTimeController,
+    public TimeAnimationController(UpdateMapTimeInputBoundary updateMapTimeInputBoundary,
                                    int tickLength) {
-        this.programTimeController = programTimeController;
+        this.updateMapTimeInputBoundary = updateMapTimeInputBoundary;
         this.scheduler = Executors.newScheduledThreadPool(1);
         playing = false;
         this.tickLength = tickLength;
@@ -49,7 +52,7 @@ public class TimeAnimationController {
     }
 
     private void tick(){
-        programTimeController.updateTime(1);
+        updateMapTimeInputBoundary.execute(new TickMapTimeInputData(1));
         System.out.println("1 tick passed.");
     }
 }

@@ -117,7 +117,7 @@ public class AppBuilder {
                         updateMapTimeOutputBoundary
                     );
         ProgramTimeController programTimeController = new ProgramTimeController(updateMapTimeInputBoundary, java.time.Duration.ofDays(3));
-        TimeAnimationController timeAnimationController = new TimeAnimationController(programTimeController, 500);
+        TimeAnimationController timeAnimationController = new TimeAnimationController(updateMapTimeInputBoundary, 500);
         programTimeView.setProgramTimeController(programTimeController);
         programTimeView.setTimeAnimationController(timeAnimationController);
         return this;

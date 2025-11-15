@@ -7,4 +7,5 @@ public interface UpdateMapTimeOutputBoundary {
      */
     void updateTime(UpdateMapTimeOutputData time);
     void incrementTime();
+
 }
