@@ -10,14 +10,12 @@ import java.awt.event.*;
 public class PanAndZoomController extends MouseAdapter implements MouseWheelListener {
     private final PanAndZoomInputBoundary useCase;
     private final JMapViewer mapViewer;
-    private final PanAndZoomPresenter presenter;
     private int lastMouseX;
     private int lastMouseY;
 
-    public PanAndZoomController(PanAndZoomInputBoundary useCase, JMapViewer mapViewer, PanAndZoomPresenter presenter) {
+    public PanAndZoomController(PanAndZoomInputBoundary useCase, JMapViewer mapViewer) {
         this.useCase = useCase;
         this.mapViewer = mapViewer;
-        this.presenter = presenter;
         bindEvents();
     }
 
@@ -34,7 +32,7 @@ public class PanAndZoomController extends MouseAdapter implements MouseWheelList
         try {
             useCase.getBoundedZoom(input);
         } catch (ZoomOutOfBoundsException ex) {
-            presenter.presentError(ex);
+            System.out.println("Zoom Out of Bounds");
         }
     }
 
