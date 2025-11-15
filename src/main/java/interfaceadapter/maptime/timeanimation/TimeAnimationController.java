@@ -1,6 +1,7 @@
 package interfaceadapter.maptime.timeanimation;
 
 
+import entity.ProgramTime;
 import interfaceadapter.maptime.programtime.ProgramTimeController;
 import usecase.maptime.TickMapTimeInputData;
 import usecase.maptime.UpdateMapTimeInputBoundary;
@@ -41,14 +42,15 @@ public class TimeAnimationController {
             } catch (Exception e) {
                 pause();
             }
-        }, 0, tickLength, TimeUnit.MILLISECONDS);
+        }, 300 /* TODO: move this to an entity or something */, tickLength, TimeUnit.MILLISECONDS);
     }
 
 
     public synchronized void pause(){
         playing = false;
         System.out.println("Pausing animation");
-        scheduler.shutdown();
+        scheduler.shutdownNow();
+        scheduler = null;
     }
 
     private void tick(){

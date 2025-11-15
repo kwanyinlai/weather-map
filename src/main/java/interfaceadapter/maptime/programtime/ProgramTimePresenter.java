@@ -21,6 +21,7 @@ public class ProgramTimePresenter implements UpdateMapTimeOutputBoundary {
         // update program time in programTimeViewModel
         ProgramTimeState programTimeState = programTimeViewModel.getState();
         programTimeState.setTime(formatTimeInstant(newTime.getStamp()));
+        programTimeState.setSliderValue(converTimeToSlider(newTime.getStamp()));
         programTimeViewModel.firePropertyChange("time slider");
     }
 
@@ -33,5 +34,11 @@ public class ProgramTimePresenter implements UpdateMapTimeOutputBoundary {
         return DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")
                 .withZone(ZoneId.systemDefault())
                 .format(instant);
+    }
+
+    private int converTimeToSlider(java.time.Instant instant) {
+        java.time.Instant min = java.time.Instant.now();
+        int max = 3*24; // TODO: don't hard code
+        return (int)(java.time.Duration.between(min, instant).toHours()*100)/max;
     }
 }

@@ -58,7 +58,7 @@ public class ProgramTimeView extends JPanel implements PropertyChangeListener {
          *
          */
         playPauseButton = new JButton(new PlayIcon(20,17, Color.ORANGE));
-        playPauseButton.addActionListener((ActionEvent e) -> {
+        playPauseButton.addActionListener((ActionEvent e1) -> {
             Icon current = playPauseButton.getIcon();
             if (current instanceof PlayIcon ) {
                 playPauseButton.setIcon(new PauseIcon(17,20, Color.ORANGE));
@@ -102,6 +102,7 @@ public class ProgramTimeView extends JPanel implements PropertyChangeListener {
         if (evt.getPropertyName().equals("time slider")) {
             final ProgramTimeState state = (ProgramTimeState) evt.getNewValue();
             currentTime.setText(state.getTime());
+            timeSlider.setValue(state.getSliderValue());
         }
         else{
             System.out.println(evt.getPropertyName());

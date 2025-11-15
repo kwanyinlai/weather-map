@@ -117,6 +117,7 @@ public class AppBuilder {
                         updateMapTimeOutputBoundary
                     );
         ProgramTimeController programTimeController = new ProgramTimeController(updateMapTimeInputBoundary, java.time.Duration.ofDays(3));
+        // TODO: move the ofDays(3) into entities as a business rule
         TimeAnimationController timeAnimationController = new TimeAnimationController(updateMapTimeInputBoundary, 500);
         programTimeView.setProgramTimeController(programTimeController);
         programTimeView.setTimeAnimationController(timeAnimationController);
