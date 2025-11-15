@@ -15,7 +15,7 @@ public class PanAndZoomPresenter implements PanAndZoomOutputBoundary {
         this.viewModel = viewModel;
     }
     @Override
-    public void presentSuccess(PanAndZoomOutputData outputData) {
+    public void present(PanAndZoomOutputData outputData) {
         Viewport updatedViewport = outputData.getUpdatedViewport();
         double pixelX = updatedViewport.getPixelCenterX();
         double pixelY = updatedViewport.getPixelCenterY();
