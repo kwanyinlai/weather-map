@@ -35,7 +35,7 @@ public class UpdateMapTimeUseCase implements UpdateMapTimeInputBoundary {
         UpdateMapTimeOutputData outputData = new UpdateMapTimeOutputData(
                 programTime.getCurrentTime().plus(ProgramTime.TIME_INCREMENT.multipliedBy(ticks.getTicks()))
         );
-        programTimePresenter.updateTime(
+        programTimePresenter.updateTimeFromAnimator(
             outputData
         );
 

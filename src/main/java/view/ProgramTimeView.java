@@ -102,6 +102,9 @@ public class ProgramTimeView extends JPanel implements PropertyChangeListener {
         if (evt.getPropertyName().equals("time slider")) {
             final ProgramTimeState state = (ProgramTimeState) evt.getNewValue();
             currentTime.setText(state.getTime());
+        }
+        else if (evt.getPropertyName().equals("animator")) {
+            final ProgramTimeState state = (ProgramTimeState) evt.getNewValue();
             timeSlider.setValue(state.getSliderValue());
         }
         else{
