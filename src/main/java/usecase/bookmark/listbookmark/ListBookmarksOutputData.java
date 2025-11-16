@@ -1,4 +1,4 @@
 package usecase.bookmark.listbookmark;
 
-public class ListBookmarksRequestModel {
+public class ListBookmarksOutputData {
 }

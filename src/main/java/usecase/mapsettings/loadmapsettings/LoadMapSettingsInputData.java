@@ -1,4 +1,4 @@
 package usecase.mapsettings.loadmapsettings;
 
-public class LoadMapSettingsResponseModel {
+public class LoadMapSettingsInputData {
 }

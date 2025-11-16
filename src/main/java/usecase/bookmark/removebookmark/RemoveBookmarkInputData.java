@@ -1,4 +1,4 @@
 package usecase.bookmark.removebookmark;
 
-public class RemoveBookmarkRequestModel {
+public class RemoveBookmarkInputData {
 }

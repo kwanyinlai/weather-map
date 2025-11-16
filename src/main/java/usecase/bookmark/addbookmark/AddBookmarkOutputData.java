@@ -1,4 +1,4 @@
 package usecase.bookmark.addbookmark;
 
-public class AddBookmarkResponseModel {
+public class AddBookmarkOutputData {
 }

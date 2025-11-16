@@ -1,4 +1,4 @@
 package usecase.mapsettings.savemapsettings;
 
-public class SaveMapSettingsRequestModel {
+public class SaveMapSettingsInputData {
 }
