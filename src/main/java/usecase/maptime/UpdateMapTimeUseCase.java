@@ -23,5 +23,6 @@ public class UpdateMapTimeUseCase implements UpdateMapTimeInputBoundary {
                 new UpdateMapTimeOutputData(
                         updateMapTimeInputData.getCurrentTime()
                 ));
+        updateOverlayUseCase.update();
     }
 }

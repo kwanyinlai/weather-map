@@ -3,6 +3,8 @@ package app;
 import javax.swing.*;
 import java.awt.*;
 import java.time.Instant;
+
+import constants.Constants;
 import entity.ProgramTime;
 import entity.Viewport;
 import interfaceadapter.maptime.ProgramTimeController;
@@ -13,10 +15,12 @@ import usecase.weatherLayers.layers.ChangeLayerOutputBoundary;
 import usecase.weatherLayers.layers.ChangeLayerUseCase;
 import usecase.weatherLayers.layers.ChangeOpacityUseCase;
 import usecase.weatherLayers.update.UpdateOverlayOutputBoundary;
+import usecase.weatherLayers.update.UpdateOverlaySizeUseCase;
 import usecase.weatherLayers.update.UpdateOverlayUseCase;
 import usecase.maptime.UpdateMapTimeOutputBoundary;
 import usecase.maptime.UpdateMapTimeUseCase;
 import view.ChangeWeatherLayersView;
+import view.DisplayOverlayView;
 import view.MapOverlayStructureView;
 import view.ProgramTimeView;
 import interfaceadapter.maptime.ProgramTimeViewModel;
@@ -28,6 +32,7 @@ public class AppBuilder {
     private final JPanel borderPanel = new JPanel();
     private final BorderLayout borderLayout = new BorderLayout();
 
+    private DisplayOverlayView weatherOverlayView;
 
     private ProgramTimeView programTimeView;
     private ProgramTimeViewModel programTimeViewModel;
@@ -40,19 +45,22 @@ public class AppBuilder {
     private ChangeWeatherLayersView changeWeatherView;
     private ChangeOpacityUseCase changeOpacityUseCase;
     private ChangeLayerUseCase changeLayerUseCase;
+    private UpdateOverlaySizeUseCase updateOverlaySizeUseCase;
+
 
     private MapOverlayStructureView mapOverlayStructure;
 
     // initialising core entities
     private final ProgramTime programTime = new ProgramTime(Instant.now());
-    private final TileRepository tileRepository = new CachedTileRepository(10); // TODO: change cache size
-    private final OverlayManager overlayManager = new OverlayManager(10,10);
-    private final Viewport viewport = new Viewport(0,0,600,
-            0, 6, 0, 600);
+    private final TileRepository tileRepository = new CachedTileRepository(100); // TODO: change cache size
+    private final OverlayManager overlayManager = new OverlayManager(Constants.DEFAULT_MAP_WIDTH,
+            Constants.DEFAULT_MAP_HEIGHT);
+    private final Viewport viewport = new Viewport(300,300,Constants.DEFAULT_MAP_WIDTH,
+            0, 6, 0, Constants.DEFAULT_MAP_HEIGHT);
 
     public AppBuilder() {
         borderPanel.setLayout(borderLayout);
-        borderPanel.setPreferredSize(new Dimension(800, 600));
+        borderPanel.setPreferredSize(new Dimension(Constants.DEFAULT_PROGRAM_WIDTH, Constants.DEFAULT_PROGRAM_HEIGHT));
     }
 
     public AppBuilder addProgramTimeView() {
@@ -69,15 +77,25 @@ public class AppBuilder {
         return this;
     }
 
+    public AppBuilder createOverlayView(){
+        updateOverlaySizeUseCase = new UpdateOverlaySizeUseCase(overlayManager, viewport);
+        UpdateOverlaySizeController sizeController = new UpdateOverlaySizeController(updateOverlaySizeUseCase, updateOverlayUseCase);
+        weatherOverlayView = new DisplayOverlayView(sizeController, overlayViewModel);
+        return this;
+    }
+    /**
+     * Overlays the weather overlay component and JMV component. Should be called after both layers have been
+     * initiazlized.
+     * @return this
+     */
     public AppBuilder addMapOverlayView(){
-        //TODO implement overlayComponent, MapComponent and other panels to be layered onto the map (temp names only)
-        //overlayComponent = new OverlayView(..., ...);
-        //mapComponent = new MapComponent(..., ...);
-        //infoPanel = ...
+        
         mapOverlayStructure = new MapOverlayStructureView();
+        mapOverlayStructure.addPropertyChangeListener(weatherOverlayView);
         //mapOverlayStructure.addComponent(mapComponent, 1);
-        //mapOverlayStructure.addComponent(overlayComponent, 2);
+        mapOverlayStructure.addComponent(weatherOverlayView, 2);
         //...
+        borderPanel.add(mapOverlayStructure, BorderLayout.CENTER);
         return this;
     }
 
@@ -85,17 +103,15 @@ public class AppBuilder {
         ChangeLayerOutputBoundary layerOutputBoundary = new WeatherLayersPresenter(weatherLayersViewModel);
         changeLayerUseCase = new ChangeLayerUseCase(overlayManager, layerOutputBoundary);
         changeOpacityUseCase = new ChangeOpacityUseCase(overlayManager);
-        WeatherLayersController cont = new WeatherLayersController(changeLayerUseCase, changeOpacityUseCase);
-        changeWeatherView.addController(cont);
+        WeatherLayersController layersController = new WeatherLayersController(changeLayerUseCase, changeOpacityUseCase);
+        changeWeatherView.addLayerController(layersController);
+        UpdateOverlayController updateCont = new UpdateOverlayController(updateOverlayUseCase);
+        changeWeatherView.addUpdateController(updateCont);
         return this;
     }
 
-    public AppBuilder addOverlayView(){
-        overlayViewModel = new UpdateOverlayViewModel();
-        //view...
-        return this;
-    }
     public AppBuilder addUpdateOverlayUseCase(){
+        overlayViewModel = new UpdateOverlayViewModel();
         final UpdateOverlayOutputBoundary output = new UpdateOverlayPresenter(overlayViewModel);
          updateOverlayUseCase = new UpdateOverlayUseCase(
                 overlayManager,
@@ -125,7 +141,7 @@ public class AppBuilder {
         application.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 
         application.add(borderPanel);
-
+        updateOverlayUseCase.update();
         return application;
     }
 

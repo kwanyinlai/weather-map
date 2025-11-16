@@ -27,7 +27,7 @@ public class WeatherTile {
      * @return String of the UTC date in yyyyMMdd format e.g: 1st Nov 2025 will be 20251101.
      */
     public String getUtcDateAsString() {
-        return timestamp.atZone(ZoneOffset.UTC).format(DateTimeFormatter.ofPattern("yyMMdd"));
+        return timestamp.atZone(ZoneOffset.UTC).format(DateTimeFormatter.ofPattern("yyyyMMdd"));
     }
 
     /** Return the UTC hour of the tile
