@@ -1,4 +1,4 @@
-package interface_adapter.InfoPanel;
+package interfaceadapter.infopanel;
 
 import usecase.infopanel.InfoPanelInputBoundary;
 import usecase.infopanel.InfoPanelInputData;
