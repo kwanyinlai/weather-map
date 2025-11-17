@@ -36,6 +36,11 @@ public final class AddBookmarkUseCase implements AddBookmarkInputBoundary {
             return;
         }
 
+        if (Double.isNaN(latitude) || Double.isNaN(longitude)) {
+            outputBoundary.presentAddBookmarkFailure("Bookmark coordinates are invalid.");
+            return;
+        }
+
         if (latitude < -90 || latitude > 90 || longitude < -180 || longitude > 180) {
             outputBoundary.presentAddBookmarkFailure("Bookmark coordinates are out of range.");
             return;
