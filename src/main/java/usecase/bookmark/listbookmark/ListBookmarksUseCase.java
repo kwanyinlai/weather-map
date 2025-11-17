@@ -8,7 +8,7 @@ import java.util.List;
  * Interactor for the "list bookmarks" use case.
  * Implements the application logic of retrieving all bookmarks.
  */
-public final class ListBookmarksInteractor implements ListBookmarksInputBoundary {
+public final class ListBookmarksUseCase implements ListBookmarksInputBoundary {
 
     private final BookmarkedLocationStorage bookmarkedLocationStorage;
     private final ListBookmarksOutputBoundary outputBoundary;
@@ -19,7 +19,7 @@ public final class ListBookmarksInteractor implements ListBookmarksInputBoundary
      * @param bookmarkedLocationStorage data access interface for bookmarks
      * @param outputBoundary            presenter to receive the result
      */
-    public ListBookmarksInteractor(BookmarkedLocationStorage bookmarkedLocationStorage,
+    public ListBookmarksUseCase(BookmarkedLocationStorage bookmarkedLocationStorage,
                                    ListBookmarksOutputBoundary outputBoundary) {
         this.bookmarkedLocationStorage = bookmarkedLocationStorage;
         this.outputBoundary = outputBoundary;
