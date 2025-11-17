@@ -8,7 +8,7 @@ import entity.BookmarkedLocation;
  * Interactor for the "remove bookmark" use case.
  * Implements the application logic of removing an existing bookmark.
  */
-public final class RemoveBookmarkUsecase implements RemoveBookmarkInputBoundary {
+public final class RemoveBookmarkUseCase implements RemoveBookmarkInputBoundary {
 
     private final BookmarkedLocationStorage bookmarkedLocationStorage;
     private final RemoveBookmarkOutputBoundary outputBoundary;
@@ -19,7 +19,7 @@ public final class RemoveBookmarkUsecase implements RemoveBookmarkInputBoundary 
  * @param bookmarkedLocationStorage data access interface for bookmarks
  * @param outputBoundary            presenter to receive the result
  */
-    public RemoveBookmarkUsecase(BookmarkedLocationStorage bookmarkedLocationStorage,
+    public RemoveBookmarkUseCase(BookmarkedLocationStorage bookmarkedLocationStorage,
                                  RemoveBookmarkOutputBoundary outputBoundary) {
 
     this.bookmarkedLocationStorage = bookmarkedLocationStorage;
@@ -62,7 +62,6 @@ public final class RemoveBookmarkUsecase implements RemoveBookmarkInputBoundary 
             outputBoundary.presentRemoveBookmarkFailure("Failed to update bookmarks.");
             return;
         }
-        boolean removed = true; // if no exception, assume success
 
         if(!removed) {
             outputBoundary.presentRemoveBookmarkFailure("Bookmarks not found.");
