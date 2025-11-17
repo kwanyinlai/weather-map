@@ -32,7 +32,6 @@ public class TimeAnimationController {
             return;
         }
         playing = true;
-        System.out.println("Playing animation");
         if (scheduler == null) {
             scheduler = Executors.newScheduledThreadPool(1);
         }
@@ -48,7 +47,6 @@ public class TimeAnimationController {
 
     public synchronized void pause(){
         playing = false;
-        System.out.println("Pausing animation");
         scheduler.shutdownNow();
         scheduler = null;
     }
