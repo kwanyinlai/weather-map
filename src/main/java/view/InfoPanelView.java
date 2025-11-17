@@ -13,7 +13,7 @@ public final class InfoPanelView extends JComponent {
 
     private InfoPanelViewModel vm;
 
-    private static final int PAD = 18,RADIUS = 20;
+    private static final int PAD = 18, RADIUS = 20;
     private static final Color BG = new Color(255,255,255,235);
     private static final Color STROKE = new Color(30,30,30);
     private static final Color SUBTLE = new Color(0,0,0,110);
