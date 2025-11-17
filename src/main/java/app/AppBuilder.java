@@ -7,22 +7,18 @@ import java.time.Instant;
 import constants.Constants;
 import entity.ProgramTime;
 import entity.Viewport;
+import entity.WeatherType;
 import interfaceadapter.maptime.ProgramTimeController;
 import interfaceadapter.maptime.ProgramTimePresenter;
 import interfaceadapter.weatherLayers.*;
 import usecase.maptime.UpdateMapTimeInputBoundary;
-import usecase.weatherLayers.layers.ChangeLayerOutputBoundary;
-import usecase.weatherLayers.layers.ChangeLayerUseCase;
-import usecase.weatherLayers.layers.ChangeOpacityUseCase;
+import usecase.weatherLayers.layers.*;
 import usecase.weatherLayers.update.UpdateOverlayOutputBoundary;
 import usecase.weatherLayers.update.UpdateOverlaySizeUseCase;
 import usecase.weatherLayers.update.UpdateOverlayUseCase;
 import usecase.maptime.UpdateMapTimeOutputBoundary;
 import usecase.maptime.UpdateMapTimeUseCase;
-import view.ChangeWeatherLayersView;
-import view.DisplayOverlayView;
-import view.MapOverlayStructureView;
-import view.ProgramTimeView;
+import view.*;
 import interfaceadapter.maptime.ProgramTimeViewModel;
 import dataaccessinterface.TileRepository;
 import dataaccessobjects.CachedTileRepository;
@@ -38,6 +34,9 @@ public class AppBuilder {
     private ProgramTimeViewModel programTimeViewModel;
 
     private UpdateOverlayViewModel overlayViewModel;
+
+    private LegendsView legendsView;
+    private LegendViewModel legendViewModel;
 
     private UpdateOverlayUseCase updateOverlayUseCase;
 
@@ -93,15 +92,23 @@ public class AppBuilder {
         mapOverlayStructure = new MapOverlayStructureView();
         mapOverlayStructure.addPropertyChangeListener(weatherOverlayView);
         //mapOverlayStructure.addComponent(mapComponent, 1);
-        mapOverlayStructure.addComponent(weatherOverlayView, 2);
+        mapOverlayStructure.addComponent(weatherOverlayView, 1);
         //...
         borderPanel.add(mapOverlayStructure, BorderLayout.CENTER);
         return this;
     }
 
+    public AppBuilder addLegendView(){
+        legendViewModel = new LegendViewModel();
+        legendsView = new LegendsView(legendViewModel);
+        borderPanel.add(legendsView, BorderLayout.NORTH);
+        return this;
+    }
+
     public AppBuilder addWeatherLayersUseCase(){
         ChangeLayerOutputBoundary layerOutputBoundary = new WeatherLayersPresenter(weatherLayersViewModel);
-        changeLayerUseCase = new ChangeLayerUseCase(overlayManager, layerOutputBoundary);
+        UpdateLegendOutputBoundary legendOutputBoundary = new LegendPresenter(legendViewModel);
+        changeLayerUseCase = new ChangeLayerUseCase(overlayManager, layerOutputBoundary, legendOutputBoundary);
         changeOpacityUseCase = new ChangeOpacityUseCase(overlayManager);
         WeatherLayersController layersController = new WeatherLayersController(changeLayerUseCase, changeOpacityUseCase);
         changeWeatherView.addLayerController(layersController);
@@ -142,6 +149,7 @@ public class AppBuilder {
 
         application.add(borderPanel);
         updateOverlayUseCase.update();
+
         return application;
     }
 

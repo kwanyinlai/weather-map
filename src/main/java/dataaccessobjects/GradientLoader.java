@@ -1,0 +1,48 @@
+package dataaccessobjects;
+
+import dataaccessinterface.GradientLegendLoader;
+import entity.WeatherType;
+
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
+import java.util.HashMap;
+
+
+public class GradientLoader implements GradientLegendLoader {
+    private final HashMap<WeatherType, BufferedImage> legends;
+    public GradientLoader(){
+        legends = new HashMap<>();
+        loadLegends();
+    }
+
+    @Override
+    public BufferedImage getLegend(WeatherType type){
+        return legends.get(type);
+    }
+
+    private void loadLegends(){
+        BufferedImage blank;
+
+        try{
+            File imageFile = new File("img/legends/legend_Blank.png");
+            blank = ImageIO.read(imageFile);
+        } catch (IOException e) {
+            blank = new BufferedImage(1,1,1);
+            System.out.println("Error reading blank image!");
+        }
+        for(WeatherType type: WeatherType.values()){
+            try{
+                BufferedImage legend_img = null;
+                File imageFile = new File("img/legends/legend_" + type + ".png");
+                legend_img = ImageIO.read(imageFile);
+                legends.put(type, legend_img);
+            } catch (RuntimeException | IOException e) {
+                legends.put(type, blank);
+                System.out.println("Error reading " + "img/legends/legend_" + type + ".png");
+            }
+
+        }
+    }
+}
