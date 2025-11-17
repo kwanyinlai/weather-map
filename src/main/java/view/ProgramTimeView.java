@@ -1,5 +1,6 @@
 package view;
 
+import app.uielements.CircleButton;
 import app.uielements.PauseIcon;
 import app.uielements.PlayIcon;
 import interfaceadapter.maptime.programtime.ProgramTimeController;
@@ -58,10 +59,11 @@ public class ProgramTimeView extends JPanel implements PropertyChangeListener {
          *
          */
         playPauseButton = new JButton(new PlayIcon(20,17, Color.ORANGE));
+
         playPauseButton.addActionListener((ActionEvent e1) -> {
             Icon current = playPauseButton.getIcon();
             if (current instanceof PlayIcon ) {
-                playPauseButton.setIcon(new PauseIcon(17,20, Color.ORANGE));
+                playPauseButton.setIcon(new PauseIcon(17,17, Color.ORANGE));
                 timeAnimationController.play();
             }
             else{
@@ -69,6 +71,7 @@ public class ProgramTimeView extends JPanel implements PropertyChangeListener {
                 timeAnimationController.pause();
             }
         });
+
 
 
 
@@ -106,6 +109,7 @@ public class ProgramTimeView extends JPanel implements PropertyChangeListener {
         else if (evt.getPropertyName().equals("animator")) {
             final ProgramTimeState state = (ProgramTimeState) evt.getNewValue();
             timeSlider.setValue(state.getSliderValue());
+            currentTime.setText(state.getTime());
         }
         else{
             System.out.println(evt.getPropertyName());
