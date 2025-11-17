@@ -44,8 +44,8 @@ public class InfoPanelInteractor implements InfoPanelInputBoundary {
     }
 
     private InfoPanelOutputData parseXmlToOutput(String xml) throws Exception {
-        DocumentBuilderFactory f = DocumentBuilderFactory.newInstance();
-        Document doc = f.newDocumentBuilder()
+        DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
+        Document doc = docFactory.newDocumentBuilder()
                 .parse(new ByteArrayInputStream(xml.getBytes(StandardCharsets.UTF_8)));
         doc.getDocumentElement().normalize();
 
@@ -54,7 +54,7 @@ public class InfoPanelInteractor implements InfoPanelInputBoundary {
         NodeList locList = doc.getElementsByTagName("location");
         if (locList.getLength() > 0) {
             Element loc = (Element) locList.item(0);
-            String name = text(loc, "name");
+            String name = getFirstTagText(loc, "name");
             if (name != null && !name.isBlank()) place = name;
         }
 
@@ -64,11 +64,11 @@ public class InfoPanelInteractor implements InfoPanelInputBoundary {
         NodeList curList = doc.getElementsByTagName("current");
         if (curList.getLength() > 0) {
             Element cur = (Element) curList.item(0);
-            curTemp = toDouble(text(cur, "temp_c"));
+            curTemp = toDouble(getFirstTagText(cur, "temp_c"));
             NodeList condList = cur.getElementsByTagName("condition");
             if (condList.getLength() > 0) {
                 Element c = (Element) condList.item(0);
-                condition = text(c, "text");
+                condition = getFirstTagText(c, "text");
             }
         }
 
@@ -80,7 +80,7 @@ public class InfoPanelInteractor implements InfoPanelInputBoundary {
             NodeList hours = day0.getElementsByTagName("hour");
             for (int i = 0; i < hours.getLength(); i++) {
                 Element h = (Element) hours.item(i);
-                hourlyTemps.add(toDouble(text(h, "temp_c")));
+                hourlyTemps.add(toDouble(getFirstTagText(h, "temp_c")));
             }
         }
 
@@ -88,14 +88,14 @@ public class InfoPanelInteractor implements InfoPanelInputBoundary {
         Map<String, String> extra = new HashMap<>();
         if (curList.getLength() > 0) {
             Element cur = (Element) curList.item(0);
-            putIfNotBlank(extra, "humidity",      text(cur, "humidity"));
-            putIfNotBlank(extra, "wind_kph",      text(cur, "wind_kph"));
-            putIfNotBlank(extra, "wind_dir",      text(cur, "wind_dir"));
-            putIfNotBlank(extra, "pressure_mb",   text(cur, "pressure_mb"));
-            putIfNotBlank(extra, "precip_mm",     text(cur, "precip_mm"));
-            putIfNotBlank(extra, "feelslike_c",   text(cur, "feelslike_c"));
-            putIfNotBlank(extra, "uv",            text(cur, "uv"));
-            putIfNotBlank(extra, "cloud",         text(cur, "cloud"));
+            putIfNotBlank(extra, "humidity",      getFirstTagText(cur, "humidity"));
+            putIfNotBlank(extra, "wind_kph",      getFirstTagText(cur, "wind_kph"));
+            putIfNotBlank(extra, "wind_dir",      getFirstTagText(cur, "wind_dir"));
+            putIfNotBlank(extra, "pressure_mb",   getFirstTagText(cur, "pressure_mb"));
+            putIfNotBlank(extra, "precip_mm",     getFirstTagText(cur, "precip_mm"));
+            putIfNotBlank(extra, "feelslike_c",   getFirstTagText(cur, "feelslike_c"));
+            putIfNotBlank(extra, "uv",            getFirstTagText(cur, "uv"));
+            putIfNotBlank(extra, "cloud",         getFirstTagText(cur, "cloud"));
         }
 
         return new InfoPanelOutputData(
@@ -108,7 +108,7 @@ public class InfoPanelInteractor implements InfoPanelInputBoundary {
         );
     }
 
-    private static String text(Element parent, String tag) {
+    private static String getFirstTagText(Element parent, String tag) {
         NodeList list = parent.getElementsByTagName(tag);
         if (list.getLength() == 0) return null;
         Node n = list.item(0).getFirstChild();
