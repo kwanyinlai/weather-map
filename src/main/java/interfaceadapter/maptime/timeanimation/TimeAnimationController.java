@@ -55,6 +55,5 @@ public class TimeAnimationController {
 
     private void tick(){
         updateMapTimeInputBoundary.execute(new TickMapTimeInputData(1));
-        System.out.println("1 tick passed.");
     }
 }
