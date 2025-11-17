@@ -12,7 +12,7 @@ public final class AddBookmarkOutputData {
     /**
      * Constructs an output data object representing the added bookmark.
      *
-     * @param name      human-readable name of the bookmark
+     * @param name      name of the bookmark
      * @param latitude  latitude of the bookmarked location
      * @param longitude longitude of the bookmarked location
      */

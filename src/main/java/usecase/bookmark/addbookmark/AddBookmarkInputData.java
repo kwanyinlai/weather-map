@@ -13,7 +13,7 @@ public final class AddBookmarkInputData {
     /**
      * Constructs an input data object for adding a bookmark.
      *
-     * @param name      human-readable name of the bookmark
+     * @param name      name of the bookmark
      * @param latitude  latitude of the bookmarked location
      * @param longitude longitude of the bookmarked location
      */
