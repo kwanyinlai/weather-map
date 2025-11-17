@@ -12,7 +12,7 @@ public class PanAndZoomUseCase implements PanAndZoomInputBoundary {
     public void handleZoom(PanAndZoomInputData input) {
         int newZoom = sharedViewport.getZoomLevel() + input.getZoomIncrement();
         sharedViewport.setZoomLevel(newZoom);
-        outputBoundary.presentSuccess(new PanAndZoomOutputData(sharedViewport, true));
+        outputBoundary.present(new PanAndZoomOutputData(sharedViewport, true));
     }
     @Override
     public void getBoundedZoom(PanAndZoomInputData input) throws ZoomOutOfBoundsException {
@@ -23,7 +23,7 @@ public class PanAndZoomUseCase implements PanAndZoomInputBoundary {
             );
         }
         sharedViewport.setZoomLevel(newZoom);
-        outputBoundary.presentSuccess(new PanAndZoomOutputData(sharedViewport, true));
+        outputBoundary.present(new PanAndZoomOutputData(sharedViewport, true));
     }
     @Override
     public void handlePan(PanAndZoomInputData input) {
@@ -31,7 +31,7 @@ public class PanAndZoomUseCase implements PanAndZoomInputBoundary {
         double newPixelY = sharedViewport.getPixelCenterY() + input.getDy();
         sharedViewport.setPixelCenterX(newPixelX);
         sharedViewport.setPixelCenterY(newPixelY);
-        outputBoundary.presentSuccess(new PanAndZoomOutputData(sharedViewport, true));
+        outputBoundary.present(new PanAndZoomOutputData(sharedViewport, true));
     }
 
 
