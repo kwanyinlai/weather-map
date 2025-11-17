@@ -31,7 +31,6 @@ public class ChangeLayerUseCase implements ChangeLayerInputBoundary{
             this.overlayManager.setSelected(data.getType());
             layersPresenter.updateOpacity(new ChangeLayersOutputData(overlayManager.getSelectedOpacity()));
             legendPresenter.setLegend(new ChangeLegendOutputData(legendStorage.getLegend(data.getType())));
-        System.out.println("Usecase Updated");
     }
 }
 

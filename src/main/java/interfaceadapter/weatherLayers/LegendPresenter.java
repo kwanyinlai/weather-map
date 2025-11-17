@@ -12,7 +12,6 @@ public class LegendPresenter implements UpdateLegendOutputBoundary {
 
     @Override
     public void setLegend(ChangeLegendOutputData data){
-        System.out.println("Presenter Updated");
         LegendState state = legendViewModel.getState();
         state.setImage(data.getLegendImg());
         legendViewModel.firePropertyChange("legend");
