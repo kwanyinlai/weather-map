@@ -7,9 +7,9 @@ import java.time.Instant;
 import constants.Constants;
 import entity.ProgramTime;
 import entity.Viewport;
-import entity.WeatherType;
-import interfaceadapter.maptime.ProgramTimeController;
-import interfaceadapter.maptime.ProgramTimePresenter;
+import interfaceadapter.maptime.programtime.ProgramTimeController;
+import interfaceadapter.maptime.programtime.ProgramTimePresenter;
+import interfaceadapter.maptime.timeanimation.TimeAnimationController;
 import interfaceadapter.weatherLayers.*;
 import usecase.maptime.UpdateMapTimeInputBoundary;
 import usecase.weatherLayers.layers.*;
@@ -18,8 +18,11 @@ import usecase.weatherLayers.update.UpdateOverlaySizeUseCase;
 import usecase.weatherLayers.update.UpdateOverlayUseCase;
 import usecase.maptime.UpdateMapTimeOutputBoundary;
 import usecase.maptime.UpdateMapTimeUseCase;
-import view.*;
-import interfaceadapter.maptime.ProgramTimeViewModel;
+import view.ChangeWeatherLayersView;
+import view.DisplayOverlayView;
+import view.MapOverlayStructureView;
+import view.ProgramTimeView;
+import interfaceadapter.maptime.programtime.ProgramTimeViewModel;
 import dataaccessinterface.TileRepository;
 import dataaccessobjects.CachedTileRepository;
 import entity.OverlayManager;
@@ -138,8 +141,11 @@ public class AppBuilder {
                         updateOverlayUseCase,
                         updateMapTimeOutputBoundary
                     );
-        ProgramTimeController controller = new ProgramTimeController(updateMapTimeInputBoundary, java.time.Duration.ofDays(3));
-        programTimeView.setProgramTimeController(controller);
+        ProgramTimeController programTimeController = new ProgramTimeController(updateMapTimeInputBoundary, java.time.Duration.ofDays(3));
+        // TODO: move the ofDays(3) into entities as a business rule
+        TimeAnimationController timeAnimationController = new TimeAnimationController(updateMapTimeInputBoundary, 500);
+        programTimeView.setProgramTimeController(programTimeController);
+        programTimeView.setTimeAnimationController(timeAnimationController);
         return this;
     }
 
