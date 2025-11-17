@@ -18,8 +18,9 @@ public class ChangeLayerUseCase implements ChangeLayerInputBoundary{
         this.layersPresenter = layerPresenter;
         this.legendPresenter = legendPresenter;
         this.legendStorage = new GradientLoader();
+        //Initialize gradient legend
         try{
-            this.change(new ChangeLayerInputData(WeatherType.Tmp2m));
+            this.change(new ChangeLayerInputData(WeatherType.values()[0]));
         } catch (LayerNotFoundException ignored) {
         }
 

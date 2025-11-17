@@ -30,7 +30,6 @@ public class GradientLoader implements GradientLegendLoader {
             blank = ImageIO.read(imageFile);
         } catch (IOException e) {
             blank = new BufferedImage(1,1,1);
-            System.out.println("Error reading blank image!");
         }
         for(WeatherType type: WeatherType.values()){
             try{
@@ -40,7 +39,6 @@ public class GradientLoader implements GradientLegendLoader {
                 legends.put(type, legend_img);
             } catch (RuntimeException | IOException e) {
                 legends.put(type, blank);
-                System.out.println("Error reading " + "img/legends/legend_" + type + ".png");
             }
 
         }

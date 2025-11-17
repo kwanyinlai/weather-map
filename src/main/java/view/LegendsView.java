@@ -28,7 +28,7 @@ public class LegendsView extends JPanel implements PropertyChangeListener {
     public void propertyChange(PropertyChangeEvent evt) {
         System.out.println("View Updated");
         imageIcon.setImage(legendView.getState().getImage().getScaledInstance(Constants.DEFAULT_PROGRAM_WIDTH ,-1,
-                Image.SCALE_SMOOTH));
+                Image.SCALE_REPLICATE));
         this.repaint();
     }
 }
