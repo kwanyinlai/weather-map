@@ -1,8 +1,8 @@
 package view;
 
 import entity.LayerNotFoundException;
-import entity.OverlayManager;
 import entity.WeatherType;
+import interfaceadapter.weatherLayers.UpdateOverlayController;
 import interfaceadapter.weatherLayers.WeatherLayersController;
 import interfaceadapter.weatherLayers.WeatherLayersViewModel;
 
@@ -14,8 +14,10 @@ import java.awt.event.ActionListener;
 public class ChangeWeatherLayersView extends JPanel{
     private final JComboBox<WeatherType> dropdown;
     private final JSlider slider;
-    private WeatherLayersController controller;
     private final WeatherLayersViewModel vm;
+
+    private WeatherLayersController layersController;
+    private UpdateOverlayController updateController;
 
     public ChangeWeatherLayersView(WeatherLayersViewModel vm){
         this.vm = vm;
@@ -27,7 +29,8 @@ public class ChangeWeatherLayersView extends JPanel{
         slider.addChangeListener(evt -> {
                     JSlider source = (JSlider) evt.getSource();
                     if(!source.getValueIsAdjusting()) {
-                        controller.executeChangeOpacity(source.getValue());
+                        layersController.executeChangeOpacity(source.getValue());
+                        updateController.update();
                     }
                 }
         );
@@ -39,9 +42,10 @@ public class ChangeWeatherLayersView extends JPanel{
             @Override
             public void actionPerformed(ActionEvent e) {
                 try {
-                    controller.executeChangeLayer((WeatherType) dropdown.getSelectedItem());
+                    layersController.executeChangeLayer((WeatherType) dropdown.getSelectedItem());
                     slider.setValue((int)(vm.getCurrentOpacity()*100));
                     slider.setEnabled(true);
+                    updateController.update();
                 } catch (LayerNotFoundException ex) {
                     slider.setEnabled(false);
                 }
@@ -55,7 +59,11 @@ public class ChangeWeatherLayersView extends JPanel{
         this.add(slider);
     }
 
-    public void addController (WeatherLayersController cont){
-        this.controller = cont;
+    public void addLayerController (WeatherLayersController cont){
+        this.layersController = cont;
+    }
+
+    public void addUpdateController (UpdateOverlayController cont){
+        this.updateController = cont;
     }
 }
