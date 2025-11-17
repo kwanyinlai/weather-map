@@ -1,4 +1,4 @@
 package usecase.bookmark.removebookmark;
 
-public class RemoveBookmarkInteractor {
+public class RemoveBookmarkUseCase {
 }

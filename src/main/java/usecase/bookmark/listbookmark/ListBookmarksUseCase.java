@@ -1,4 +1,4 @@
 package usecase.bookmark.listbookmark;
 
-public class ListBookmarksInteractor {
+public class ListBookmarksUseCase {
 }
