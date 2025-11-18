@@ -27,6 +27,12 @@ import interfaceadapter.maptime.ProgramTimeViewModel;
 import dataaccessinterface.TileRepository;
 import dataaccessobjects.CachedTileRepository;
 import entity.OverlayManager;
+import interfaceadapter.mapinteraction.MapViewModel;
+import interfaceadapter.mapinteraction.PanAndZoomController;
+import interfaceadapter.mapinteraction.PanAndZoomPresenter;
+import usecase.mapinteraction.PanAndZoomUseCase;
+import usecase.mapinteraction.PanAndZoomInputBoundary;
+import view.PanAndZoomView;
 
 public class AppBuilder {
     private final JPanel borderPanel = new JPanel();
@@ -57,6 +63,11 @@ public class AppBuilder {
             Constants.DEFAULT_MAP_HEIGHT);
     private final Viewport viewport = new Viewport(300,300,Constants.DEFAULT_MAP_WIDTH,
             0, 6, 0, Constants.DEFAULT_MAP_HEIGHT);
+    private PanAndZoomView panAndZoomView;
+    private MapViewModel mapViewModel;
+    private PanAndZoomPresenter panAndZoomPresenter;
+    private PanAndZoomInputBoundary panAndZoomUseCase;
+    private PanAndZoomController panAndZoomController;
 
     public AppBuilder() {
         borderPanel.setLayout(borderLayout);
@@ -92,7 +103,7 @@ public class AppBuilder {
         
         mapOverlayStructure = new MapOverlayStructureView();
         mapOverlayStructure.addPropertyChangeListener(weatherOverlayView);
-        //mapOverlayStructure.addComponent(mapComponent, 1);
+        mapOverlayStructure.addComponent(panAndZoomView, 1);
         mapOverlayStructure.addComponent(weatherOverlayView, 2);
         //...
         borderPanel.add(mapOverlayStructure, BorderLayout.CENTER);
@@ -133,6 +144,22 @@ public class AppBuilder {
                     );
         ProgramTimeController controller = new ProgramTimeController(updateMapTimeInputBoundary, java.time.Duration.ofDays(3));
         programTimeView.setProgramTimeController(controller);
+        return this;
+    }
+    public AppBuilder addPanZoomView() {
+
+        mapViewModel = new MapViewModel();
+        panAndZoomView = new PanAndZoomView(mapViewModel);
+        panAndZoomPresenter = new PanAndZoomPresenter(
+                panAndZoomView.getMapViewer(),
+                mapViewModel
+        );
+        panAndZoomUseCase = new PanAndZoomUseCase(viewport, panAndZoomPresenter);
+        panAndZoomController = new PanAndZoomController(
+                panAndZoomUseCase,
+                panAndZoomView.getMapViewer()
+        );
+        panAndZoomView.setController(panAndZoomController);
         return this;
     }
 
