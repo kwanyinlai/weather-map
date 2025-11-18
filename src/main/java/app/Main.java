@@ -10,6 +10,7 @@ public class Main {
                 .createOverlayView()
                 .addPanZoomView()
                 .addMapOverlayView()
+                .addLegendView()
                 .addChangeOpacityView()
                 .addWeatherLayersUseCase()
                 .addProgramTimeView()
