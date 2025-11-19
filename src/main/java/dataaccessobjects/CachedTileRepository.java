@@ -156,4 +156,8 @@ public class CachedTileRepository implements TileRepository {
         tileCache.clear();
     }
 
+    @Override
+    public void requestTile(WeatherTile tile) throws TileNotFoundException {
+
+    }
 }
