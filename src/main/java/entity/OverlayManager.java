@@ -27,6 +27,12 @@ public class OverlayManager {
         this.overlay = new BufferedImage(size.width, size.height, BufferedImage.TYPE_INT_ARGB);
     }
 
+    public void clear(){
+        Graphics2D g = (Graphics2D) overlay.getGraphics();
+        g.setBackground(new Color(0,0,0,0));
+        g.clearRect(0,0, overlay.getWidth(), overlay.getHeight());
+        g.dispose();
+    }
 
     public void setSelected(WeatherType selection) throws LayerNotFoundException {
         // Change the selected layer. Raise LayerNotFoundException if selection is not an added overlay type.
@@ -87,7 +93,7 @@ public class OverlayManager {
         // same as c * "scale" = c / (2^zoom * 256)
         double pngToTileFactor = scaleToOvl / 256 ;
         //apply scale to the tile image.
-        Image scaledTileImg = tileImg.getScaledInstance((int)(256*pngToTileFactor), -1, Image.SCALE_AREA_AVERAGING);
+        Image scaledTileImg = tileImg.getScaledInstance((int)(256*pngToTileFactor), -1, Image.SCALE_FAST);
 
         //draw tile image onto overlay with selected layer's opacity.
         Graphics2D g = this.overlay.createGraphics();
