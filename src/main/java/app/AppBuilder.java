@@ -18,10 +18,7 @@ import usecase.weatherLayers.update.UpdateOverlaySizeUseCase;
 import usecase.weatherLayers.update.UpdateOverlayUseCase;
 import usecase.maptime.UpdateMapTimeOutputBoundary;
 import usecase.maptime.UpdateMapTimeUseCase;
-import view.ChangeWeatherLayersView;
-import view.DisplayOverlayView;
-import view.MapOverlayStructureView;
-import view.ProgramTimeView;
+import view.*;
 import interfaceadapter.maptime.programtime.ProgramTimeViewModel;
 import dataaccessinterface.TileRepository;
 import dataaccessobjects.CachedTileRepository;
@@ -31,7 +28,6 @@ import interfaceadapter.mapinteraction.PanAndZoomController;
 import interfaceadapter.mapinteraction.PanAndZoomPresenter;
 import usecase.mapinteraction.PanAndZoomUseCase;
 import usecase.mapinteraction.PanAndZoomInputBoundary;
-import view.PanAndZoomView;
 
 public class AppBuilder {
     private final JPanel borderPanel = new JPanel();

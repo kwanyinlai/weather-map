@@ -27,6 +27,9 @@ public class PanAndZoomView extends JPanel {
         this.viewModel.addPropertyChangeListener(this::onViewModelChanged);
         mapViewer.setFocusable(true);
         mapViewer.requestFocusInWindow();
+        mapViewer.setRequestFocusEnabled(true);
+        this.setBounds(0, 0, 600, 600);
+        mapViewer.setBounds(0, 0, 600, 600);
     }
     public void setController(PanAndZoomController controller) {
         MouseListener[] mouseListeners = mapViewer.getMouseListeners();
