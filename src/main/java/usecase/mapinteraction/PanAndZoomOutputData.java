@@ -4,11 +4,22 @@ import entity.Viewport;
 
 public class PanAndZoomOutputData {
     private final Viewport updatedViewport;
-    private final boolean isSuccess;
-    public PanAndZoomOutputData(Viewport newViewport, boolean isSuccess) {
+    private final boolean isZoom;
+    private final double dx;
+    private final double dy;
+
+    public PanAndZoomOutputData(Viewport newViewport, boolean isZoom, double dx, double dy) {
         this.updatedViewport = newViewport;
-        this.isSuccess = isSuccess;
+        this.isZoom = isZoom;
+        this.dx = dx;
+        this.dy = dy;
     }
-    public Viewport getUpdatedViewport() { return updatedViewport; }
-    public boolean isSuccess() { return isSuccess; }
+
+    public boolean isZoom() { return isZoom; }
+    public double getDx() { return dx; }
+    public double getDy() { return dy; }
+
+    public Viewport getUpdatedViewport() {
+        return updatedViewport;
+    }
 }
