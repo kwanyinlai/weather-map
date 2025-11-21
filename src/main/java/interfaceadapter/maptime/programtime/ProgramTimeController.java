@@ -15,25 +15,14 @@ public class ProgramTimeController {
         this.maxForecast = maxForecast;
     }
 
-    // TODO: Add a timer to tick maybe every 10 minutes and force update time.
-
-    /**
+    /** Update the program time with the newly set slider value
      *
-     * @param programTimeState
+     * @param sliderVal     the value on the slider, representing an integer between 0 and 100
      */
     public void updateTime(double sliderVal) {
         java.time.Instant maxTime = convertSliderToTime(sliderVal);
         updateMapTimeUseCase.execute(new UpdateMapTimeInputData(maxTime));
     }
-
-    /** Increment by a fixed value
-     *
-     */
-//    public void updateTime(int ticks){
-//        // TODO: contain reset loop logic
-//        TickMapTimeInputData in = new TickMapTimeInputData(1);
-//        updateMapTimeUseCase.execute(in);
-//    }
 
     /** Converts the slider value to a java.time.Instant
      *
