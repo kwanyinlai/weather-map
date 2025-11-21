@@ -28,7 +28,6 @@ public final class UpdateOverlayUseCase implements UpdateOverlayInputBoundary{
             return;
         }
         zoom = (int)Math.max(0, Math.min(6,zoom / 1.5));
-        System.out.println(zoom);
         BoundingBox bBox = this.viewport.calculateBBox();
 
         //Convert to tile coords,
