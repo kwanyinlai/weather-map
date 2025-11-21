@@ -1,16 +1,20 @@
 package entity;
 
+import java.time.Instant;
+
 public class IncompleteTile {
     private final Vector topLeft;
     private final Vector botRight;
     private final Location viewportState;
     private final WeatherTile tile;
+    private final Instant time;
 
-    public IncompleteTile(Vector topLeft, Vector botRight, Location viewportState, WeatherTile tile){
+    public IncompleteTile(Vector topLeft, Vector botRight, Location viewportState, WeatherTile tile, Instant time){
         this.topLeft = topLeft;
         this.botRight = botRight;
         this.viewportState = viewportState;
         this.tile = tile;
+        this.time = time;
     }
 
     public Vector getTopLeft() {
@@ -24,5 +28,9 @@ public class IncompleteTile {
     public WeatherTile getWeatherTile() {
         return tile;
     }
+
+    public Location getViewportState() { return viewportState; }
+
+    public Instant getTime() { return time; }
 
 }

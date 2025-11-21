@@ -4,6 +4,7 @@ import entity.*;
 import kotlin.Pair;
 
 import java.awt.image.BufferedImage;
+import java.time.Instant;
 import java.util.concurrent.CompletableFuture;
 
 
@@ -14,10 +15,9 @@ public class TileJob {
     private final Pair<IncompleteTile, CompletableFuture<BufferedImage>> futureData;
 
 
-    public TileJob(WeatherTile tile, Vector topLeft, Vector botRight, Location viewportState) {
-        this.tileData = new IncompleteTile(topLeft, botRight, viewportState, tile);
+    public TileJob(WeatherTile tile, Vector topLeft, Vector botRight, Location viewportState, Instant time) {
+        this.tileData = new IncompleteTile(topLeft, botRight, viewportState, tile, time);
         this.futureData = new Pair<>(this.tileData, this.future);
-
     }
 
     public WeatherTile getTile() {
