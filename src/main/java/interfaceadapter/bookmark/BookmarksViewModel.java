@@ -1,117 +1,117 @@
 package interfaceadapter.bookmark;
 
+import interfaceadapter.ViewModel;
 import entity.BookmarkedLocation;
 
-import java.beans.PropertyChangeListener;
-import java.beans.PropertyChangeSupport;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 /**
- * View model for all bookmark-related UI state.
- * <p>
- * This class sits in the interface-adapter layer and exposes a UI-friendly
- * representation of the application's bookmark state:
- * <ul>
- *     <li>The current list of {@link BookmarkedLocation} objects to display.</li>
- *     <li>An optional error message to show to the user.</li>
- * </ul>
- * <p>
- * Swing views can register {@link PropertyChangeListener}s to be notified when
- * either the bookmarks list or the error message changes, and then redraw
- * themselves accordingly.
+ * ViewModel for the bookmarks screen.
+ *
+ * <p>This class extends the generic {@link ViewModel} used in the project and
+ * specializes it for bookmark-related state. It exposes convenience methods
+ * for presenters to update the list of bookmarks and any associated error
+ * messages, and notifies any listeners via property change events.</p>
  */
-public class BookmarksViewModel {
+public final class BookmarksViewModel extends ViewModel<BookmarksViewModel.BookmarksState> {
 
     /**
-     * Name of the property used when firing change events for the bookmarks list.
-     * <p>
-     * Listeners can use this constant to check which property changed.
+     * A logical name for this view. Useful if your application switches
+     * between multiple views.
      */
-    public static final String BOOKMARKS_PROPERTY = "bookmarks";
+    public static final String VIEW_NAME = "bookmarks";
 
     /**
-     * Name of the property used when firing change events for the error message.
-     * <p>
-     * Listeners can use this constant to check which property changed.
+     * The property name used when firing state change events.
+     * Listeners can check this name to know that the bookmark state has changed.
      */
-    public static final String ERROR_PROPERTY = "errorMessage";
+    public static final String STATE_PROPERTY = "state";
 
     /**
-     * Helper object that manages registration of listeners and firing
-     * {@link java.beans.PropertyChangeEvent}s when the view model changes.
+     * Constructs a new BookmarksViewModel with an initial empty state.
      */
-    private final PropertyChangeSupport support = new PropertyChangeSupport(this);
-
-    /**
-     * Current bookmarks to be displayed by the UI.
-     */
-    private List<BookmarkedLocation> bookmarks = new ArrayList<>();
-
-    /**
-     * Current error message to show to the user, or {@code null}
-     * if there is no error to display.
-     */
-    private String errorMessage = null;
-
-    /**
-     * Returns an immutable snapshot of the current bookmark list.
-     *
-     * @return unmodifiable list of {@link BookmarkedLocation} objects
-     */
-    public List<BookmarkedLocation> getBookmarks() {
-        return Collections.unmodifiableList(bookmarks);
+    public BookmarksViewModel() {
+        super(VIEW_NAME);
+        // Start with an empty list of bookmarks and no error.
+        this.setState(new BookmarksState(Collections.emptyList(), null));
     }
 
     /**
-     * Returns the current error message.
+     * Updates the list of bookmarks in the state and notifies listeners.
      *
-     * @return error message, or {@code null} if there is no error
+     * @param bookmarks the new list of bookmarks to display (may be null,
+     *                  in which case it is treated as an empty list)
      */
-    public String getErrorMessage() {
-        return errorMessage;
+    public void setBookmarks(List<BookmarkedLocation> bookmarks) {
+        BookmarksState current = getState();
+        List<BookmarkedLocation> safeList =
+                (bookmarks == null) ? Collections.emptyList() : new ArrayList<>(bookmarks);
+
+        BookmarksState newState = new BookmarksState(
+                safeList,
+                current == null ? null : current.getErrorMessage()
+        );
+
+        setState(newState);
+        firePropertyChange(STATE_PROPERTY);
     }
 
     /**
-     * Replaces the current bookmarks list and notifies any registered listeners.
+     * Updates the error message in the state (for example, when a persistence
+     * error occurs) and notifies listeners.
      *
-     * @param newBookmarks new list of bookmarks to expose to the UI
+     * @param errorMessage the new error message to display, or null to clear it
      */
-    public void setBookmarks(List<BookmarkedLocation> newBookmarks) {
-        List<BookmarkedLocation> old = this.bookmarks;
-        this.bookmarks = new ArrayList<>(newBookmarks);
-        support.firePropertyChange(BOOKMARKS_PROPERTY, old, this.bookmarks);
+    public void setErrorMessage(String errorMessage) {
+        BookmarksState current = getState();
+        List<BookmarkedLocation> currentBookmarks =
+                (current == null || current.getBookmarks() == null)
+                        ? Collections.emptyList()
+                        : current.getBookmarks();
+
+        BookmarksState newState = new BookmarksState(currentBookmarks, errorMessage);
+        setState(newState);
+        firePropertyChange(STATE_PROPERTY);
     }
 
     /**
-     * Updates the error message and notifies any registered listeners.
-     *
-     * @param newErrorMessage new error message to display; may be {@code null}
-     *                        to indicate that there is currently no error
+     * Immutable state object representing everything the bookmarks view needs
+     * to render itself.
      */
-    public void setErrorMessage(String newErrorMessage) {
-        String old = this.errorMessage;
-        this.errorMessage = newErrorMessage;
-        support.firePropertyChange(ERROR_PROPERTY, old, newErrorMessage);
-    }
+    public static final class BookmarksState {
 
-    /**
-     * Registers a new listener that will be notified whenever one of the
-     * view model's properties changes.
-     *
-     * @param listener listener to register
-     */
-    public void addPropertyChangeListener(PropertyChangeListener listener) {
-        support.addPropertyChangeListener(listener);
-    }
+        private final List<BookmarkedLocation> bookmarks;
+        private final String errorMessage;
 
-    /**
-     * Unregisters a previously registered property change listener.
-     *
-     * @param listener listener to remove
-     */
-    public void removePropertyChangeListener(PropertyChangeListener listener) {
-        support.removePropertyChangeListener(listener);
+        /**
+         * Creates a new bookmarks state.
+         *
+         * @param bookmarks    the list of bookmarked locations to display
+         * @param errorMessage an optional error message for the UI to show,
+         *                     or null if there is no error
+         */
+        public BookmarksState(List<BookmarkedLocation> bookmarks, String errorMessage) {
+            // Internally keep a defensive copy to preserve immutability.
+            this.bookmarks = (bookmarks == null)
+                    ? Collections.emptyList()
+                    : Collections.unmodifiableList(new ArrayList<>(bookmarks));
+            this.errorMessage = errorMessage;
+        }
+
+        /**
+         * Returns an unmodifiable list of bookmarked locations.
+         */
+        public List<BookmarkedLocation> getBookmarks() {
+            return bookmarks;
+        }
+
+        /**
+         * Returns the current error message, or null if none.
+         */
+        public String getErrorMessage() {
+            return errorMessage;
+        }
     }
 }
