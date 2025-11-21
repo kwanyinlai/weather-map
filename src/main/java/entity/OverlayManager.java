@@ -27,11 +27,40 @@ public class OverlayManager {
         this.overlay = new BufferedImage(size.width, size.height, BufferedImage.TYPE_INT_ARGB);
     }
 
-    public void clear(){
+    /**
+     * Clear the overlay area that is outside the map area
+     * @param tl the viewport's top left tile coordinate
+     * @param br the viewport's bottom right tile coordinate
+     * @param zoom
+     */
+    public void clear(Vector tl, Vector br, int zoom){
+        if (tl.x < 0 || tl.y < 0){
+            double xFactor = Math.abs(tl.x) / (br.x - tl.x);
+            double yFactor = Math.abs(tl.y) / (br.y - tl.y);
+            clearArea(0,0, (int)(overlay.getWidth() * xFactor), overlay.getHeight());
+            clearArea(0,0, overlay.getWidth(), (int)(overlay.getHeight()* yFactor));
+        }
+        if (br.x > Math.pow(2, zoom) || br.y > Math.pow(2, zoom)){
+            double xFactor = Math.abs(br.x) / (br.x - tl.x);
+            double yFactor = Math.abs(br.y) / (br.y - tl.y);
+            clearArea((int)(overlay.getWidth() * (1 - xFactor)), 0,
+                    (int)(overlay.getWidth() * xFactor), overlay.getHeight());
+            clearArea(0, (int)(overlay.getHeight()* (1 - yFactor)),
+                    overlay.getWidth(), (int)(overlay.getHeight() * (yFactor)));
+        }
+
+
+    }
+
+    private void clearArea(int tx, int ty, int width, int height){
         Graphics2D g = (Graphics2D) overlay.getGraphics();
         g.setBackground(new Color(0,0,0,0));
-        g.clearRect(0,0, overlay.getWidth(), overlay.getHeight());
+        g.clearRect(tx, ty, width, height);
         g.dispose();
+    }
+
+    public void clearAll(){
+        clearArea(0,0, overlay.getWidth(), overlay.getHeight());
     }
 
     public void setSelected(WeatherType selection) throws LayerNotFoundException {

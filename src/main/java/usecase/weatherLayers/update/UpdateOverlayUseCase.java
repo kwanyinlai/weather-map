@@ -25,10 +25,12 @@ public final class UpdateOverlayUseCase implements UpdateOverlayInputBoundary{
     public void update(){
         int zoom = this.viewport.getZoomLevel();
         if (zoom > 10){
+            //with current tiling implemetation zooming in too much will cause a crash due to scaling an image too much,
+            //so skip drawing overlay if too zoomed in.
+            this.overlayManager.clearAll();
             return;
         }
         zoom = (int)Math.max(0, Math.min(6,zoom / 1.5));
-        System.out.println(zoom);
         BoundingBox bBox = this.viewport.calculateBBox();
 
         //Convert to tile coords,
@@ -48,7 +50,7 @@ public final class UpdateOverlayUseCase implements UpdateOverlayInputBoundary{
         //get amount of visible tiles in both direction (vp might not be a square)
         int visibleTilesX = (int)botRight.x - (int)topLeft.x + 1; //(15.1 to 15.6, sill 1 tile visible)
         int visibleTilesY = (int)botRight.y - (int)topLeft.y + 1;
-        overlayManager.clear();
+        overlayManager.clear(topLeft, botRight, zoom);
         for(int i = 0; i < visibleTilesX; i++){
             for(int j = 0; j < visibleTilesY; j++) {
                 //TODO looping? ((i % 2^zoom) + 2^zoom) % 2^zoom, j...
