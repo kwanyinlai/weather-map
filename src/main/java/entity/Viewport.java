@@ -66,8 +66,8 @@ public class Viewport {
     }
 
     public Location getCentre() {
-        double lon = mercator.xToLon((int) pixelCenterX, zoomLevel);
-        double lat = mercator.yToLat((int) pixelCenterY, zoomLevel);
+        double lon = mercator.xToLon(pixelCenterX, zoomLevel);
+        double lat = mercator.yToLat(pixelCenterY, zoomLevel);
         return new Location(lat, lon);
     }
     public boolean isZoomValid(int newZoom) {
@@ -96,6 +96,10 @@ public class Viewport {
 
     public int getViewHeight() {
         return viewHeight;
+    }
+
+    public PropertyChangeSupport getSupport(){
+        return this.support;
     }
 
     public void setViewSize(Dimension data){
