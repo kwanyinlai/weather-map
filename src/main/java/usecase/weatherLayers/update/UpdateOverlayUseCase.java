@@ -7,7 +7,7 @@ import entity.*;
 
 import java.awt.image.BufferedImage;
 
-public final class UpdateOverlayUseCase implements UpdateOverlayInputBoundary {
+public final class UpdateOverlayUseCase implements UpdateOverlayInputBoundary, TileCompletedListener  {
     private final OverlayManager overlayManager;
     private final TileRepository tileCache;
     private final ProgramTime time;
@@ -24,6 +24,7 @@ public final class UpdateOverlayUseCase implements UpdateOverlayInputBoundary {
         this.time = time;
         this.viewport = vp;
         this.output = output;
+        tileCache.addListener(this);
     }
 
     public void update(){
@@ -61,6 +62,23 @@ public final class UpdateOverlayUseCase implements UpdateOverlayInputBoundary {
             }
         }
         output.updateImage(new UpdateOverlayOutputData(overlayManager.getOverlay()));
+
+    }
+
+    @Override
+    public void onTileCompleted(IncompleteTile tile, BufferedImage tileImage) {
+        overlayManager.drawTileToOverlay(tile.getTopLeft(), tile.getBotRight(), tile.getWeatherTile(), tileImage);
+        output.updateImage(new UpdateOverlayOutputData(overlayManager.getOverlay()));
+        System.out.println("Test");
+        // TODO: we'll need to check if the viewport state is the same as right now
+    }
+
+    @Override
+    public void onTileFailed(IncompleteTile tile, TileNotFoundException e) {
+        BufferedImage tileImg = new BufferedImage(256, 256, BufferedImage.TYPE_3BYTE_BGR);
+        overlayManager.drawTileToOverlay(tile.getTopLeft(), tile.getBotRight(), tile.getWeatherTile(), tileImg);
+        output.updateImage(new UpdateOverlayOutputData(overlayManager.getOverlay()));
+        System.out.println("ASD");
     }
 }
 
