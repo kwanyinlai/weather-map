@@ -4,37 +4,35 @@ import usecase.bookmark.removebookmark.RemoveBookmarkInputBoundary;
 import usecase.bookmark.removebookmark.RemoveBookmarkInputData;
 
 /**
- * Controller for the "remove bookmark" flow.
- * <p>
- * This class accepts UI requests to remove a bookmark and forwards them
- * to the corresponding use case.
+ * Controller for the "remove bookmark" use case.
+ *
+ * <p>Called by the UI layer when the user requests that a bookmark be
+ * deleted. It translates primitive values into an input data object and
+ * delegates to the interactor.</p>
  */
-public class RemoveBookmarkController {
+public final class RemoveBookmarkController {
 
-    private final RemoveBookmarkInputBoundary inputBoundary;
+    private final RemoveBookmarkInputBoundary removeBookmarkInputBoundary;
 
     /**
-     * Constructs a controller that delegates to the "remove bookmark" use case.
+     * Constructs a controller with the given input boundary.
      *
-     * @param inputBoundary the use case entry point
+     * @param removeBookmarkInputBoundary the interactor for removing bookmarks
      */
-    public RemoveBookmarkController(RemoveBookmarkInputBoundary inputBoundary) {
-        this.inputBoundary = inputBoundary;
+    public RemoveBookmarkController(RemoveBookmarkInputBoundary removeBookmarkInputBoundary) {
+        this.removeBookmarkInputBoundary = removeBookmarkInputBoundary;
     }
 
     /**
-     * Requests removal of the specified bookmark.
-     * <p>
-     * The bookmark is identified by its name and coordinates; this mirrors
-     * the semantics used by the data access layer.
+     * Triggers the "remove bookmark" use case.
      *
-     * @param name      name of the bookmark
-     * @param latitude  latitude of the location
-     * @param longitude longitude of the location
+     * @param name      name of the bookmark to remove
+     * @param latitude  latitude of the bookmarked location
+     * @param longitude longitude of the bookmarked location
      */
     public void removeBookmark(String name, double latitude, double longitude) {
         RemoveBookmarkInputData inputData =
                 new RemoveBookmarkInputData(name, latitude, longitude);
-        inputBoundary.removeBookmark(inputData);
+        removeBookmarkInputBoundary.removeBookmark(inputData);
     }
 }

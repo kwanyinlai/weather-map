@@ -2,67 +2,69 @@ package interfaceadapter.bookmark.removebookmark;
 
 import entity.BookmarkedLocation;
 import interfaceadapter.bookmark.BookmarksViewModel;
+import interfaceadapter.bookmark.BookmarksViewModel.BookmarksState;
 import usecase.bookmark.removebookmark.RemoveBookmarkOutputBoundary;
 import usecase.bookmark.removebookmark.RemoveBookmarkOutputData;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
  * Presenter for the "remove bookmark" use case.
- * <p>
- * This presenter updates the {@link BookmarksViewModel} to reflect removal
- * of a bookmark, or displays an error message if the removal failed.
+ *
+ * <p>Applies the result of the remove–bookmark interactor to the
+ * {@link BookmarksViewModel}.</p>
  */
-public class RemoveBookmarkPresenter implements RemoveBookmarkOutputBoundary {
+public final class RemoveBookmarkPresenter implements RemoveBookmarkOutputBoundary {
 
     private final BookmarksViewModel viewModel;
 
     /**
-     * Creates a presenter that will update the given view model on
-     * successful or failed bookmark removals.
+     * Constructs a presenter with the given bookmarks view model.
      *
-     * @param viewModel shared view model used by bookmark-related views
+     * @param viewModel the view model representing bookmarks in the UI
      */
     public RemoveBookmarkPresenter(BookmarksViewModel viewModel) {
         this.viewModel = viewModel;
     }
 
-    /**
-     * Called by the use case when a bookmark has been successfully removed.
-     * <p>
-     * The presenter removes the matching bookmark from the list currently
-     * stored in the view model. Matching is done on name and coordinates,
-     * mirroring the semantics of the data access layer.
-     *
-     * @param outputData data describing the bookmark that was removed
-     */
     @Override
     public void presentRemovedBookmark(RemoveBookmarkOutputData outputData) {
         if (!outputData.isRemoved()) {
-            // Defensive: in case the output indicates that nothing was removed.
-            viewModel.setErrorMessage("Failed to remove bookmark.");
+            // Defensive: if the use case reports no removal, expose a generic error.
+            viewModel.setErrorMessage("The bookmark could not be removed.");
             return;
         }
 
-        List<BookmarkedLocation> current = new ArrayList<>(viewModel.getBookmarks());
-        current.removeIf(b ->
-                b.getName().equals(outputData.getName())
-                        && Double.compare(b.getLatitude(), outputData.getLatitude()) == 0
-                        && Double.compare(b.getLongitude(), outputData.getLongitude()) == 0
-        );
+        BookmarksState currentState = viewModel.getState();
+        List<BookmarkedLocation> current =
+                (currentState == null || currentState.getBookmarks() == null)
+                        ? Collections.emptyList()
+                        : currentState.getBookmarks();
 
-        viewModel.setBookmarks(current);
+        List<BookmarkedLocation> updated = new ArrayList<>();
+
+        for (BookmarkedLocation bookmark : current) {
+            boolean sameName = bookmark.getName().equals(outputData.getName());
+            boolean sameLat = Double.compare(bookmark.getLatitude(), outputData.getLatitude()) == 0;
+            boolean sameLon = Double.compare(bookmark.getLongitude(), outputData.getLongitude()) == 0;
+
+            // Skip the one that matches the removed bookmark.
+            if (sameName && sameLat && sameLon) {
+                continue;
+            }
+            updated.add(bookmark);
+        }
+
+        viewModel.setBookmarks(updated);
+        // Clear any previous error.
         viewModel.setErrorMessage(null);
     }
 
-    /**
-     * Called when removing a bookmark fails.
-     *
-     * @param errorMessage user-friendly error message
-     */
     @Override
     public void presentRemoveBookmarkFailure(String errorMessage) {
+        // Keep the existing bookmarks but show the error.
         viewModel.setErrorMessage(errorMessage);
     }
 }
