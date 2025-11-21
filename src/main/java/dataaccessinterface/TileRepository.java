@@ -1,6 +1,6 @@
 package dataaccessinterface;
-import entity.WeatherTile;
-import entity.WeatherType;
+import dataaccessobjects.tilejobs.TileCompletedListener;
+import entity.*;
 import kotlin.Pair;
 
 import java.awt.image.BufferedImage;
@@ -37,7 +37,8 @@ public interface TileRepository {
      * @param tile the tile to be added to cache
      * @throws TileNotFoundException raised if the tile does not correspond to valid image data
      */
-    void requestTile(WeatherTile tile) throws TileNotFoundException;
+    void requestTile(WeatherTile tile, Vector topLeft, Vector botRight, Location tileCoords);
 
+    void addListener(TileCompletedListener listener);
 
 }
