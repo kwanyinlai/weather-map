@@ -20,10 +20,7 @@ import usecase.weatherLayers.update.UpdateOverlaySizeUseCase;
 import usecase.weatherLayers.update.UpdateOverlayUseCase;
 import usecase.maptime.UpdateMapTimeOutputBoundary;
 import usecase.maptime.UpdateMapTimeUseCase;
-import view.ChangeWeatherLayersView;
-import view.DisplayOverlayView;
-import view.MapOverlayStructureView;
-import view.ProgramTimeView;
+import view.*;
 import interfaceadapter.maptime.programtime.ProgramTimeViewModel;
 import dataaccessinterface.TileRepository;
 import dataaccessobjects.CachedTileRepository;
@@ -55,7 +52,7 @@ public class AppBuilder {
     private final ProgramTime programTime = new ProgramTime(Instant.now());
     private final TileRepository tileRepository = new CachedTileRepository(100); // TODO: change cache size
     private final OverlayManager overlayManager = new OverlayManager(Constants.DEFAULT_MAP_WIDTH,
-            Constants.DEFAULT_MAP_HEIGHT);
+            Constants.DEFAULT_MAP_HEIGHT, tileRepository);
     private final Viewport viewport = new Viewport(300,300,Constants.DEFAULT_MAP_WIDTH,
             0, 6, 0, Constants.DEFAULT_MAP_HEIGHT);
 
