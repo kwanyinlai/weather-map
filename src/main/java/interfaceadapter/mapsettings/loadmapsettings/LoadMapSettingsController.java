@@ -6,29 +6,31 @@ import usecase.mapsettings.loadmapsettings.LoadMapSettingsInputData;
 /**
  * Controller for the "load map settings" use case.
  *
- * <p>The view calls this when it wants to restore the last saved map state.</p>
+ * <p>Called by the UI layer when the map view needs to restore the last
+ * saved state. It translates the UI request into an input data object
+ * and delegates to the interactor.</p>
  */
-public class LoadMapSettingsController {
+public final class LoadMapSettingsController {
 
-    private final LoadMapSettingsInputBoundary inputBoundary;
+    private final LoadMapSettingsInputBoundary loadMapSettingsInputBoundary;
 
     /**
-     * Constructs a controller that delegates to the given use case input boundary.
+     * Constructs a controller with the given input boundary.
      *
-     * @param inputBoundary the "load map settings" use case entry point
+     * @param loadMapSettingsInputBoundary the interactor for loading map settings
      */
-    public LoadMapSettingsController(LoadMapSettingsInputBoundary inputBoundary) {
-        this.inputBoundary = inputBoundary;
+    public LoadMapSettingsController(LoadMapSettingsInputBoundary loadMapSettingsInputBoundary) {
+        this.loadMapSettingsInputBoundary = loadMapSettingsInputBoundary;
     }
 
     /**
-     * Triggers a load of the last saved map settings.
+     * Triggers the "load map settings" use case.
      *
-     * <p>Typical usage from the UI layer is to call this after the map view
-     * is ready to be centered/zoomed.</p>
+     * <p>Currently, no parameters are required, so an empty
+     * {@link LoadMapSettingsInputData} is created and passed to the interactor.</p>
      */
     public void loadMapSettings() {
         LoadMapSettingsInputData inputData = new LoadMapSettingsInputData();
-        inputBoundary.loadMapSettings(inputData);
+        loadMapSettingsInputBoundary.loadMapSettings(inputData);
     }
 }

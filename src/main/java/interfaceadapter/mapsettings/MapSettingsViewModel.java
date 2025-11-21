@@ -1,189 +1,174 @@
 package interfaceadapter.mapsettings;
 
-import java.beans.PropertyChangeListener;
-import java.beans.PropertyChangeSupport;
+import interfaceadapter.ViewModel;
 
 /**
- * View model for map settings (saved center and zoom).
+ * ViewModel for the map settings screen.
  *
- * <p>This class sits in the interface-adapter layer and holds the state that
- * map-related views care about:
- * <ul>
- *     <li>Saved center latitude/longitude</li>
- *     <li>Saved zoom level</li>
- *     <li>Whether any saved settings exist</li>
- *     <li>A user-facing error message (if any)</li>
- * </ul>
- *
- * <p>Presenters write into this view model, and Swing views listen for
- * property change events and redraw themselves when the state changes.</p>
+ * <p>This class extends the generic {@link ViewModel} and specializes it
+ * for holding the current / last-saved map center and zoom, plus simple
+ * status information such as whether settings exist and any error message.</p>
  */
-public class MapSettingsViewModel {
+public final class MapSettingsViewModel
+        extends ViewModel<MapSettingsViewModel.MapSettingsState> {
 
     /**
-     * Property name fired when the saved map settings (center/zoom/exists)
-     * change.
+     * Logical name for this view (useful if you switch between multiple views).
      */
-    public static final String MAP_SETTINGS_PROPERTY = "mapSettings";
+    public static final String VIEW_NAME = "mapSettings";
 
     /**
-     * Property name fired when the error message changes.
+     * Property name used when firing state change events.
      */
-    public static final String ERROR_PROPERTY = "errorMessage";
-
-    private final PropertyChangeSupport support = new PropertyChangeSupport(this);
-
-    // Saved settings state.
-    private Double centerLatitude;
-    private Double centerLongitude;
-    private Integer zoomLevel;
-    private boolean hasSavedSettings;
-
-    // Error state.
-    private String errorMessage;
+    public static final String STATE_PROPERTY = "state";
 
     /**
-     * Immutable snapshot of the map settings portion of the view model.
-     * Used as the "old" and "new" values in MAP_SETTINGS_PROPERTY events.
+     * Creates a MapSettingsViewModel with a default initial state.
+     * By default, we assume there are no saved settings yet.
+     */
+    public MapSettingsViewModel() {
+        super(VIEW_NAME);
+        // Default: no saved settings, dummy coordinates/zoom, no error.
+        setState(new MapSettingsState(
+                false,   // hasSavedSettings
+                0.0,     // centerLatitude
+                0.0,     // centerLongitude
+                1,       // zoomLevel
+                null     // errorMessage
+        ));
+    }
+
+    /**
+     * Updates the map settings in the state and notifies listeners.
+     *
+     * <p>Typical use: called by the presenter when settings are successfully
+     * loaded from disk, or after the user changes the map and the app
+     * wishes to reflect that in the UI.</p>
+     *
+     * @param centerLatitude   latitude of the map center
+     * @param centerLongitude  longitude of the map center
+     * @param zoomLevel        zoom level
+     * @param hasSavedSettings whether these settings come from a saved state
+     *                         (true) or are just defaults (false)
+     */
+    public void setMapSettings(double centerLatitude,
+                               double centerLongitude,
+                               int zoomLevel,
+                               boolean hasSavedSettings) {
+
+        MapSettingsState current = getState();
+        String currentError = current == null ? null : current.getErrorMessage();
+
+        MapSettingsState newState = new MapSettingsState(
+                hasSavedSettings,
+                centerLatitude,
+                centerLongitude,
+                zoomLevel,
+                currentError
+        );
+
+        setState(newState);
+        firePropertyChange(STATE_PROPERTY);
+    }
+
+    /**
+     * Updates only the error message in the state and notifies listeners.
+     *
+     * <p>Typical use: called by the presenter when loading/saving settings
+     * fails for some reason.</p>
+     *
+     * @param errorMessage the new error message, or {@code null} to clear it
+     */
+    public void setErrorMessage(String errorMessage) {
+        MapSettingsState current = getState();
+
+        boolean hasSavedSettings =
+                current != null && current.hasSavedSettings();
+        double lat =
+                current != null ? current.getCenterLatitude() : 0.0;
+        double lon =
+                current != null ? current.getCenterLongitude() : 0.0;
+        int zoom =
+                current != null ? current.getZoomLevel() : 1;
+
+        MapSettingsState newState = new MapSettingsState(
+                hasSavedSettings,
+                lat,
+                lon,
+                zoom,
+                errorMessage
+        );
+
+        setState(newState);
+        firePropertyChange(STATE_PROPERTY);
+    }
+
+    /**
+     * Immutable state object representing everything the map settings view
+     * needs to render itself.
      */
     public static final class MapSettingsState {
-        public final Double centerLatitude;
-        public final Double centerLongitude;
-        public final Integer zoomLevel;
-        public final boolean hasSavedSettings;
 
-        public MapSettingsState(Double centerLatitude,
-                                Double centerLongitude,
-                                Integer zoomLevel,
-                                boolean hasSavedSettings) {
+        private final boolean hasSavedSettings;
+        private final double centerLatitude;
+        private final double centerLongitude;
+        private final int zoomLevel;
+        private final String errorMessage;
+
+        /**
+         * Creates a new map settings state.
+         *
+         * @param hasSavedSettings whether settings have been successfully loaded/saved before
+         * @param centerLatitude   latitude of the map center
+         * @param centerLongitude  longitude of the map center
+         * @param zoomLevel        zoom level
+         * @param errorMessage     optional error message, or null if no error
+         */
+        public MapSettingsState(boolean hasSavedSettings,
+                                double centerLatitude,
+                                double centerLongitude,
+                                int zoomLevel,
+                                String errorMessage) {
+            this.hasSavedSettings = hasSavedSettings;
             this.centerLatitude = centerLatitude;
             this.centerLongitude = centerLongitude;
             this.zoomLevel = zoomLevel;
-            this.hasSavedSettings = hasSavedSettings;
+            this.errorMessage = errorMessage;
         }
-    }
 
-    /**
-     * Creates an immutable snapshot of the current map settings state.
-     */
-    private MapSettingsState snapshot() {
-        return new MapSettingsState(centerLatitude, centerLongitude, zoomLevel, hasSavedSettings);
-    }
+        /**
+         * Returns whether valid saved settings exist.
+         */
+        public boolean hasSavedSettings() {
+            return hasSavedSettings;
+        }
 
-    // ===== Getters used by the view =====
+        /**
+         * Returns the center latitude.
+         */
+        public double getCenterLatitude() {
+            return centerLatitude;
+        }
 
-    /**
-     * @return latitude of the saved map center, or {@code null} if none.
-     */
-    public Double getCenterLatitude() {
-        return centerLatitude;
-    }
+        /**
+         * Returns the center longitude.
+         */
+        public double getCenterLongitude() {
+            return centerLongitude;
+        }
 
-    /**
-     * @return longitude of the saved map center, or {@code null} if none.
-     */
-    public Double getCenterLongitude() {
-        return centerLongitude;
-    }
+        /**
+         * Returns the zoom level.
+         */
+        public int getZoomLevel() {
+            return zoomLevel;
+        }
 
-    /**
-     * @return saved zoom level, or {@code null} if none.
-     */
-    public Integer getZoomLevel() {
-        return zoomLevel;
-    }
-
-    /**
-     * @return true if saved settings exist, false otherwise.
-     */
-    public boolean hasSavedSettings() {
-        return hasSavedSettings;
-    }
-
-    /**
-     * @return current error message, or {@code null} if there is no error.
-     */
-    public String getErrorMessage() {
-        return errorMessage;
-    }
-
-    // ===== Mutations used by presenters =====
-
-    /**
-     * Sets the saved map settings (center + zoom) and marks that saved
-     * settings exist.
-     *
-     * <p>Typical caller: {@code LoadMapSettingsPresenter.presentLoadedSettings(...)}.</p>
-     *
-     * @param latitude  latitude of saved map center
-     * @param longitude longitude of saved map center
-     * @param zoomLevel saved zoom level
-     */
-    public void setMapSettings(double latitude, double longitude, int zoomLevel) {
-        MapSettingsState oldState = snapshot();
-
-        this.centerLatitude = latitude;
-        this.centerLongitude = longitude;
-        this.zoomLevel = zoomLevel;
-        this.hasSavedSettings = true;
-
-        MapSettingsState newState = snapshot();
-        support.firePropertyChange(MAP_SETTINGS_PROPERTY, oldState, newState);
-    }
-
-    /**
-     * Clears any saved settings and marks that none are available.
-     *
-     * <p>Typical caller: {@code LoadMapSettingsPresenter.presentNoSavedSettings()}.</p>
-     */
-    public void clearSettings() {
-        MapSettingsState oldState = snapshot();
-
-        this.centerLatitude = null;
-        this.centerLongitude = null;
-        this.zoomLevel = null;
-        this.hasSavedSettings = false;
-
-        MapSettingsState newState = snapshot();
-        support.firePropertyChange(MAP_SETTINGS_PROPERTY, oldState, newState);
-    }
-
-    /**
-     * Updates the current error message and notifies listeners.
-     *
-     * <p>Typical callers:
-     * <ul>
-     *     <li>{@code LoadMapSettingsPresenter.presentLoadSettingsFailure(...)} </li>
-     *     <li>{@code SaveMapSettingsPresenter.presentSaveSettingsFailure(...)} </li>
-     *     <li>{@code SaveMapSettingsPresenter.presentSavedSettings(...)} (to clear errors)</li>
-     * </ul>
-     * </p>
-     *
-     * @param newErrorMessage new error message, or {@code null} to clear
-     */
-    public void setErrorMessage(String newErrorMessage) {
-        String old = this.errorMessage;
-        this.errorMessage = newErrorMessage;
-        support.firePropertyChange(ERROR_PROPERTY, old, newErrorMessage);
-    }
-
-    // ===== Listener management =====
-
-    /**
-     * Registers a listener for property change events.
-     *
-     * @param listener listener to register
-     */
-    public void addPropertyChangeListener(PropertyChangeListener listener) {
-        support.addPropertyChangeListener(listener);
-    }
-
-    /**
-     * Unregisters a previously registered property change listener.
-     *
-     * @param listener listener to remove
-     */
-    public void removePropertyChangeListener(PropertyChangeListener listener) {
-        support.removePropertyChangeListener(listener);
+        /**
+         * Returns the current error message, or null if none.
+         */
+        public String getErrorMessage() {
+            return errorMessage;
+        }
     }
 }

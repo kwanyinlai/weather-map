@@ -5,41 +5,37 @@ import usecase.mapsettings.savemapsettings.SaveMapSettingsInputData;
 
 /**
  * Controller for the "save map settings" use case.
- * <p>
- * The view calls this when the user wants to persist the current map view
- * (center latitude/longitude and zoom level).
+ *
+ * <p>Called by the UI when the user changes the map view and the new
+ * state should be persisted.</p>
  */
-public class SaveMapSettingsController {
+public final class SaveMapSettingsController {
 
-    private final SaveMapSettingsInputBoundary inputBoundary;
+    private final SaveMapSettingsInputBoundary saveMapSettingsInputBoundary;
 
     /**
-     * Constructs a controller that delegates to the given use case
-     * input boundary.
+     * Constructs a controller with the given input boundary.
      *
-     * @param inputBoundary the "save map settings" use case entry point
+     * @param saveMapSettingsInputBoundary the interactor for saving map settings
      */
-    public SaveMapSettingsController(SaveMapSettingsInputBoundary inputBoundary) {
-        this.inputBoundary = inputBoundary;
+    public SaveMapSettingsController(SaveMapSettingsInputBoundary saveMapSettingsInputBoundary) {
+        this.saveMapSettingsInputBoundary = saveMapSettingsInputBoundary;
     }
 
     /**
-     * Saves the current map settings.
-     * <p>
-     * Typical usage from the UI layer:
-     * <pre>
-     * saveMapSettingsController.saveMapSettings(currentLat, currentLon, currentZoom);
-     * </pre>
+     * Triggers the "save map settings" use case with the given map state.
      *
      * @param centerLatitude  current map center latitude
      * @param centerLongitude current map center longitude
-     * @param zoomLevel       current map zoom level
+     * @param zoomLevel       current zoom level
      */
     public void saveMapSettings(double centerLatitude,
                                 double centerLongitude,
                                 int zoomLevel) {
+
         SaveMapSettingsInputData inputData =
                 new SaveMapSettingsInputData(centerLatitude, centerLongitude, zoomLevel);
-        inputBoundary.saveMapSettings(inputData);
+
+        saveMapSettingsInputBoundary.saveMapSettings(inputData);
     }
 }
