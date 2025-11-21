@@ -21,6 +21,7 @@ public class TileJobSystem {
 
     private void processJob(TileJob job){
         try {
+
             BufferedImage image = CachedTileRepository.getInstance().getTileImageData(job.getTile());
             job.getFuture().component2().complete(image);
         } catch (TileNotFoundException e) {
