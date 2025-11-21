@@ -2,67 +2,60 @@ package interfaceadapter.bookmark.addbookmark;
 
 import entity.BookmarkedLocation;
 import interfaceadapter.bookmark.BookmarksViewModel;
+import interfaceadapter.bookmark.BookmarksViewModel.BookmarksState;
 import usecase.bookmark.addbookmark.AddBookmarkOutputBoundary;
 import usecase.bookmark.addbookmark.AddBookmarkOutputData;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
  * Presenter for the "add bookmark" use case.
- * <p>
- * This class converts the raw output data from the use case into
- * updates on the {@link BookmarksViewModel}, which the UI listens to.
- * It does not know anything about Swing or specific UI widgets.
+ *
+ * <p>Transforms the output of the add–bookmark interactor into updates
+ * on the {@link BookmarksViewModel}, which the UI listens to.</p>
  */
-public class AddBookmarkPresenter implements AddBookmarkOutputBoundary {
+public final class AddBookmarkPresenter implements AddBookmarkOutputBoundary {
 
     private final BookmarksViewModel viewModel;
 
     /**
-     * Creates a presenter that will update the given view model.
+     * Constructs a presenter with the given bookmarks view model.
      *
-     * @param viewModel shared view model used by bookmark-related views
+     * @param viewModel the view model representing the bookmarks in the UI
      */
     public AddBookmarkPresenter(BookmarksViewModel viewModel) {
         this.viewModel = viewModel;
     }
 
-    /**
-     * Called by the use case when a bookmark has been successfully added.
-     * <p>
-     * The presenter converts the {@link AddBookmarkOutputData} into a
-     * {@link BookmarkedLocation} and appends it to the list exposed by
-     * the view model.
-     *
-     * @param outputData data describing the newly added bookmark
-     */
     @Override
     public void presentAddedBookmark(AddBookmarkOutputData outputData) {
-        BookmarkedLocation newBookmark =
-                new BookmarkedLocation(
-                        outputData.getName(),
-                        outputData.getLatitude(),
-                        outputData.getLongitude()
-                );
+        // Convert the output data into a BookmarkedLocation entity.
+        BookmarkedLocation added = new BookmarkedLocation(
+                outputData.getName(),
+                outputData.getLatitude(),
+                outputData.getLongitude()
+        );
 
-        List<BookmarkedLocation> updated = new ArrayList<>(viewModel.getBookmarks());
-        updated.add(newBookmark);
+        // Start from the current list of bookmarks (if any) and append the new one.
+        BookmarksState currentState = viewModel.getState();
+        List<BookmarkedLocation> current =
+                (currentState == null || currentState.getBookmarks() == null)
+                        ? Collections.emptyList()
+                        : currentState.getBookmarks();
+
+        List<BookmarkedLocation> updated = new ArrayList<>(current);
+        updated.add(added);
 
         viewModel.setBookmarks(updated);
-        viewModel.setErrorMessage(null); // clear any previous error
+        // Clear any previous error message now that the operation succeeded.
+        viewModel.setErrorMessage(null);
     }
 
-    /**
-     * Called by the use case when adding a bookmark fails.
-     * <p>
-     * The presenter simply forwards the error message to the view model,
-     * which allows the UI to display it to the user.
-     *
-     * @param errorMessage user-friendly error message
-     */
     @Override
     public void presentAddBookmarkFailure(String errorMessage) {
+        // Keep the existing list of bookmarks but expose the error.
         viewModel.setErrorMessage(errorMessage);
     }
 }

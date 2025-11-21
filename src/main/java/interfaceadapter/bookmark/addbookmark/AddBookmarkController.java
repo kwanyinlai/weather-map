@@ -4,40 +4,36 @@ import usecase.bookmark.addbookmark.AddBookmarkInputBoundary;
 import usecase.bookmark.addbookmark.AddBookmarkInputData;
 
 /**
- * Controller for the "add bookmark" flow.
- * <p>
- * This class lives in the interface-adapter layer and translates
- * UI-level operations (e.g., a user clicking an "Add bookmark" button)
- * into calls to the {@link AddBookmarkInputBoundary} use case.
+ * Controller for the "add bookmark" use case.
+ *
+ * <p>Called by the UI layer when the user requests to add a new bookmark.
+ * It translates primitive input values into an {@link AddBookmarkInputData}
+ * object and delegates the work to the use case interactor via the
+ * {@link AddBookmarkInputBoundary}.</p>
  */
-public class AddBookmarkController {
+public final class AddBookmarkController {
 
-    private final AddBookmarkInputBoundary inputBoundary;
+    private final AddBookmarkInputBoundary addBookmarkInputBoundary;
 
     /**
-     * Constructs a controller that delegates to the given use case input boundary.
+     * Constructs a controller with the given input boundary.
      *
-     * @param inputBoundary the "add bookmark" use case entry point
+     * @param addBookmarkInputBoundary the interactor for adding bookmarks
      */
-    public AddBookmarkController(AddBookmarkInputBoundary inputBoundary) {
-        this.inputBoundary = inputBoundary;
+    public AddBookmarkController(AddBookmarkInputBoundary addBookmarkInputBoundary) {
+        this.addBookmarkInputBoundary = addBookmarkInputBoundary;
     }
 
     /**
-     * Requests that a new bookmark be added for the specified location.
-     * <p>
-     * Typical usage from the UI layer:
-     * <pre>
-     * addBookmarkController.addBookmark(name, latitude, longitude);
-     * </pre>
+     * Triggers the "add bookmark" use case.
      *
-     * @param name      human-readable name for the bookmark
-     * @param latitude  latitude of the location
-     * @param longitude longitude of the location
+     * @param name      the user-visible name of the bookmark
+     * @param latitude  the latitude of the bookmarked location
+     * @param longitude the longitude of the bookmarked location
      */
     public void addBookmark(String name, double latitude, double longitude) {
         AddBookmarkInputData inputData =
                 new AddBookmarkInputData(name, latitude, longitude);
-        inputBoundary.addBookmark(inputData);
+        addBookmarkInputBoundary.addBookmark(inputData);
     }
 }
