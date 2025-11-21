@@ -3,23 +3,14 @@ package usecase.mapinteraction;
 import entity.Viewport;
 
 public class PanAndZoomOutputData {
-    private final Viewport updatedViewport;
-    private final boolean isZoom;
-    private final double dx;
-    private final double dy;
+    private final Viewport viewport;
+    private final boolean updated;
 
-    public PanAndZoomOutputData(Viewport newViewport, boolean isZoom, double dx, double dy) {
-        this.updatedViewport = newViewport;
-        this.isZoom = isZoom;
-        this.dx = dx;
-        this.dy = dy;
+    public PanAndZoomOutputData(Viewport viewport, boolean updated) {
+        this.viewport = viewport;
+        this.updated = updated;
     }
 
-    public boolean isZoom() { return isZoom; }
-    public double getDx() { return dx; }
-    public double getDy() { return dy; }
-
-    public Viewport getUpdatedViewport() {
-        return updatedViewport;
-    }
+    public Viewport getViewport() { return viewport; }
+    public boolean isUpdated() { return updated; }
 }
