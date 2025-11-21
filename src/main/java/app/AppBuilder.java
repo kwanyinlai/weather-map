@@ -11,6 +11,7 @@ import interfaceadapter.maptime.programtime.ProgramTimeController;
 import interfaceadapter.maptime.programtime.ProgramTimePresenter;
 import interfaceadapter.maptime.timeanimation.TimeAnimationController;
 import interfaceadapter.weatherLayers.*;
+import org.openstreetmap.gui.jmapviewer.JMapViewer;
 import usecase.maptime.UpdateMapTimeInputBoundary;
 import usecase.weatherLayers.layers.*;
 import usecase.weatherLayers.update.UpdateOverlayOutputBoundary;
@@ -53,14 +54,15 @@ public class AppBuilder {
 
 
     private MapOverlayStructureView mapOverlayStructure;
+    private JMapViewer mapViewer = new JMapViewer();
 
     // initialising core entities
     private final ProgramTime programTime = new ProgramTime(Instant.now());
     private final TileRepository tileRepository = new CachedTileRepository(100); // TODO: change cache size
     private final OverlayManager overlayManager = new OverlayManager(Constants.DEFAULT_MAP_WIDTH,
             Constants.DEFAULT_MAP_HEIGHT);
-    private final Viewport viewport = new Viewport(300,300,Constants.DEFAULT_MAP_WIDTH,
-            0, 6, 0, Constants.DEFAULT_MAP_HEIGHT);
+    private final Viewport viewport = new Viewport(000,000,Constants.DEFAULT_MAP_WIDTH,
+            0, 6, 0, 584);
     private PanAndZoomView panAndZoomView;
     private MapViewModel mapViewModel;
     private PanAndZoomPresenter panAndZoomPresenter;
@@ -81,7 +83,7 @@ public class AppBuilder {
 
     public AppBuilder addChangeOpacityView(){
         weatherLayersViewModel = new WeatherLayersViewModel(0.5);
-        changeWeatherView = new ChangeWeatherLayersView(weatherLayersViewModel);
+        changeWeatherView = new ChangeWeatherLayersView(weatherLayersViewModel, mapViewer);
         borderPanel.add(changeWeatherView, BorderLayout.EAST);
         return this;
     }
@@ -124,6 +126,7 @@ public class AppBuilder {
         changeWeatherView.addLayerController(layersController);
         UpdateOverlayController updateCont = new UpdateOverlayController(updateOverlayUseCase);
         changeWeatherView.addUpdateController(updateCont);
+        viewport.addListener(updateCont);
         return this;
     }
 
@@ -158,7 +161,7 @@ public class AppBuilder {
     public AppBuilder addPanZoomView() {
 
         mapViewModel = new MapViewModel();
-        panAndZoomView = new PanAndZoomView(mapViewModel);
+        panAndZoomView = new PanAndZoomView(mapViewModel, mapViewer);
         panAndZoomPresenter = new PanAndZoomPresenter(
                 panAndZoomView.getMapViewer(),
                 mapViewModel

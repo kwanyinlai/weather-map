@@ -14,9 +14,9 @@ public class PanAndZoomView extends JPanel {
     private final JMapViewer mapViewer;
     private final MapViewModel  viewModel;
     private final JLabel errorLabel;
-    public PanAndZoomView(MapViewModel mapViewModel) {
+    public PanAndZoomView(MapViewModel mapViewModel, JMapViewer mapViewer) {
         this.viewModel = mapViewModel;
-        this.mapViewer = new JMapViewer();
+        this.mapViewer = mapViewer;
         this.errorLabel = new JLabel(" ");
         mapViewer.setZoomContolsVisible(true);
         mapViewer.setPreferredSize(new Dimension(600, 600));
