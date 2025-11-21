@@ -74,7 +74,6 @@ public final class UpdateOverlayUseCase implements UpdateOverlayInputBoundary, T
                     else {
                         tileCache.requestTile(tile, topLeft, botRight, viewport.getCentre(), programTime.getCurrentTime());
                     }
-                    this.overlayManager.drawTileToOverlay(topLeft, botRight, tile, tileImg);
                 }
             }
         }
