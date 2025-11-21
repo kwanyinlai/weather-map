@@ -22,12 +22,7 @@ public class CachedTileRepository implements TileRepository {
     private Map<WeatherTile, BufferedImage> tileCache;
     private final TileJobSystem tileJobSystem;
     private final List<TileCompletedListener> listeners = new ArrayList<>();
-
     private static CachedTileRepository instance;
-
-    public static CachedTileRepository getInstance(){
-        return instance;
-    }
 
 
     public void requestTile(WeatherTile tile, Vector topLeft, Vector botRight, Location viewportState){
@@ -56,7 +51,7 @@ public class CachedTileRepository implements TileRepository {
     /**
      * @param tileCacheSize The maximum cache size for the cache
      */
-    public CachedTileRepository(int tileCacheSize){
+    private CachedTileRepository(int tileCacheSize){
         tileCache = Collections.synchronizedMap(
                 new LinkedHashMap<WeatherTile, BufferedImage>(){
                     @Override
@@ -66,6 +61,13 @@ public class CachedTileRepository implements TileRepository {
                 }
         );
         tileJobSystem = new TileJobSystem(4);
+    }
+
+    public static CachedTileRepository getInstance(){
+        if (instance == null){
+            instance = new CachedTileRepository(200);
+        }
+        return instance;
     }
 
     /** Return the tile image data associated with the given parms
