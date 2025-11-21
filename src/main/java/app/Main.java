@@ -1,6 +1,5 @@
 package app;
 
-import app.AppBuilder;
 import javax.swing.*;
 
 public class Main {
@@ -9,6 +8,7 @@ public class Main {
         JFrame application = appBuilder
                 .addUpdateOverlayUseCase()
                 .createOverlayView()
+                .addPanZoomView()
                 .addMapOverlayView()
                 .addLegendView()
                 .addChangeOpacityView()

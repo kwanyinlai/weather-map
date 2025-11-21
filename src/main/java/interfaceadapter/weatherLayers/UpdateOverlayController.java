@@ -2,7 +2,10 @@ package interfaceadapter.weatherLayers;
 
 import usecase.weatherLayers.update.UpdateOverlayInputBoundary;
 
-public class UpdateOverlayController {
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+
+public class UpdateOverlayController implements PropertyChangeListener {
     private final UpdateOverlayInputBoundary input;
 
     public UpdateOverlayController(UpdateOverlayInputBoundary in){
@@ -11,6 +14,11 @@ public class UpdateOverlayController {
 
     public void update(){
         input.update();
+    }
+
+    @Override
+    public void propertyChange(PropertyChangeEvent e){
+        update();
     }
 
 }

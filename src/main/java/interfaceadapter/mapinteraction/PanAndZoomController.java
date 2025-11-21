@@ -2,7 +2,6 @@ package interfaceadapter.mapinteraction;
 
 import usecase.mapinteraction.PanAndZoomInputBoundary;
 import usecase.mapinteraction.PanAndZoomInputData;
-import usecase.mapinteraction.ZoomOutOfBoundsException;
 import org.openstreetmap.gui.jmapviewer.JMapViewer;
 import java.awt.event.*;
 
@@ -29,11 +28,7 @@ public class PanAndZoomController extends MouseAdapter implements MouseWheelList
     public void mouseWheelMoved(MouseWheelEvent e) {
         int zoomIncrement = e.getWheelRotation() < 0 ? 1 : -1;
         PanAndZoomInputData input = new PanAndZoomInputData(zoomIncrement);
-        try {
-            useCase.getBoundedZoom(input);
-        } catch (ZoomOutOfBoundsException ex) {
-            System.out.println("Zoom Out of Bounds");
-        }
+        useCase.handleZoom(input);
     }
 
     @Override
