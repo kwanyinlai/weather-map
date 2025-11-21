@@ -4,33 +4,30 @@ import usecase.bookmark.listbookmark.ListBookmarksInputBoundary;
 import usecase.bookmark.listbookmark.ListBookmarksInputData;
 
 /**
- * Controller for the "list bookmarks" flow.
- * <p>
- * This controller triggers the use case to retrieve all persisted bookmarks.
- * It does not know how the result will be displayed; that is the job of
- * the presenter and view model.
+ * Controller for the "list bookmarks" use case.
+ *
+ * <p>Called by the UI when the user navigates to the bookmarks view or
+ * refreshes it. This controller constructs an (empty) input data object
+ * and delegates to the interactor.</p>
  */
-public class ListBookmarksController {
+public final class ListBookmarksController {
 
-    private final ListBookmarksInputBoundary inputBoundary;
+    private final ListBookmarksInputBoundary listBookmarksInputBoundary;
 
     /**
-     * Constructs a controller that delegates to the "list bookmarks" use case.
+     * Constructs a controller with the given input boundary.
      *
-     * @param inputBoundary the use case entry point
+     * @param listBookmarksInputBoundary the interactor for listing bookmarks
      */
-    public ListBookmarksController(ListBookmarksInputBoundary inputBoundary) {
-        this.inputBoundary = inputBoundary;
+    public ListBookmarksController(ListBookmarksInputBoundary listBookmarksInputBoundary) {
+        this.listBookmarksInputBoundary = listBookmarksInputBoundary;
     }
 
     /**
-     * Requests that all current bookmarks be listed.
-     * <p>
-     * Typical usage from the UI layer is to call this on startup or when
-     * the bookmarks view needs to be refreshed.
+     * Triggers the "list bookmarks" use case.
      */
     public void listBookmarks() {
         ListBookmarksInputData inputData = new ListBookmarksInputData();
-        inputBoundary.listBookmarks(inputData);
+        listBookmarksInputBoundary.listBookmarks(inputData);
     }
 }

@@ -6,43 +6,34 @@ import usecase.bookmark.listbookmark.ListBookmarksOutputData;
 
 /**
  * Presenter for the "list bookmarks" use case.
- * <p>
- * This presenter receives the complete set of bookmarks from the use case
- * and pushes them into the {@link BookmarksViewModel}.
+ *
+ * <p>Transforms the output of the list–bookmarks interactor into updates
+ * on the {@link BookmarksViewModel}.</p>
  */
-public class ListBookmarksPresenter implements ListBookmarksOutputBoundary {
+public final class ListBookmarksPresenter implements ListBookmarksOutputBoundary {
 
     private final BookmarksViewModel viewModel;
 
     /**
-     * Creates a presenter that will write list results into the given view model.
+     * Constructs a presenter with the given bookmarks view model.
      *
-     * @param viewModel shared view model used by bookmark-related views
+     * @param viewModel the view model representing bookmarks in the UI
      */
     public ListBookmarksPresenter(BookmarksViewModel viewModel) {
         this.viewModel = viewModel;
     }
 
-    /**
-     * Called by the use case when bookmarks have been successfully loaded.
-     *
-     * @param outputData data describing the list of bookmarks to present
-     */
     @Override
     public void presentBookmarks(ListBookmarksOutputData outputData) {
-        // The output data already contains a List<BookmarkedLocation>.
+        // Simply push the list of bookmarks into the view model.
         viewModel.setBookmarks(outputData.getBookmarks());
+        // Clear any error if listing succeeded.
         viewModel.setErrorMessage(null);
     }
 
-    /**
-     * Called when listing bookmarks fails (for example if there is a
-     * persistence error).
-     *
-     * @param errorMessage user-friendly error message
-     */
     @Override
     public void presentListBookmarksFailure(String errorMessage) {
+        // Preserve the existing bookmarks (if desired) and only set the error.
         viewModel.setErrorMessage(errorMessage);
     }
 }
