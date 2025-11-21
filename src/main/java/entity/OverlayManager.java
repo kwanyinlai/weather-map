@@ -1,17 +1,23 @@
 package entity;
 
+import dataaccessinterface.TileNotFoundException;
+import dataaccessinterface.TileRepository;
+import dataaccessobjects.tilejobs.TileCompletedListener;
+
 import java.awt.*;
 import java.awt.image.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-public class OverlayManager {
+public class OverlayManager implements TileCompletedListener {
     private final ArrayList<WeatherType> types;
     private final ArrayList<Float> opacity;
     private WeatherType selected;
     private BufferedImage overlay;
+    private ArrayList<WeatherTile> pendingTiles;
 
-    public OverlayManager(int x, int y){
+
+    public OverlayManager(int x, int y, TileRepository tileRepository){
         this.types = new ArrayList<>();
         this.types.add(WeatherType.Tmp2m);
         this.types.add(WeatherType.Precip);
@@ -20,7 +26,7 @@ public class OverlayManager {
         this.opacity = new ArrayList<>(Arrays.asList((float)0.5, (float)0.5, (float)0.5, (float)0.5));
         this.selected = WeatherType.Tmp2m;
         this.overlay = new BufferedImage(x, y, BufferedImage.TYPE_INT_ARGB);
-
+        tileRepository.addListener(this);
     }
 
     public void changeSize(Dimension size){
@@ -60,9 +66,8 @@ public class OverlayManager {
      @param tile - the metadata of the tile
      @param tileImg - the bufferedImage of the tile
      **/
-    public void drawTileToOverlay(Vector tl, Vector br, WeatherTile tile, BufferedImage tileImg){
+    private void drawTileToOverlay(Vector tl, Vector br, WeatherTile tile, BufferedImage tileImg){
         //
-
         TileCoords tc = tile.getCoordinates();
         //convert tile location to Vector for convenience.
         Vector tileCoord = new Vector(tc.getX(),tc.getY());
@@ -98,5 +103,16 @@ public class OverlayManager {
 
     }
 
+    @Override
+    public void onTileCompleted(IncompleteTile tile, BufferedImage tileImage) {
+        drawTileToOverlay(tile.getTopLeft(), tile.getBotRight(), tile.getWeatherTile(), tileImage);
+        // TODO: we'll need to check if the viewport state is the same as right now
+    }
+
+    @Override
+    public void onTileFailed(IncompleteTile tile, TileNotFoundException e) {
+        BufferedImage tileImg = new BufferedImage(256, 256, BufferedImage.TYPE_3BYTE_BGR);
+        drawTileToOverlay(tile.getTopLeft(), tile.getBotRight(), tile.getWeatherTile(), tileImg);
+    }
 }
 
