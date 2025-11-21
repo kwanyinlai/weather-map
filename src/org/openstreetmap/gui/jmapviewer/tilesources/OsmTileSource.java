@@ -33,6 +33,10 @@ public class OsmTileSource {
             serverNum = (serverNum + 1) % SERVER.length;
             return url;
         }
+        @Override
+        public int getMaxZoom() {
+            return 10;
+        }
     }
 
     /**
@@ -40,7 +44,7 @@ public class OsmTileSource {
      */
     public static class CycleMap extends AbstractOsmTileSource {
 
-        private static final String API_KEY = "API_KEY_HERE";
+        private static final String API_KEY = (String) System.getenv("API_KEY");
 
         private static final String PATTERN = "https://%s.tile.thunderforest.com/cycle";
 
@@ -64,12 +68,12 @@ public class OsmTileSource {
 
         @Override
         public int getMaxZoom() {
-            return 18;
+            return 10;
         }
 
         @Override
         public String getTileUrl(int zoom, int tilex, int tiley) throws IOException {
-            return this.getBaseUrl() + getTilePath(zoom, tilex, tiley); // + "?apikey=" + API_KEY;
+            return this.getBaseUrl() + getTilePath(zoom, tilex, tiley) + "?apikey=" + API_KEY;
         }
 
         @Override
@@ -88,7 +92,7 @@ public class OsmTileSource {
      */
     public static class TransportMap extends AbstractOsmTileSource {
 
-        private static final String API_KEY = "API_KEY_HERE";
+        private static final String API_KEY = (String) System.getenv("API_KEY");
 
         private static final String PATTERN = "https://%s.tile.thunderforest.com/transport";
 
@@ -112,12 +116,12 @@ public class OsmTileSource {
 
         @Override
         public int getMaxZoom() {
-            return 18;
+            return 10;
         }
 
         @Override
         public String getTileUrl(int zoom, int tilex, int tiley) throws IOException {
-            return this.getBaseUrl() + getTilePath(zoom, tilex, tiley); // + "?apikey=" + API_KEY;
+            return this.getBaseUrl() + getTilePath(zoom, tilex, tiley) + "?apikey=" + API_KEY;
         }
 
         @Override
@@ -136,7 +140,7 @@ public class OsmTileSource {
      */
     public static class LandscapeMap extends AbstractOsmTileSource {
 
-        private static final String API_KEY = "API_KEY_HERE";
+        private static final String API_KEY = (String) System.getenv("API_KEY");
 
         private static final String PATTERN = "https://%s.tile.thunderforest.com/landscape";
 
@@ -160,12 +164,12 @@ public class OsmTileSource {
 
         @Override
         public int getMaxZoom() {
-            return 18;
+            return 10;
         }
 
         @Override
         public String getTileUrl(int zoom, int tilex, int tiley) throws IOException {
-            return this.getBaseUrl() + getTilePath(zoom, tilex, tiley); // + "?apikey=" + API_KEY;
+            return this.getBaseUrl() + getTilePath(zoom, tilex, tiley) + "?apikey=" + API_KEY;
         }
 
         @Override
@@ -184,7 +188,7 @@ public class OsmTileSource {
      */
     public static class OutdoorsMap extends AbstractOsmTileSource {
 
-        private static final String API_KEY = "API_KEY_HERE";
+        private static final String API_KEY = (String) System.getenv("API_KEY");
 
         private static final String PATTERN = "https://%s.tile.thunderforest.com/outdoors";
 
@@ -208,12 +212,60 @@ public class OsmTileSource {
 
         @Override
         public int getMaxZoom() {
-            return 18;
+            return 10;
         }
 
         @Override
         public String getTileUrl(int zoom, int tilex, int tiley) throws IOException {
-            return this.getBaseUrl() + getTilePath(zoom, tilex, tiley); // + "?apikey=" + API_KEY;
+            return this.getBaseUrl() + getTilePath(zoom, tilex, tiley) + "?apikey=" + API_KEY;
+        }
+
+        @Override
+        public String getAttributionText(int zoom, ICoordinate topLeft, ICoordinate botRight) {
+            return "Maps © Thunderforest, Data © OpenStreetMap contributors";
+        }
+
+        @Override
+        public String getAttributionLinkURL() {
+            return "http://www.thunderforest.com/";
+        }
+    }
+
+    /**
+     * The "Mobile-atlas Map" OSM tile source.
+     */
+    public static class MobileAtlas extends AbstractOsmTileSource {
+
+        private static final String API_KEY = (String) System.getenv("API_KEY");
+
+        private static final String PATTERN = "https://%s.tile.thunderforest.com/mobile-atlas";
+
+        private static final String[] SERVER = { "a", "b", "c" };
+
+        private int serverNum;
+
+        /**
+         * Constructs a new {@code OutdoorsMap} tile source.
+         */
+        public MobileAtlas() {
+            super("OSM MobileAtlas Map", PATTERN, "mobileatlasmap");
+        }
+
+        @Override
+        public String getBaseUrl() {
+            String url = String.format(this.baseUrl, new Object[] {SERVER[serverNum]});
+            serverNum = (serverNum + 1) % SERVER.length;
+            return url;
+        }
+
+        @Override
+        public int getMaxZoom() {
+            return 10;
+        }
+
+        @Override
+        public String getTileUrl(int zoom, int tilex, int tiley) throws IOException {
+            return this.getBaseUrl() + getTilePath(zoom, tilex, tiley) + "?apikey=" + API_KEY;
         }
 
         @Override
