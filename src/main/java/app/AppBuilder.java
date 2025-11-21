@@ -158,19 +158,15 @@ public class AppBuilder {
     public AppBuilder addPanZoomView() {
         mapViewModel = new MapViewModel();
         panAndZoomView = new PanAndZoomView(mapViewModel);
-
-        // 初始化用例（直接操作Viewport，依赖其getSupport()实现事件通知）
         panAndZoomUseCase = new PanAndZoomUseCase(viewport);
-
-        // 初始化控制器（绑定视图交互与用例）
         panAndZoomController = new PanAndZoomController(
                panAndZoomUseCase,
                 panAndZoomView.getMapViewer()
         );
         panAndZoomView.setController(panAndZoomController);
         viewport.getSupport().addPropertyChangeListener(evt -> {
-            if (updateOverlayUseCase != null) { // 确保用例已初始化
-                updateOverlayUseCase.update(); // 调用你唯一的update方法
+            if (updateOverlayUseCase != null) {
+                updateOverlayUseCase.update();
             }
         });
 

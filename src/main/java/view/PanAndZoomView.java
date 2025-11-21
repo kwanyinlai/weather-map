@@ -22,7 +22,6 @@ public class PanAndZoomView extends JPanel {
 
     private void initMap() {
         mapViewer.setZoomContolsVisible(true);
-        // 保留默认鼠标监听器（不删除原生控制器）
         mapViewer.setPreferredSize(new Dimension(600, 600));
     }
 
@@ -31,6 +30,5 @@ public class PanAndZoomView extends JPanel {
     }
 
     public void setController(PanAndZoomController controller) {
-        // 绑定控制器（已通过构造函数注入）
     }
 }
