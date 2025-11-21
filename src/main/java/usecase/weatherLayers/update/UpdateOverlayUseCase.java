@@ -2,16 +2,20 @@ package usecase.weatherLayers.update;
 
 import dataaccessinterface.TileNotFoundException;
 import dataaccessinterface.TileRepository;
+import dataaccessobjects.tilejobs.TileCompletedListener;
 import entity.*;
 
 import java.awt.image.BufferedImage;
 
-public final class UpdateOverlayUseCase implements UpdateOverlayInputBoundary{
+public final class UpdateOverlayUseCase implements UpdateOverlayInputBoundary {
     private final OverlayManager overlayManager;
     private final TileRepository tileCache;
     private final ProgramTime time;
     private final Viewport viewport;
     private final UpdateOverlayOutputBoundary output;
+
+
+
 
     public UpdateOverlayUseCase(OverlayManager om, TileRepository tCache, ProgramTime time, Viewport vp,
                                 UpdateOverlayOutputBoundary output){
@@ -52,20 +56,12 @@ public final class UpdateOverlayUseCase implements UpdateOverlayInputBoundary{
                 if (x >= 0 && x < Math.pow(2, zoom) && y >= 0 && y < Math.pow(2, zoom)) {
                     TileCoords tc = new TileCoords(x, y, zoom);
                     WeatherTile tile = new WeatherTile(tc, this.time.getCurrentTime(), this.overlayManager.getSelected());
-                    BufferedImage tileImg;
-                    try {
-                        tileImg = this.tileCache.getTileImageData(tile);
-                    } catch (TileNotFoundException e) {
-                        tileImg = new BufferedImage(256, 256, BufferedImage.TYPE_3BYTE_BGR);
-                    }
-
-                    this.overlayManager.drawTileToOverlay(topLeft, botRight, tile, tileImg);
+                    tileCache.requestTile(tile, topLeft, botRight, viewport.getCentre());
                 }
             }
         }
         output.updateImage(new UpdateOverlayOutputData(overlayManager.getOverlay()));
     }
-
 }
 
 
