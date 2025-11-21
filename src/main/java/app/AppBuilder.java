@@ -156,19 +156,20 @@ public class AppBuilder {
         return this;
     }
     public AppBuilder addPanZoomView() {
-
         mapViewModel = new MapViewModel();
         panAndZoomView = new PanAndZoomView(mapViewModel);
-        panAndZoomPresenter = new PanAndZoomPresenter(
-                panAndZoomView.getMapViewer(),
-                mapViewModel
-        );
-        panAndZoomUseCase = new PanAndZoomUseCase(viewport, panAndZoomPresenter);
+        panAndZoomUseCase = new PanAndZoomUseCase(viewport);
         panAndZoomController = new PanAndZoomController(
-                panAndZoomUseCase,
+               panAndZoomUseCase,
                 panAndZoomView.getMapViewer()
         );
         panAndZoomView.setController(panAndZoomController);
+        viewport.getSupport().addPropertyChangeListener(evt -> {
+            if (updateOverlayUseCase != null) {
+                updateOverlayUseCase.update();
+            }
+        });
+
         return this;
     }
 
