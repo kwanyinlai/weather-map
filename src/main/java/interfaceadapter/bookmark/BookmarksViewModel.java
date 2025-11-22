@@ -9,23 +9,14 @@ import java.util.List;
 
 /**
  * ViewModel for the bookmarks screen.
- *
- * <p>This class extends the generic {@link ViewModel} used in the project and
- * specializes it for bookmark-related state. It exposes convenience methods
- * for presenters to update the list of bookmarks and any associated error
- * messages, and notifies any listeners via property change events.</p>
  */
-public final class BookmarksViewModel extends ViewModel<BookmarksViewModel.BookmarksState> {
+public final class BookmarksViewModel
+        extends ViewModel<BookmarksViewModel.BookmarksState> {
 
-    /**
-     * A logical name for this view. Useful if your application switches
-     * between multiple views.
-     */
     public static final String VIEW_NAME = "bookmarks";
 
     /**
      * The property name used when firing state change events.
-     * Listeners can check this name to know that the bookmark state has changed.
      */
     public static final String STATE_PROPERTY = "state";
 
@@ -34,15 +25,30 @@ public final class BookmarksViewModel extends ViewModel<BookmarksViewModel.Bookm
      */
     public BookmarksViewModel() {
         super(VIEW_NAME);
-        // Start with an empty list of bookmarks and no error.
+        // Empty list of bookmarks and no error.
         this.setState(new BookmarksState(Collections.emptyList(), null));
     }
 
     /**
-     * Updates the list of bookmarks in the state and notifies listeners.
-     *
-     * @param bookmarks the new list of bookmarks to display (may be null,
-     *                  in which case it is treated as an empty list)
+     * Returns the current bookmarks state (may be null before initialization).
+     */
+    @Override
+    public BookmarksState getState() {
+        return super.getState();
+    }
+
+    /**
+     * Sets the entire bookmarks state and notifies listeners.
+     */
+    @Override
+    public void setState(BookmarksState state) {
+        super.setState(state);
+        firePropertyChange(STATE_PROPERTY);
+    }
+
+    /**
+     * Convenience method for presenters: replace the bookmarks list while
+     * preserving the current error message (if any).
      */
     public void setBookmarks(List<BookmarkedLocation> bookmarks) {
         BookmarksState current = getState();
@@ -55,25 +61,21 @@ public final class BookmarksViewModel extends ViewModel<BookmarksViewModel.Bookm
         );
 
         setState(newState);
-        firePropertyChange(STATE_PROPERTY);
     }
 
     /**
-     * Updates the error message in the state (for example, when a persistence
-     * error occurs) and notifies listeners.
-     *
-     * @param errorMessage the new error message to display, or null to clear it
+     * Convenience method for presenters: update the error message while
+     * preserving the current bookmarks list.
      */
     public void setErrorMessage(String errorMessage) {
         BookmarksState current = getState();
-        List<BookmarkedLocation> currentBookmarks =
+        List<BookmarkedLocation> bookmarks =
                 (current == null || current.getBookmarks() == null)
                         ? Collections.emptyList()
                         : current.getBookmarks();
 
-        BookmarksState newState = new BookmarksState(currentBookmarks, errorMessage);
+        BookmarksState newState = new BookmarksState(bookmarks, errorMessage);
         setState(newState);
-        firePropertyChange(STATE_PROPERTY);
     }
 
     /**
@@ -88,12 +90,12 @@ public final class BookmarksViewModel extends ViewModel<BookmarksViewModel.Bookm
         /**
          * Creates a new bookmarks state.
          *
-         * @param bookmarks    the list of bookmarked locations to display
-         * @param errorMessage an optional error message for the UI to show,
-         *                     or null if there is no error
+         * @param bookmarks    list of bookmarked locations to display
+         * @param errorMessage optional error message, or null if none
          */
-        public BookmarksState(List<BookmarkedLocation> bookmarks, String errorMessage) {
-            // Internally keep a defensive copy to preserve immutability.
+        public BookmarksState(List<BookmarkedLocation> bookmarks,
+                              String errorMessage) {
+            // Defensive copy, then wrap as unmodifiable to keep the state immutable.
             this.bookmarks = (bookmarks == null)
                     ? Collections.emptyList()
                     : Collections.unmodifiableList(new ArrayList<>(bookmarks));
