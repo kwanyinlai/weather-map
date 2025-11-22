@@ -13,17 +13,17 @@ import java.util.List;
 /**
  * Presenter for the "remove bookmark" use case.
  *
- * <p>Applies the result of the remove–bookmark interactor to the
- * {@link BookmarksViewModel}.</p>
+ * <p>Updates the {@link BookmarksViewModel} when a bookmark is successfully
+ * removed or when removal fails.</p>
  */
 public final class RemoveBookmarkPresenter implements RemoveBookmarkOutputBoundary {
 
     private final BookmarksViewModel viewModel;
 
     /**
-     * Constructs a presenter with the given bookmarks view model.
+     * Creates a presenter that updates the given view model.
      *
-     * @param viewModel the view model representing bookmarks in the UI
+     * @param viewModel the bookmarks view model
      */
     public RemoveBookmarkPresenter(BookmarksViewModel viewModel) {
         this.viewModel = viewModel;
@@ -32,7 +32,7 @@ public final class RemoveBookmarkPresenter implements RemoveBookmarkOutputBounda
     @Override
     public void presentRemovedBookmark(RemoveBookmarkOutputData outputData) {
         if (!outputData.isRemoved()) {
-            // Defensive: if the use case reports no removal, expose a generic error.
+            // Interactor says nothing was removed; treat as a failure.
             viewModel.setErrorMessage("The bookmark could not be removed.");
             return;
         }
@@ -44,13 +44,14 @@ public final class RemoveBookmarkPresenter implements RemoveBookmarkOutputBounda
                         : currentState.getBookmarks();
 
         List<BookmarkedLocation> updated = new ArrayList<>();
-
         for (BookmarkedLocation bookmark : current) {
             boolean sameName = bookmark.getName().equals(outputData.getName());
-            boolean sameLat = Double.compare(bookmark.getLatitude(), outputData.getLatitude()) == 0;
-            boolean sameLon = Double.compare(bookmark.getLongitude(), outputData.getLongitude()) == 0;
+            boolean sameLat =
+                    Double.compare(bookmark.getLatitude(), outputData.getLatitude()) == 0;
+            boolean sameLon =
+                    Double.compare(bookmark.getLongitude(), outputData.getLongitude()) == 0;
 
-            // Skip the one that matches the removed bookmark.
+            // Skip the one that was removed.
             if (sameName && sameLat && sameLon) {
                 continue;
             }
@@ -64,7 +65,7 @@ public final class RemoveBookmarkPresenter implements RemoveBookmarkOutputBounda
 
     @Override
     public void presentRemoveBookmarkFailure(String errorMessage) {
-        // Keep the existing bookmarks but show the error.
+        // Show the error.
         viewModel.setErrorMessage(errorMessage);
     }
 }

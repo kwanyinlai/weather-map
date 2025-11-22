@@ -6,27 +6,28 @@ import usecase.bookmark.removebookmark.RemoveBookmarkInputData;
 /**
  * Controller for the "remove bookmark" use case.
  *
- * <p>Called by the UI layer when the user requests that a bookmark be
- * deleted. It translates primitive values into an input data object and
- * delegates to the interactor.</p>
+ * <p>Called by the UI layer when the user requests to delete a bookmark.
+ * It translates primitive input values into a
+ * {@link RemoveBookmarkInputData} object and delegates to the use case
+ * interactor.</p>
  */
 public final class RemoveBookmarkController {
 
     private final RemoveBookmarkInputBoundary removeBookmarkInputBoundary;
 
     /**
-     * Constructs a controller with the given input boundary.
+     * Creates a controller that delegates to the given input boundary.
      *
-     * @param removeBookmarkInputBoundary the interactor for removing bookmarks
+     * @param removeBookmarkInputBoundary the remove–bookmark use case interactor
      */
     public RemoveBookmarkController(RemoveBookmarkInputBoundary removeBookmarkInputBoundary) {
         this.removeBookmarkInputBoundary = removeBookmarkInputBoundary;
     }
 
     /**
-     * Triggers the "remove bookmark" use case.
+     * Requests that a bookmark be removed.
      *
-     * @param name      name of the bookmark to remove
+     * @param name      name of the bookmark
      * @param latitude  latitude of the bookmarked location
      * @param longitude longitude of the bookmarked location
      */
