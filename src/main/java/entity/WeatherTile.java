@@ -1,6 +1,7 @@
 package entity;
 import java.time.*;
 import java.time.format.DateTimeFormatter;
+import java.util.Objects;
 
 /** Class which represents a tile on the weather map overlay
  *
@@ -46,4 +47,18 @@ public class WeatherTile {
         return weatherType;
     }
 
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof WeatherTile) {
+            WeatherTile tile = (WeatherTile) obj;
+            return coordinates.equals(tile.getCoordinates()) && weatherType.equals(tile.getWeatherType())
+                && timestamp.equals(tile.getTimestamp());
+        }
+        return false;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(coordinates, weatherType, timestamp);
+    }
 }
