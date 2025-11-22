@@ -1,6 +1,7 @@
 package interfaceadapter.mapsettings.loadmapsettings;
 
 import interfaceadapter.mapsettings.MapSettingsViewModel;
+import interfaceadapter.mapsettings.MapSettingsViewModel.MapSettingsState;
 import usecase.mapsettings.loadmapsettings.LoadMapSettingsOutputBoundary;
 import usecase.mapsettings.loadmapsettings.LoadMapSettingsOutputData;
 
@@ -15,9 +16,9 @@ public final class LoadMapSettingsPresenter implements LoadMapSettingsOutputBoun
     private final MapSettingsViewModel viewModel;
 
     /**
-     * Constructs a presenter with the given view model.
+     * Creates a presenter that updates the given view model.
      *
-     * @param viewModel the view model that represents map settings in the UI
+     * @param viewModel the map settings view model
      */
     public LoadMapSettingsPresenter(MapSettingsViewModel viewModel) {
         this.viewModel = viewModel;
@@ -25,36 +26,32 @@ public final class LoadMapSettingsPresenter implements LoadMapSettingsOutputBoun
 
     @Override
     public void presentLoadedSettings(LoadMapSettingsOutputData outputData) {
-        // Populate the view model with the loaded settings.
-        viewModel.setMapSettings(
+        // We have valid saved settings: update coordinates and zoom.
+        viewModel.setSettings(
                 outputData.getCenterLatitude(),
                 outputData.getCenterLongitude(),
-                outputData.getZoomLevel(),
-                true   // we have saved settings
+                outputData.getZoomLevel()
         );
-
-        // Clear any previous error, since loading was successful.
-        viewModel.setErrorMessage(null);
+        // setSettings already sets errorMessage to null in the state.
     }
 
     @Override
     public void presentNoSavedSettings() {
-        // No saved settings exist: keep default coordinates but mark it.
-        // Defaults mirror MapSettingsViewModel's constructor.
-        viewModel.setMapSettings(
-                0.0,  // default latitude
-                0.0,  // default longitude
-                1,    // default zoom
-                false // no saved settings
+        // Represent the "no saved settings" situation explicitly:
+        // hasSavedSettings = false, neutral coordinates/zoom, no error.
+        MapSettingsState state = new MapSettingsState(
+                false,   // hasSavedSettings
+                0.0,     // centerLatitude
+                0.0,     // centerLongitude
+                1,       // zoomLevel
+                null     // errorMessage
         );
-
-        // Also clear any previous error message.
-        viewModel.setErrorMessage(null);
+        viewModel.setState(state);
     }
 
     @Override
     public void presentLoadSettingsFailure(String errorMessage) {
-        // Do not change coordinates/zoom; just surface the error.
-        viewModel.setErrorMessage(errorMessage);
+        // Keep existing settings (if any), surface the error.
+        viewModel.setError(errorMessage);
     }
 }

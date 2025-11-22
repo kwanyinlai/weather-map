@@ -16,9 +16,9 @@ public final class SaveMapSettingsPresenter implements SaveMapSettingsOutputBoun
     private final MapSettingsViewModel viewModel;
 
     /**
-     * Constructs a presenter with the given view model.
+     * Creates a presenter that updates the given view model.
      *
-     * @param viewModel the view model representing the map settings in the UI
+     * @param viewModel the map settings view model
      */
     public SaveMapSettingsPresenter(MapSettingsViewModel viewModel) {
         this.viewModel = viewModel;
@@ -27,30 +27,25 @@ public final class SaveMapSettingsPresenter implements SaveMapSettingsOutputBoun
     @Override
     public void presentSavedSettings(SaveMapSettingsOutputData outputData) {
         if (outputData.isSuccess()) {
-            // Mark saved settings, keeping the current coordinates/zoom.
+            // We assume the current state already reflects the coordinates/zoom
+            // that were just saved (e.g. set by the load presenter or the view).
             MapSettingsState current = viewModel.getState();
 
-            double latitude = current != null ? current.getCenterLatitude() : 0.0;
+            double latitude  = current != null ? current.getCenterLatitude()  : 0.0;
             double longitude = current != null ? current.getCenterLongitude() : 0.0;
-            int zoom = current != null ? current.getZoomLevel() : 1;
+            int zoom         = current != null ? current.getZoomLevel()       : 1;
 
-            viewModel.setMapSettings(
-                    latitude,
-                    longitude,
-                    zoom,
-                    true // we now have saved settings
-            );
-
-            // Clear any previous error.
-            viewModel.setErrorMessage(null);
+            // Mark that we now definitely have saved settings; error cleared.
+            viewModel.setSettings(latitude, longitude, zoom);
         } else {
-            // This path won't usually be hit since failures go to presentSaveSettingsFailure.
-            viewModel.setErrorMessage("Saving map settings did not complete successfully.");
+            // This path might not usually be hit (failures often go to presentSaveSettingsFailure),
+            // but we still handle it defensively.
+            viewModel.setError("Saving map settings did not complete successfully.");
         }
     }
 
     @Override
     public void presentSaveSettingsFailure(String errorMessage) {
-        viewModel.setErrorMessage(errorMessage);
+        viewModel.setError(errorMessage);
     }
 }
