@@ -21,7 +21,7 @@ public class PanAndZoomView extends JPanel {
         add(mapViewer, BorderLayout.CENTER);
         add(errorLabel, BorderLayout.SOUTH);
         errorLabel.setForeground(Color.RED);
-        this.viewModel.addPropertyChangeListener(this::onViewModelChanged);
+        //this.viewModel.addPropertyChangeListener(this::onViewModelChanged);
         mapViewer.setFocusable(true);
         mapViewer.requestFocusInWindow();
         mapViewer.setRequestFocusEnabled(true);
