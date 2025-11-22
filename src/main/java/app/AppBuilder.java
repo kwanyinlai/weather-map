@@ -58,7 +58,6 @@ public class AppBuilder {
 
     // initialising core entities
     private final ProgramTime programTime = new ProgramTime(Instant.now());
-    private final TileRepository tileRepository = new CachedTileRepository(100); // TODO: change cache size
     private final OverlayManager overlayManager = new OverlayManager(Constants.DEFAULT_MAP_WIDTH,
             Constants.DEFAULT_MAP_HEIGHT);
     private final Viewport viewport = new Viewport(000,000,Constants.DEFAULT_MAP_WIDTH,
@@ -135,7 +134,7 @@ public class AppBuilder {
         final UpdateOverlayOutputBoundary output = new UpdateOverlayPresenter(overlayViewModel);
          updateOverlayUseCase = new UpdateOverlayUseCase(
                 overlayManager,
-                tileRepository,
+                CachedTileRepository.getInstance(),
                 programTime,
                  viewport,
                  output

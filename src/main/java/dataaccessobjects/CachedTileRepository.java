@@ -3,14 +3,15 @@ package dataaccessobjects;
 import dataaccessinterface.TileNotFoundException;
 import dataaccessinterface.TileRepository;
 import dataaccessinterface.WeatherTileApiFetcher;
-import entity.TileCoords;
-import entity.WeatherTile;
-import entity.WeatherType;
+import dataaccessobjects.tilejobs.TileCompletedListener;
+import dataaccessobjects.tilejobs.TileJob;
+import dataaccessobjects.tilejobs.TileJobSystem;
+import entity.*;
+import entity.Vector;
 
 import java.awt.image.BufferedImage;
-import java.util.Collections;
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.time.Instant;
+import java.util.*;
 
 
 /** Concrete implementation of a {@link TileRepository} interface, used to
@@ -20,11 +21,15 @@ import java.util.Map;
 public class CachedTileRepository implements TileRepository {
     private final WeatherTileApiFetcher weatherTileApiFetcher = new OkHttpsWeatherTileApiFetcher();
     private Map<WeatherTile, BufferedImage> tileCache;
+    private final TileJobSystem tileJobSystem;
+    private final List<TileCompletedListener> listeners = new ArrayList<>();
+    private static CachedTileRepository instance;
+
 
     /**
      * @param tileCacheSize The maximum cache size for the cache
      */
-    public CachedTileRepository(int tileCacheSize){
+    private CachedTileRepository(int tileCacheSize){
         tileCache = Collections.synchronizedMap(
                 new LinkedHashMap<WeatherTile, BufferedImage>(){
                     @Override
@@ -33,6 +38,19 @@ public class CachedTileRepository implements TileRepository {
                     }
                 }
         );
+        tileJobSystem = new TileJobSystem(20);
+    }
+
+    /**
+     * Get and return the singleton instance of the CachedTileRepository, and create one
+     * if one hasn't been instantiated yet.
+     * @return
+     */
+    public static CachedTileRepository getInstance(){
+        if (instance == null){
+            instance = new CachedTileRepository(200);
+        }
+        return instance;
     }
 
     /** Return the tile image data associated with the given parms
@@ -89,6 +107,40 @@ public class CachedTileRepository implements TileRepository {
             } catch (TileNotFoundException e) {
                 throw new TileNotFoundException(e.getMessage());
             }
+        }
+    }
+
+    /**
+     * Request for a tile to be fetched from the API (but does not return immediately).
+     * All listeners to the CachedTileRepository will receive a copy of the image data
+     * alongside other metadata related to the tile.
+     *
+     * @param tile              the tile to be requested
+     * @param topLeft           the top left of the viewport, in tile coordinates as a vector.
+     * @param botRight          the bot right of the viewport, in tile coordinates as a vector.
+     * @param viewportState     the latitude longitude of the centre of the viewport at the time of requesting
+     * @param currentTime       the current program time at the time of requesting
+     */
+    public void requestTile(WeatherTile tile, Vector topLeft, Vector botRight, Location viewportState, Instant currentTime){
+        if (tileCache.containsKey(tile)){
+            BufferedImage image = tileCache.get(tile);
+            for (TileCompletedListener listener : listeners){
+                listener.onTileCompleted(new IncompleteTile(topLeft, botRight, viewportState, tile, currentTime), image);
+            }
+        }
+        else{
+            TileJob tileJob = new TileJob(tile, topLeft, botRight, viewportState, currentTime);
+            tileJobSystem.submitJob(tileJob);
+            tileJob.getFuture().component2().thenAccept(future -> {
+                for (TileCompletedListener listener : listeners){
+                    listener.onTileCompleted(tileJob.getFuture().component1(), future);
+                }
+            }).exceptionally(e -> {
+                for (TileCompletedListener listener : listeners){
+                    listener.onTileFailed(tileJob.getFuture().component1(), (TileNotFoundException) e);
+                }
+                return null;
+            });
         }
     }
 
@@ -156,4 +208,12 @@ public class CachedTileRepository implements TileRepository {
         tileCache.clear();
     }
 
+    public void addListener(TileCompletedListener listener){
+        listeners.add(listener);
+    }
+
+    @Override
+    public boolean inCache(WeatherTile tile) {
+        return tileCache.containsKey(tile);
+    }
 }

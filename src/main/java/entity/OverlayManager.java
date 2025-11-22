@@ -1,5 +1,9 @@
 package entity;
 
+import dataaccessinterface.TileNotFoundException;
+import dataaccessinterface.TileRepository;
+import dataaccessobjects.tilejobs.TileCompletedListener;
+
 import java.awt.*;
 import java.awt.image.*;
 import java.util.ArrayList;
@@ -68,7 +72,6 @@ public class OverlayManager {
      **/
     public void drawTileToOverlay(Vector tl, Vector br, WeatherTile tile, BufferedImage tileImg){
         //
-
         TileCoords tc = tile.getCoordinates();
         //convert tile location to Vector for convenience.
         Vector tileCoord = new Vector(tc.getX(),tc.getY());
@@ -101,8 +104,6 @@ public class OverlayManager {
         g.setComposite(alphaComposite);
         g.drawImage(scaledTileImg, (int)tileCoord.x, (int)tileCoord.y, null);
         g.dispose();
-
     }
-
 }
 
