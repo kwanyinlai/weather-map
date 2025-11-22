@@ -22,7 +22,7 @@ public class PanAndZoomController implements JMapViewerEventListener {
         mapViewer.addJMVListener(this);
         mapViewer.addMouseMotionListener(new MouseMotionAdapter() {
             @Override
-            public void mouseMoved(MouseEvent e) {
+            public void mouseDragged(MouseEvent e) {
                 syncViewport();
             }
         });
