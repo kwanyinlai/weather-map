@@ -161,10 +161,11 @@ public class AppBuilder {
         mapViewModel = new MapViewModel();
         panAndZoomView = new PanAndZoomView(mapViewModel, mapViewer);
         panAndZoomPresenter = new PanAndZoomPresenter(
+                viewport,
                 panAndZoomView.getMapViewer(),
                 mapViewModel
         );
-        panAndZoomUseCase = new PanAndZoomUseCase(viewport, panAndZoomPresenter);
+        panAndZoomUseCase = new PanAndZoomUseCase(viewport);
         panAndZoomController = new PanAndZoomController(
                panAndZoomUseCase,
                 panAndZoomView.getMapViewer()
