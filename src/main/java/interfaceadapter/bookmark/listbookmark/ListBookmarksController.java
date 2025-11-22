@@ -6,25 +6,25 @@ import usecase.bookmark.listbookmark.ListBookmarksInputData;
 /**
  * Controller for the "list bookmarks" use case.
  *
- * <p>Called by the UI when the user navigates to the bookmarks view or
- * refreshes it. This controller constructs an (empty) input data object
- * and delegates to the interactor.</p>
+ * <p>Called by the UI layer when the user wants to view all bookmarks.
+ * It creates a {@link ListBookmarksInputData} object and delegates to
+ * the use case interactor.</p>
  */
 public final class ListBookmarksController {
 
     private final ListBookmarksInputBoundary listBookmarksInputBoundary;
 
     /**
-     * Constructs a controller with the given input boundary.
+     * Creates a controller that delegates to the given input boundary.
      *
-     * @param listBookmarksInputBoundary the interactor for listing bookmarks
+     * @param listBookmarksInputBoundary the list–bookmarks use case interactor
      */
     public ListBookmarksController(ListBookmarksInputBoundary listBookmarksInputBoundary) {
         this.listBookmarksInputBoundary = listBookmarksInputBoundary;
     }
 
     /**
-     * Triggers the "list bookmarks" use case.
+     * Requests that all bookmarks be listed.
      */
     public void listBookmarks() {
         ListBookmarksInputData inputData = new ListBookmarksInputData();
