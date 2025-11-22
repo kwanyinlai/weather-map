@@ -13,17 +13,17 @@ import java.util.List;
 /**
  * Presenter for the "add bookmark" use case.
  *
- * <p>Transforms the output of the add–bookmark interactor into updates
- * on the {@link BookmarksViewModel}, which the UI listens to.</p>
+ * <p>Transforms use-case output data into updates on the
+ * {@link BookmarksViewModel}, which the view observes.</p>
  */
 public final class AddBookmarkPresenter implements AddBookmarkOutputBoundary {
 
     private final BookmarksViewModel viewModel;
 
     /**
-     * Constructs a presenter with the given bookmarks view model.
+     * Creates a presenter that updates the given view model.
      *
-     * @param viewModel the view model representing the bookmarks in the UI
+     * @param viewModel the bookmarks view model
      */
     public AddBookmarkPresenter(BookmarksViewModel viewModel) {
         this.viewModel = viewModel;
@@ -31,14 +31,12 @@ public final class AddBookmarkPresenter implements AddBookmarkOutputBoundary {
 
     @Override
     public void presentAddedBookmark(AddBookmarkOutputData outputData) {
-        // Convert the output data into a BookmarkedLocation entity.
         BookmarkedLocation added = new BookmarkedLocation(
                 outputData.getName(),
                 outputData.getLatitude(),
                 outputData.getLongitude()
         );
 
-        // Start from the current list of bookmarks (if any) and append the new one.
         BookmarksState currentState = viewModel.getState();
         List<BookmarkedLocation> current =
                 (currentState == null || currentState.getBookmarks() == null)
@@ -49,13 +47,13 @@ public final class AddBookmarkPresenter implements AddBookmarkOutputBoundary {
         updated.add(added);
 
         viewModel.setBookmarks(updated);
-        // Clear any previous error message now that the operation succeeded.
+        // Clear any previous error.
         viewModel.setErrorMessage(null);
     }
 
     @Override
     public void presentAddBookmarkFailure(String errorMessage) {
-        // Keep the existing list of bookmarks but expose the error.
+        // Not changing the existing list, surface the error.
         viewModel.setErrorMessage(errorMessage);
     }
 }

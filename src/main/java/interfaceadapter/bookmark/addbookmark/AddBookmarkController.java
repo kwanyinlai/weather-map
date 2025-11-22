@@ -16,20 +16,20 @@ public final class AddBookmarkController {
     private final AddBookmarkInputBoundary addBookmarkInputBoundary;
 
     /**
-     * Constructs a controller with the given input boundary.
+     * Creates a controller that delegates to the given input boundary.
      *
-     * @param addBookmarkInputBoundary the interactor for adding bookmarks
+     * @param addBookmarkInputBoundary the add–bookmark use case interactor
      */
     public AddBookmarkController(AddBookmarkInputBoundary addBookmarkInputBoundary) {
         this.addBookmarkInputBoundary = addBookmarkInputBoundary;
     }
 
     /**
-     * Triggers the "add bookmark" use case.
+     * Requests that a bookmark be added with the given attributes.
      *
-     * @param name      the user-visible name of the bookmark
-     * @param latitude  the latitude of the bookmarked location
-     * @param longitude the longitude of the bookmarked location
+     * @param name      name of the bookmark
+     * @param latitude  latitude of the bookmarked location
+     * @param longitude longitude of the bookmarked location
      */
     public void addBookmark(String name, double latitude, double longitude) {
         AddBookmarkInputData inputData =
