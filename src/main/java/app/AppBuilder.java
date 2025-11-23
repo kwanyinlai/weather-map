@@ -117,13 +117,13 @@ public class AppBuilder {
     }
 
     public AppBuilder addInfoPanelView(){
-        infoPanelViewModel = new InfoPanelViewModel();
-        infoPanelPresenter = new InfoPanelPresenter(infoPanelViewModel, infoPanelView);
-        infoPanelUseCase = new InfoPanelInteractor(pointWeatherFetcher,infoPanelPresenter, Constants.ZOOM_THRESHOLD);
-        infoPanelController = new InfoPanelController(infoPanelUseCase);
-
-        infoPanelView = new InfoPanelView(infoPanelViewModel);
-        borderPanel.add(infoPanelView, BorderLayout.WEST);
+//        infoPanelViewModel = new InfoPanelViewModel();
+//        infoPanelPresenter = new InfoPanelPresenter(infoPanelViewModel);
+//        infoPanelUseCase = new InfoPanelInteractor(pointWeatherFetcher,infoPanelPresenter, Constants.ZOOM_THRESHOLD);
+//        infoPanelController = new InfoPanelController(infoPanelUseCase);
+//
+//        infoPanelView = new InfoPanelView(infoPanelViewModel);
+//        borderPanel.add(infoPanelView, BorderLayout.WEST);
         return this;
     }
 
