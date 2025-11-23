@@ -2,7 +2,9 @@ package app;
 
 import javax.swing.*;
 import java.awt.*;
+import java.nio.file.Paths;
 import java.time.Instant;
+import java.util.List;
 
 import constants.Constants;
 import dataaccessinterface.BookmarkedLocationStorage;
@@ -44,7 +46,6 @@ import usecase.maptime.UpdateMapTimeOutputBoundary;
 import usecase.maptime.UpdateMapTimeUseCase;
 import view.*;
 import interfaceadapter.maptime.programtime.ProgramTimeViewModel;
-import dataaccessinterface.TileRepository;
 import dataaccessobjects.CachedTileRepository;
 import entity.OverlayManager;
 import interfaceadapter.mapinteraction.MapViewModel;
@@ -85,6 +86,8 @@ public class AppBuilder {
             Constants.DEFAULT_MAP_HEIGHT);
     private final Viewport viewport = new Viewport(000,000,Constants.DEFAULT_MAP_WIDTH,
             0, 6, 0, 584);
+    private final BookmarkedLocationStorage bookmarkStorage = new InDiskBookmarkStorage(Constants.BOOKMARK_DATA_PATH);
+
     private PanAndZoomView panAndZoomView;
     private MapViewModel mapViewModel;
     private PanAndZoomPresenter panAndZoomPresenter;
@@ -97,18 +100,8 @@ public class AppBuilder {
     private ListBookmarksInputBoundary listBookmarksUseCase;
     private AddBookmarkOutputBoundary addBookmarkPresenter;
     private RemoveBookmarkOutputBoundary removeBookmarkPresenter;
-    private final BookmarkedLocationStorage bookmarkStorage = new InDiskBookmarkStorage(Constants.BOOKMARK_DATA_PATH);
     private ListBookmarksPresenter listBookmarksPresenter;
-    private InfoPanelViewModel infoPanelViewModel;
-    private InfoPanelInteractor infoPanelUseCase;
-    private InfoPanelView infoPanelView;
-    private InfoPanelController infoPanelController;
-    private InfoPanelPresenter infoPanelPresenter;
-    private final PointWeatherFetcher pointWeatherFetcher = new OkHttpsPointWeatherGatewayXml();
 
-    private AddBookmarkController addBookmarkController;
-    private RemoveBookmarkController removeBookmarkController;
-    private ListBookmarksController listBookmarksController;
 
 
     public AppBuilder() {
@@ -117,13 +110,11 @@ public class AppBuilder {
     }
 
     public AppBuilder addInfoPanelView(){
-//        infoPanelViewModel = new InfoPanelViewModel();
-//        infoPanelPresenter = new InfoPanelPresenter(infoPanelViewModel);
-//        infoPanelUseCase = new InfoPanelInteractor(pointWeatherFetcher,infoPanelPresenter, Constants.ZOOM_THRESHOLD);
-//        infoPanelController = new InfoPanelController(infoPanelUseCase);
-//
-//        infoPanelView = new InfoPanelView(infoPanelViewModel);
-//        borderPanel.add(infoPanelView, BorderLayout.WEST);
+        infoPanelViewModel = new InfoPanelViewModel();
+        infoPanelController = new InfoPanelController();
+        infoPanelUseCase = new InfoPanelInteractor();
+        infoPanelView = new InfoPanelView();
+        borderPanel.add(bookmarksView, BorderLayout.WEST);
         return this;
     }
 
