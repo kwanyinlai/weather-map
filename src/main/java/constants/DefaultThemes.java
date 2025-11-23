@@ -1,9 +1,9 @@
-package uielements;
+package constants;
 
 import java.awt.*;
 import java.io.File;
 import java.io.IOException;
-// TODO: this mgiht not be clean?
+
 public class DefaultThemes {
 
     public static final Color BG_COLOUR =Color.BLUE;
@@ -17,7 +17,6 @@ public class DefaultThemes {
                     new File("fonts/StackSansText-Bold.ttf")
             ).deriveFont(12f);
         } catch (FontFormatException | IOException e) {
-            e.printStackTrace();
             font = new Font("Serif", Font.BOLD, 12);
         }
 
@@ -33,7 +32,6 @@ public class DefaultThemes {
                     new File("fonts/StackSansText-Light.ttf")
             ).deriveFont(12f);
         } catch (FontFormatException | IOException e) {
-            e.printStackTrace();
             font = new Font("Serif", Font.PLAIN, 12);
         }
 
