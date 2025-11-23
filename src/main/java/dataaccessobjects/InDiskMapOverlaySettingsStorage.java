@@ -2,6 +2,7 @@ package dataaccessobjects;
 
 import dataaccessinterface.SavedMapOverlaySettings;
 import entity.Location;
+import entity.WeatherType;
 import org.json.JSONObject;
 import java.nio.charset.StandardCharsets;
 
@@ -46,6 +47,7 @@ public final class InDiskMapOverlaySettingsStorage implements SavedMapOverlaySet
             return obj.has("centerLatitude")
                     && obj.has("centerLongitude")
                     && obj.has("zoomLevel");
+            // weatherType is optional for backward compatibility
         } catch (IOException e) {
             // On read failure, just behave as if there are no saved settings.
             return false;
@@ -100,24 +102,59 @@ public final class InDiskMapOverlaySettingsStorage implements SavedMapOverlaySet
     }
 
     /**
-     * Persists the given map center location and zoom level to disk.
+     * Returns the last saved weather type.
+     *
+     * <p>This method expects valid saved settings to be present on disk.
+     * Callers should check {@link #hasSavedSettings()} first
+     * before invoking this method.</p>
+     *
+     * @return the last saved weather type, or null if not saved
+     * @throws MapOverlaySettingsPersistenceException if reading or parsing
+     *         the stored settings fails for any reason
+     */
+    @Override
+    public synchronized WeatherType getSavedWeatherType() {
+        try {
+            JSONObject obj = readSettings();
+            if (obj.has("weatherType")) {
+                String weatherTypeStr = obj.getString("weatherType");
+                try {
+                    return WeatherType.valueOf(weatherTypeStr);
+                } catch (IllegalArgumentException e) {
+                    // Invalid weather type, return null
+                    return null;
+                }
+            }
+            return null;
+        } catch (IOException | RuntimeException e) {
+            throw new MapOverlaySettingsPersistenceException(
+                    "Failed to read map overlay settings from " + filePath, e);
+        }
+    }
+
+    /**
+     * Persists the given map center location, zoom level, and weather type to disk.
      *
      * <p>The values are stored as a JSON object with keys
-     * {@code centerLatitude}, {@code centerLongitude}, and {@code zoomLevel}.
+     * {@code centerLatitude}, {@code centerLongitude}, {@code zoomLevel}, and {@code weatherType}.
      * Save is performed via a temporary file and an atomic move to
      * reduce the chance of partial writes.</p>
      *
      * @param centerLocation the current center {@link Location} of the map
      * @param zoomLevel      the current zoom level of the map
+     * @param weatherType    the currently selected weather type
      * @throws MapOverlaySettingsPersistenceException if writing to disk fails
      */
     @Override
-    public synchronized void save(Location centerLocation, int zoomLevel) {
+    public synchronized void save(Location centerLocation, int zoomLevel, WeatherType weatherType) {
         JSONObject obj = new JSONObject();
 
         obj.put("centerLatitude", centerLocation.getLatitude());
         obj.put("centerLongitude", centerLocation.getLongitude());
         obj.put("zoomLevel", zoomLevel);
+        if (weatherType != null) {
+            obj.put("weatherType", weatherType.name());
+        }
 
         try {
             writeSettings(obj);

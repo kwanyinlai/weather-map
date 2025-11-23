@@ -20,6 +20,7 @@ public class Constants {
     public static final java.time.Duration API_MAX_DAY_LIMIT_DURATION = java.time.Duration.ofDays(3);
     public static final int TICK_LENGTH_MS = 250;
     public static final Path BOOKMARK_DATA_PATH = Paths.get("data/bookmarks.json");
+    public static final Path MAP_SETTINGS_DATA_PATH = Paths.get("data/map-settings.json");
     public static final int ZOOM_THRESHOLD = 1000;
 
     public Constants(){}

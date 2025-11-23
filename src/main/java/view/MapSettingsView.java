@@ -149,7 +149,7 @@ public final class MapSettingsView extends JPanel implements PropertyChangeListe
                     double longitude = Double.parseDouble(lonText);
                     int zoom = (Integer) zoomSpinner.getValue();
 
-                    saveMapSettingsController.saveMapSettings(latitude, longitude, zoom);
+                    saveMapSettingsController.saveMapSettings(latitude, longitude, zoom, null);
                 } catch (NumberFormatException ex) {
                     errorLabel.setText("Latitude and longitude must be valid numbers.");
                 }

@@ -35,6 +35,7 @@ public final class SaveMapSettingsUseCase implements SaveMapSettingsInputBoundar
         double latitude = inputData.getCenterLatitude();
         double longitude = inputData.getCenterLongitude();
         int zoomLevel = inputData.getZoomLevel();
+        var weatherType = inputData.getWeatherType();
 
         // Validation for coordinates
         if (Double.isNaN(latitude) || Double.isNaN(longitude)) {
@@ -46,7 +47,7 @@ public final class SaveMapSettingsUseCase implements SaveMapSettingsInputBoundar
             // Create a Location entity from the input data
             Location centerLocation = new Location(latitude, longitude);
 
-            savedMapOverlaySettings.save(centerLocation, zoomLevel);
+            savedMapOverlaySettings.save(centerLocation, zoomLevel, weatherType);
 
             SaveMapSettingsOutputData outputData =
                     new SaveMapSettingsOutputData(true);
