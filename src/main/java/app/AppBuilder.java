@@ -9,6 +9,7 @@ import java.util.List;
 import constants.Constants;
 import dataaccessinterface.BookmarkedLocationStorage;
 import dataaccessobjects.InDiskBookmarkStorage;
+import dataaccessobjects.OkHttpsPointWeatherGatewayXml;
 import entity.ProgramTime;
 import entity.Viewport;
 import interfaceadapter.bookmark.BookmarksViewModel;
@@ -19,6 +20,7 @@ import interfaceadapter.bookmark.listbookmark.ListBookmarksPresenter;
 import interfaceadapter.bookmark.removebookmark.RemoveBookmarkController;
 import interfaceadapter.bookmark.removebookmark.RemoveBookmarkPresenter;
 import interfaceadapter.infopanel.InfoPanelController;
+import interfaceadapter.infopanel.InfoPanelPresenter;
 import interfaceadapter.infopanel.InfoPanelViewModel;
 import interfaceadapter.maptime.programtime.ProgramTimeController;
 import interfaceadapter.maptime.programtime.ProgramTimePresenter;
@@ -34,6 +36,7 @@ import usecase.bookmark.removebookmark.RemoveBookmarkInputBoundary;
 import usecase.bookmark.removebookmark.RemoveBookmarkOutputBoundary;
 import usecase.bookmark.removebookmark.RemoveBookmarkUseCase;
 import usecase.infopanel.InfoPanelInteractor;
+import usecase.infopanel.PointWeatherFetcher;
 import usecase.maptime.UpdateMapTimeInputBoundary;
 import usecase.weatherLayers.layers.*;
 import usecase.weatherLayers.update.UpdateOverlayOutputBoundary;
@@ -118,15 +121,17 @@ public class AppBuilder {
     public AppBuilder addBookmarkView(){
 
         bookmarksViewModel = new BookmarksViewModel();
+        removeBookmarkPresenter = new RemoveBookmarkPresenter(bookmarksViewModel);
+        listBookmarksPresenter = new ListBookmarksPresenter(bookmarksViewModel);
+        addBookmarkPresenter = new AddBookmarkPresenter(bookmarksViewModel);
         addBookmarkUseCase = new AddBookmarkUseCase(bookmarkStorage, addBookmarkPresenter);
         removeBookmarkUseCase = new RemoveBookmarkUseCase(bookmarkStorage, removeBookmarkPresenter);
         listBookmarksUseCase = new ListBookmarksUseCase(bookmarkStorage, listBookmarksPresenter);
-        addBookmarkPresenter = new AddBookmarkPresenter(bookmarksViewModel);
-        removeBookmarkPresenter = new RemoveBookmarkPresenter(bookmarksViewModel);
-        listBookmarksPresenter = new ListBookmarksPresenter(bookmarksViewModel);
-        AddBookmarkController addBookmarkController = new AddBookmarkController(addBookmarkUseCase);
-        RemoveBookmarkController removeBookmarkController = new RemoveBookmarkController(removeBookmarkUseCase);
-        ListBookmarksController listBookmarksController = new ListBookmarksController(listBookmarksUseCase);
+
+        ;
+        addBookmarkController = new AddBookmarkController(addBookmarkUseCase);
+        removeBookmarkController = new RemoveBookmarkController(removeBookmarkUseCase);
+        listBookmarksController = new ListBookmarksController(listBookmarksUseCase);
         bookmarksView = new BookmarksView(bookmarksViewModel, addBookmarkController, removeBookmarkController,
                 listBookmarksController);
         borderPanel.add(bookmarksView, BorderLayout.EAST);
