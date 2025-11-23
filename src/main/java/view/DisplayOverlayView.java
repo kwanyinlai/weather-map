@@ -19,6 +19,9 @@ public class DisplayOverlayView extends JPanel implements PropertyChangeListener
 
     public DisplayOverlayView(UpdateOverlaySizeController sizeCont,
                               UpdateOverlayViewModel vm){
+        this.setOpaque(false);
+        this.setEnabled(false);
+        setFocusable(false);
         view = vm;
         view.addPropertyChangeListener(this);
 
@@ -28,6 +31,7 @@ public class DisplayOverlayView extends JPanel implements PropertyChangeListener
         JLabel label = new JLabel();
         label.setIcon(imageIcon);
         this.add(label);
+        this.setBackground(new Color(0,0,0,0));
         this.setBounds(0,0, Constants.DEFAULT_MAP_WIDTH, Constants.DEFAULT_MAP_HEIGHT);
     }
 
