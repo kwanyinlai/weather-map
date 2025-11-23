@@ -106,6 +106,10 @@ public class AppBuilder {
     private InfoPanelPresenter infoPanelPresenter;
     private final PointWeatherFetcher pointWeatherFetcher = new OkHttpsPointWeatherGatewayXml();
 
+    private AddBookmarkController addBookmarkController;
+    private RemoveBookmarkController removeBookmarkController;
+    private ListBookmarksController listBookmarksController;
+
 
     public AppBuilder() {
         borderPanel.setLayout(borderLayout);
@@ -126,15 +130,17 @@ public class AppBuilder {
     public AppBuilder addBookmarkView(){
 
         bookmarksViewModel = new BookmarksViewModel();
+        removeBookmarkPresenter = new RemoveBookmarkPresenter(bookmarksViewModel);
+        listBookmarksPresenter = new ListBookmarksPresenter(bookmarksViewModel);
+        addBookmarkPresenter = new AddBookmarkPresenter(bookmarksViewModel);
         addBookmarkUseCase = new AddBookmarkUseCase(bookmarkStorage, addBookmarkPresenter);
         removeBookmarkUseCase = new RemoveBookmarkUseCase(bookmarkStorage, removeBookmarkPresenter);
         listBookmarksUseCase = new ListBookmarksUseCase(bookmarkStorage, listBookmarksPresenter);
-        addBookmarkPresenter = new AddBookmarkPresenter(bookmarksViewModel);
-        removeBookmarkPresenter = new RemoveBookmarkPresenter(bookmarksViewModel);
-        listBookmarksPresenter = new ListBookmarksPresenter(bookmarksViewModel);
-        AddBookmarkController addBookmarkController = new AddBookmarkController(addBookmarkUseCase);
-        RemoveBookmarkController removeBookmarkController = new RemoveBookmarkController(removeBookmarkUseCase);
-        ListBookmarksController listBookmarksController = new ListBookmarksController(listBookmarksUseCase);
+
+        ;
+        addBookmarkController = new AddBookmarkController(addBookmarkUseCase);
+        removeBookmarkController = new RemoveBookmarkController(removeBookmarkUseCase);
+        listBookmarksController = new ListBookmarksController(listBookmarksUseCase);
         bookmarksView = new BookmarksView(bookmarksViewModel, addBookmarkController, removeBookmarkController,
                 listBookmarksController);
         borderPanel.add(bookmarksView, BorderLayout.EAST);
