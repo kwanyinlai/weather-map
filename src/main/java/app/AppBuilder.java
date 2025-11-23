@@ -90,7 +90,8 @@ public class AppBuilder {
     private final Viewport viewport = new Viewport(000,000,Constants.DEFAULT_MAP_WIDTH,
             0, 6, 0, 584);
     private final BookmarkedLocationStorage bookmarkStorage = new InDiskBookmarkStorage(Constants.BOOKMARK_DATA_PATH);
-
+    private int popUpZoomThreshold = 8;
+    private boolean belowZoomThreshold = false;
     private PanAndZoomView panAndZoomView;
     private MapViewModel mapViewModel;
     private PanAndZoomPresenter panAndZoomPresenter;
@@ -120,20 +121,25 @@ public class AppBuilder {
     }
 
     public AppBuilder addInfoPanelView() {
-        infoPanelViewModel = new InfoPanelViewModel();
-        var presenter = new InfoPanelPresenter(infoPanelViewModel);
+        infoPanelViewModel = new interfaceadapter.infopanel.InfoPanelViewModel();
+        var presenter = new interfaceadapter.infopanel.InfoPanelPresenter(infoPanelViewModel);
 
-        PointWeatherFetcher fetcher =
-                new OkHttpsPointWeatherGatewayXml(System.getenv("WEATHER_API_KEY"));
-        var useCase = new InfoPanelInteractor(fetcher, presenter);
+        usecase.infopanel.PointWeatherFetcher fetcher =
+                new dataaccessinterface.OkHttpsPointWeatherGatewayXml(System.getenv("WEATHER_API_KEY"));
+        var useCase = new usecase.infopanel.InfoPanelInteractor(fetcher, presenter);
 
         int popUpZoomThreshold = 8;
-        infoPanelController = new InfoPanelController(useCase, presenter, popUpZoomThreshold);
+        infoPanelController = new interfaceadapter.infopanel.InfoPanelController(useCase, presenter,
+                popUpZoomThreshold);
 
-        infoPanelView = new InfoPanelView(infoPanelViewModel);
+        infoPanelView = new view.InfoPanelView(infoPanelViewModel);
         infoPanelView.setController(infoPanelController);
+        infoPanelView.setVisible(false);
+
         presenter.addChangeListener(ev ->
-                SwingUtilities.invokeLater(infoPanelView::repaint));
+                javax.swing.SwingUtilities.invokeLater(infoPanelView::repaint)
+        );
+
         return this;
     }
 
@@ -273,25 +279,33 @@ public class AppBuilder {
         );
         panAndZoomUseCase = new PanAndZoomUseCase(viewport);
         panAndZoomController = new PanAndZoomController(
-               panAndZoomUseCase,
+                panAndZoomUseCase,
                 panAndZoomView.getMapViewer()
         );
         panAndZoomView.setController(panAndZoomController);
         viewport.getSupport().addPropertyChangeListener(evt -> {
-            if (updateOverlayUseCase != null) {
-                updateOverlayUseCase.update();
-            }
-            if (infoPanelController != null && infoPanelView != null) {
-                JMapViewer mv = panAndZoomView.getMapViewer();
-                var pos = mv.getPosition();
-                int z   = mv.getZoom();
-                infoPanelController.onViewportChanged(pos.getLat(), pos.getLon(), z);
-                SwingUtilities.invokeLater(infoPanelView::repaint);
+            if (infoPanelController != null) {
+                var c = viewport.getCentre();
+                int z = Math.round(viewport.getZoomLevel());
+
+                if (z >= popUpZoomThreshold) {
+                    if (!belowZoomThreshold) {
+                        if (infoPanelView != null) infoPanelView.setVisible(true);
+                        infoPanelController.onViewportChanged(c.getLatitude(), c.getLongitude(), z);
+                        belowZoomThreshold = true;
+                    } else {
+                        infoPanelController.onViewportChanged(c.getLatitude(), c.getLongitude(), z);
+                    }
+                } else {
+                    belowZoomThreshold = false;
+                    if (infoPanelView != null) infoPanelView.setVisible(false);
+                    infoPanelController.onViewportChanged(c.getLatitude(), c.getLongitude(), z);
+                }
             }
         });
-
         return this;
     }
+
 
     public JFrame build() {
         final JFrame application = new JFrame("Weather Map");

@@ -52,6 +52,7 @@ public final class InfoPanelView extends JPanel {
             @Override public void mouseClicked(MouseEvent e) {
                 if (closeRect.contains(e.getPoint()) && controller != null) {
                     controller.onCloseRequested();
+                    setVisible(false);
                 }
             }
         });
@@ -68,8 +69,6 @@ public final class InfoPanelView extends JPanel {
     protected void paintComponent(Graphics g0) {
         if (vm == null || !vm.visible) {
             return;
-        } else if (!isVisible()) {
-            setVisible(true);
         }
 
         Graphics2D g = (Graphics2D) g0.create();
@@ -89,7 +88,7 @@ public final class InfoPanelView extends JPanel {
         g.drawRoundRect(closeRect.x, closeRect.y, closeRect.width, closeRect.height, 10, 10);
         g.setFont(F_BIG);
         FontMetrics fmClose = g.getFontMetrics();
-        String closeChar = "\u2715"; // ×
+        String closeChar = "\u2715";
         int cx = closeRect.x + (closeRect.width - fmClose.stringWidth(closeChar)) / 2;
         int cy = closeRect.y + (closeRect.height + fmClose.getAscent() - fmClose.getDescent()) / 2;
         g.drawString(closeChar, cx, cy);

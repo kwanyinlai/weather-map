@@ -11,12 +11,11 @@ public final class InfoPanelController {
     private final InfoPanelOutputBoundary presenter;
     private final int popUpZoomThreshold;
 
-    private final Timer debounce = new Timer(300, e -> fireIfTargetChanged());
+    private final Timer debounce = new Timer(200, e -> fireIfTargetChanged());
     private double pendingLat, pendingLon;
     private int pendingZoom;
 
     private TileCoords lastRequestedTile;
-    private TileCoords lastDismissedTile;
 
     public InfoPanelController(InfoPanelInputBoundary interactor,
                                InfoPanelOutputBoundary presenter,
@@ -29,35 +28,23 @@ public final class InfoPanelController {
 
     public void onViewportChanged(double centerLat, double centerLon, int zoom) {
         if (zoom < popUpZoomThreshold) {
-            lastRequestedTile = null;
-            lastDismissedTile = null;
             presenter.presentError(InfoPanelError.HIDDEN_BY_ZOOM);
             return;
         }
-
-        TileCoords current = new Location(centerLat, centerLon).getTileCoords(zoom);
-        if (sameTile(current, lastDismissedTile)) {
-            presenter.presentError(InfoPanelError.USER_CLOSED);
-            return;
-        }
-
         pendingLat  = centerLat;
         pendingLon  = centerLon;
         pendingZoom = zoom;
+
         presenter.presentLoading();
         debounce.restart();
     }
 
     public void onCloseRequested() {
-        if (lastRequestedTile != null) {
-            lastDismissedTile = lastRequestedTile;
-        }
         presenter.presentError(InfoPanelError.USER_CLOSED);
     }
 
     private void fireIfTargetChanged() {
         TileCoords current = new Location(pendingLat, pendingLon).getTileCoords(pendingZoom);
-        if (sameTile(current, lastRequestedTile)) return;
 
         lastRequestedTile = current;
         interactor.execute(new InfoPanelInputData(pendingLat, pendingLon, pendingZoom));
