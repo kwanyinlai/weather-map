@@ -1,8 +1,9 @@
 package dataaccessinterface;
-import entity.WeatherTile;
-import entity.WeatherType;
+import dataaccessobjects.tilejobs.TileCompletedListener;
+import entity.*;
 
 import java.awt.image.BufferedImage;
+import java.time.Instant;
 
 
 /** Interface which returns the image data to given tiles
@@ -30,11 +31,17 @@ public interface TileRepository {
      */
     BufferedImage getTileImageData(WeatherTile tile) throws TileNotFoundException;
 
-    /** Takes a tile parameter (w/o image data) and retrieves the data associated with
+    /**
+     * Takes a tile parameter (w/o image data) and retrieves the data associated with
      * it and adds it to cache
      *
-     * @param tile the tile to be added to cache
+     * @param tile        the tile to be added to cache
+     * @param currentTime
      * @throws TileNotFoundException raised if the tile does not correspond to valid image data
      */
-    void addTileToCache(WeatherTile tile) throws TileNotFoundException;
+    void requestTile(WeatherTile tile, Vector topLeft, Vector botRight, Location tileCoords, Instant currentTime);
+
+    void addListener(TileCompletedListener listener);
+
+    boolean inCache(WeatherTile tile);
 }

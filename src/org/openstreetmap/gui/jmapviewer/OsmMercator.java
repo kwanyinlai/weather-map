@@ -76,20 +76,21 @@ public class OsmMercator {
     public static boolean isRetina() {
         if (isRetina!=null)
         	return isRetina;
-        isRetina = false;
-        final GraphicsEnvironment env = GraphicsEnvironment.getLocalGraphicsEnvironment();
-        final GraphicsDevice device = env.getDefaultScreenDevice();
-        try {
-            Field field = device.getClass().getDeclaredField("scale");
-            field.setAccessible(true);
-            Object scale = field.get(device);
-            if (scale instanceof Integer && ((Integer) scale) == 2) {
-                isRetina = true;
-            }
-        } catch (IllegalAccessException | IllegalArgumentException | NoSuchFieldException
-                     | NullPointerException | SecurityException e) {
-        }
-        return isRetina;
+        return false;
+//        isRetina = false;
+//        final GraphicsEnvironment env = GraphicsEnvironment.getLocalGraphicsEnvironment();
+//        final GraphicsDevice device = env.getDefaultScreenDevice();
+//        try {
+//            Field field = device.getClass().getDeclaredField("scale");
+//            field.setAccessible(true);
+//            Object scale = field.get(device);
+//            if (scale instanceof Integer && ((Integer) scale) == 2) {
+//                isRetina = true;
+//            }
+//        } catch (IllegalAccessException | IllegalArgumentException | NoSuchFieldException
+//                     | NullPointerException | SecurityException e) {
+//        }
+//        return isRetina;
     }
 
     /**

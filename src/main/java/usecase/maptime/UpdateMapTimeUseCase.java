@@ -18,11 +18,26 @@ public class UpdateMapTimeUseCase implements UpdateMapTimeInputBoundary {
     @Override
     public void execute(UpdateMapTimeInputData updateMapTimeInputData) {
         programTime.setTime(updateMapTimeInputData.getCurrentTime());
-//        updateOverlayUseCase.update();
-        programTimePresenter.updateTime(
-                new UpdateMapTimeOutputData(
-                        updateMapTimeInputData.getCurrentTime()
-                ));
         updateOverlayUseCase.update();
+        UpdateMapTimeOutputData outputData = new UpdateMapTimeOutputData(
+                updateMapTimeInputData.getCurrentTime()
+        );
+        programTimePresenter.updateTime(
+                outputData
+                );
+    }
+
+    @Override
+    public void execute(TickMapTimeInputData ticks){
+        programTime.incrementTime();
+        updateOverlayUseCase.update();
+
+        UpdateMapTimeOutputData outputData = new UpdateMapTimeOutputData(
+                programTime.getCurrentTime().plus(ProgramTime.TIME_INCREMENT.multipliedBy(ticks.getTicks()))
+        );
+        programTimePresenter.updateTimeFromAnimator(
+            outputData
+        );
+
     }
 }
