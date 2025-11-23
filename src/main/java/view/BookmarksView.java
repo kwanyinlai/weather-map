@@ -96,6 +96,9 @@ public final class BookmarksView extends JPanel implements PropertyChangeListene
 
         // Initialise from current state, if any.
         updateFromState(this.viewModel.getState());
+
+        // Load bookmarks from storage on startup.
+        listBookmarksController.listBookmarks();
     }
 
     /**
