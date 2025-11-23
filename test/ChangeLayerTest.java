@@ -1,15 +1,14 @@
 import entity.LayerNotFoundException;
 import entity.OverlayManager;
 import entity.WeatherType;
-import interfaceadapter.weatherLayers.LegendPresenter;
-import interfaceadapter.weatherLayers.LegendViewModel;
-import interfaceadapter.weatherLayers.WeatherLayersPresenter;
-import interfaceadapter.weatherLayers.WeatherLayersViewModel;
+import interfaceadapter.weatherlayers.LegendPresenter;
+import interfaceadapter.weatherlayers.LegendViewModel;
+import interfaceadapter.weatherlayers.WeatherLayersPresenter;
+import interfaceadapter.weatherlayers.WeatherLayersViewModel;
 import org.junit.jupiter.api.Test;
-import usecase.weatherLayers.layers.ChangeLayerInputData;
-import usecase.weatherLayers.layers.ChangeLayerOutputBoundary;
-import usecase.weatherLayers.layers.ChangeLayerUseCase;
-import usecase.weatherLayers.layers.ChangeOpacityUseCase;
+import usecase.weatherlayers.layers.ChangeLayerInputData;
+import usecase.weatherlayers.layers.ChangeLayerOutputBoundary;
+import usecase.weatherlayers.layers.ChangeLayerUseCase;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -21,14 +20,6 @@ public class ChangeLayerTest {
     private LegendPresenter legendPresenter = new LegendPresenter(lVm);
     private ChangeLayerUseCase useCase = new ChangeLayerUseCase(om, presenter, legendPresenter);
 
-    @Test
-    void invalidTypeThrows(){
-        try {
-            useCase.change(new ChangeLayerInputData(WeatherType.Invalid));
-        } catch (LayerNotFoundException e) {
-            assertTrue(true);
-        }
-    }
     @Test
     void changeType(){
         try {

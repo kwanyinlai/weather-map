@@ -7,13 +7,13 @@ import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import java.util.HashMap;
+import java.util.EnumMap;
 
 
 public class GradientLoader implements GradientLegendLoader {
-    private final HashMap<WeatherType, BufferedImage> legends;
+    private final EnumMap<WeatherType, BufferedImage> legends;
     public GradientLoader(){
-        legends = new HashMap<>();
+        legends = new EnumMap<>(WeatherType.class);
         loadLegends();
     }
 
@@ -33,10 +33,10 @@ public class GradientLoader implements GradientLegendLoader {
         }
         for(WeatherType type: WeatherType.values()){
             try{
-                BufferedImage legend_img = null;
+                BufferedImage legendImg = null;
                 File imageFile = new File("img/legends/legend_" + type + ".png");
-                legend_img = ImageIO.read(imageFile);
-                legends.put(type, legend_img);
+                legendImg = ImageIO.read(imageFile);
+                legends.put(type, legendImg);
             } catch (RuntimeException | IOException e) {
                 legends.put(type, blank);
             }

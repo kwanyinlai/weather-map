@@ -1,8 +1,8 @@
 import entity.LayerNotFoundException;
 import entity.OverlayManager;
 import entity.WeatherType;
-import usecase.weatherLayers.layers.ChangeOpacityInputData;
-import usecase.weatherLayers.layers.ChangeOpacityUseCase;
+import usecase.weatherlayers.layers.ChangeOpacityInputData;
+import usecase.weatherlayers.layers.ChangeOpacityUseCase;
 
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
