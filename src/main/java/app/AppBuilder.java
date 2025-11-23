@@ -5,13 +5,36 @@ import java.awt.*;
 import java.time.Instant;
 
 import constants.Constants;
+import dataaccessinterface.BookmarkedLocationStorage;
+import dataaccessobjects.InDiskBookmarkStorage;
+import dataaccessobjects.OkHttpsPointWeatherGatewayXml;
 import entity.ProgramTime;
 import entity.Viewport;
+import interfaceadapter.bookmark.BookmarksViewModel;
+import interfaceadapter.bookmark.addbookmark.AddBookmarkController;
+import interfaceadapter.bookmark.addbookmark.AddBookmarkPresenter;
+import interfaceadapter.bookmark.listbookmark.ListBookmarksController;
+import interfaceadapter.bookmark.listbookmark.ListBookmarksPresenter;
+import interfaceadapter.bookmark.removebookmark.RemoveBookmarkController;
+import interfaceadapter.bookmark.removebookmark.RemoveBookmarkPresenter;
+import interfaceadapter.infopanel.InfoPanelController;
+import interfaceadapter.infopanel.InfoPanelPresenter;
+import interfaceadapter.infopanel.InfoPanelViewModel;
 import interfaceadapter.maptime.programtime.ProgramTimeController;
 import interfaceadapter.maptime.programtime.ProgramTimePresenter;
 import interfaceadapter.maptime.timeanimation.TimeAnimationController;
 import interfaceadapter.weatherLayers.*;
 import org.openstreetmap.gui.jmapviewer.JMapViewer;
+import usecase.bookmark.addbookmark.AddBookmarkInputBoundary;
+import usecase.bookmark.addbookmark.AddBookmarkOutputBoundary;
+import usecase.bookmark.addbookmark.AddBookmarkUseCase;
+import usecase.bookmark.listbookmark.ListBookmarksInputBoundary;
+import usecase.bookmark.listbookmark.ListBookmarksUseCase;
+import usecase.bookmark.removebookmark.RemoveBookmarkInputBoundary;
+import usecase.bookmark.removebookmark.RemoveBookmarkOutputBoundary;
+import usecase.bookmark.removebookmark.RemoveBookmarkUseCase;
+import usecase.infopanel.InfoPanelInteractor;
+import usecase.infopanel.PointWeatherFetcher;
 import usecase.maptime.UpdateMapTimeInputBoundary;
 import usecase.weatherLayers.layers.*;
 import usecase.weatherLayers.update.UpdateOverlayOutputBoundary;
@@ -67,10 +90,62 @@ public class AppBuilder {
     private PanAndZoomPresenter panAndZoomPresenter;
     private PanAndZoomInputBoundary panAndZoomUseCase;
     private PanAndZoomController panAndZoomController;
+    private BookmarksViewModel bookmarksViewModel;
+    private BookmarksView bookmarksView;
+    private AddBookmarkInputBoundary addBookmarkUseCase;
+    private RemoveBookmarkInputBoundary removeBookmarkUseCase;
+    private ListBookmarksInputBoundary listBookmarksUseCase;
+    private AddBookmarkOutputBoundary addBookmarkPresenter;
+    private RemoveBookmarkOutputBoundary removeBookmarkPresenter;
+    private final BookmarkedLocationStorage bookmarkStorage = new InDiskBookmarkStorage(Constants.BOOKMARK_DATA_PATH);
+    private ListBookmarksPresenter listBookmarksPresenter;
+    private InfoPanelViewModel infoPanelViewModel;
+    private InfoPanelInteractor infoPanelUseCase;
+    private InfoPanelView infoPanelView;
+    private InfoPanelController infoPanelController;
+    private InfoPanelPresenter infoPanelPresenter;
+    private final PointWeatherFetcher pointWeatherFetcher = new OkHttpsPointWeatherGatewayXml();
+
+    private AddBookmarkController addBookmarkController;
+    private RemoveBookmarkController removeBookmarkController;
+    private ListBookmarksController listBookmarksController;
+
 
     public AppBuilder() {
         borderPanel.setLayout(borderLayout);
         borderPanel.setPreferredSize(new Dimension(Constants.DEFAULT_PROGRAM_WIDTH, Constants.DEFAULT_PROGRAM_HEIGHT));
+    }
+
+    public AppBuilder addInfoPanelView(){
+//        infoPanelViewModel = new InfoPanelViewModel();
+//        infoPanelPresenter = new InfoPanelPresenter(infoPanelViewModel);
+//        infoPanelUseCase = new InfoPanelInteractor(pointWeatherFetcher,infoPanelPresenter, Constants.ZOOM_THRESHOLD);
+//        infoPanelController = new InfoPanelController(infoPanelUseCase);
+//
+//        infoPanelView = new InfoPanelView(infoPanelViewModel);
+//        borderPanel.add(infoPanelView, BorderLayout.WEST);
+        return this;
+    }
+
+    public AppBuilder addBookmarkView(){
+
+        bookmarksViewModel = new BookmarksViewModel();
+        removeBookmarkPresenter = new RemoveBookmarkPresenter(bookmarksViewModel);
+        listBookmarksPresenter = new ListBookmarksPresenter(bookmarksViewModel);
+        addBookmarkPresenter = new AddBookmarkPresenter(bookmarksViewModel);
+        addBookmarkUseCase = new AddBookmarkUseCase(bookmarkStorage, addBookmarkPresenter);
+        removeBookmarkUseCase = new RemoveBookmarkUseCase(bookmarkStorage, removeBookmarkPresenter);
+        listBookmarksUseCase = new ListBookmarksUseCase(bookmarkStorage, listBookmarksPresenter);
+
+        ;
+        addBookmarkController = new AddBookmarkController(addBookmarkUseCase);
+        removeBookmarkController = new RemoveBookmarkController(removeBookmarkUseCase);
+        listBookmarksController = new ListBookmarksController(listBookmarksUseCase);
+        bookmarksView = new BookmarksView(bookmarksViewModel, addBookmarkController, removeBookmarkController,
+                listBookmarksController);
+        borderPanel.add(bookmarksView, BorderLayout.EAST);
+
+        return this;
     }
 
     public AppBuilder addProgramTimeView() {
