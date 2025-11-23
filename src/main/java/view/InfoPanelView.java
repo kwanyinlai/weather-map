@@ -87,7 +87,6 @@ public final class InfoPanelView extends JPanel {
         g.fillRoundRect(closeRect.x, closeRect.y, closeRect.width, closeRect.height, 10, 10);
         g.setColor(STROKE);
         g.drawRoundRect(closeRect.x, closeRect.y, closeRect.width, closeRect.height, 10, 10);
-        // 画 ×
         g.setFont(F_BIG);
         FontMetrics fmClose = g.getFontMetrics();
         String closeChar = "\u2715"; // ×
