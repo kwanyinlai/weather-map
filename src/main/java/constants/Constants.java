@@ -1,5 +1,8 @@
 package constants;
 
+import java.nio.file.Path;
+import java.nio.file.Paths;
+
 public class Constants {
     public static final int DEFAULT_PROGRAM_WIDTH = 800;
     public static final int DEFAULT_PROGRAM_HEIGHT = 800;
@@ -16,6 +19,8 @@ public class Constants {
     public static final int CACHE_SIZE = 200;
     public static final java.time.Duration API_MAX_DAY_LIMIT_DURATION = java.time.Duration.ofDays(3);
     public static final int TICK_LENGTH_MS = 250;
+    public static final Path BOOKMARK_DATA_PATH = Paths.get("data/bookmarks.json");
+    public static final int ZOOM_THRESHOLD = 1000;
 
     public Constants(){}
 }
