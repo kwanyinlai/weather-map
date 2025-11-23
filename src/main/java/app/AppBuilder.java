@@ -95,10 +95,9 @@ public class AppBuilder {
     private AddBookmarkInputBoundary addBookmarkUseCase;
     private RemoveBookmarkInputBoundary removeBookmarkUseCase;
     private ListBookmarksInputBoundary listBookmarksUseCase;
-
-    private final AddBookmarkOutputBoundary addBookmarkPresenter = new AddBookmarkPresenter(bookmarksViewModel);
-    private final RemoveBookmarkOutputBoundary removeBookmarkPresenter = new RemoveBookmarkPresenter(bookmarksViewModel);
-    private final ListBookmarksPresenter listBookmarksPresenter = new ListBookmarksPresenter(bookmarksViewModel);
+    private AddBookmarkOutputBoundary addBookmarkPresenter;
+    private RemoveBookmarkOutputBoundary removeBookmarkPresenter;
+    private ListBookmarksPresenter listBookmarksPresenter;
 
 
 
