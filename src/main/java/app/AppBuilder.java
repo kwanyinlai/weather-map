@@ -2,16 +2,41 @@ package app;
 
 import javax.swing.*;
 import java.awt.*;
+import java.nio.file.Paths;
 import java.time.Instant;
+import java.util.List;
 
 import constants.Constants;
+import dataaccessinterface.BookmarkedLocationStorage;
+import dataaccessobjects.InDiskBookmarkStorage;
+import dataaccessobjects.OkHttpsPointWeatherGatewayXml;
 import entity.ProgramTime;
 import entity.Viewport;
+import interfaceadapter.bookmark.BookmarksViewModel;
+import interfaceadapter.bookmark.addbookmark.AddBookmarkController;
+import interfaceadapter.bookmark.addbookmark.AddBookmarkPresenter;
+import interfaceadapter.bookmark.listbookmark.ListBookmarksController;
+import interfaceadapter.bookmark.listbookmark.ListBookmarksPresenter;
+import interfaceadapter.bookmark.removebookmark.RemoveBookmarkController;
+import interfaceadapter.bookmark.removebookmark.RemoveBookmarkPresenter;
+import interfaceadapter.infopanel.InfoPanelController;
+import interfaceadapter.infopanel.InfoPanelPresenter;
+import interfaceadapter.infopanel.InfoPanelViewModel;
 import interfaceadapter.maptime.programtime.ProgramTimeController;
 import interfaceadapter.maptime.programtime.ProgramTimePresenter;
 import interfaceadapter.maptime.timeanimation.TimeAnimationController;
 import interfaceadapter.weatherlayers.*;
 import org.openstreetmap.gui.jmapviewer.JMapViewer;
+import usecase.bookmark.addbookmark.AddBookmarkInputBoundary;
+import usecase.bookmark.addbookmark.AddBookmarkOutputBoundary;
+import usecase.bookmark.addbookmark.AddBookmarkUseCase;
+import usecase.bookmark.listbookmark.ListBookmarksInputBoundary;
+import usecase.bookmark.listbookmark.ListBookmarksUseCase;
+import usecase.bookmark.removebookmark.RemoveBookmarkInputBoundary;
+import usecase.bookmark.removebookmark.RemoveBookmarkOutputBoundary;
+import usecase.bookmark.removebookmark.RemoveBookmarkUseCase;
+import usecase.infopanel.InfoPanelInteractor;
+import usecase.infopanel.PointWeatherFetcher;
 import usecase.maptime.UpdateMapTimeInputBoundary;
 import usecase.weatherlayers.layers.*;
 import usecase.weatherlayers.update.UpdateOverlayOutputBoundary;
@@ -57,19 +82,62 @@ public class AppBuilder {
 
     // initialising core entities
     private final ProgramTime programTime = new ProgramTime(Instant.now());
+    private final TileRepository tileRepository = new CachedTileRepository(Constants.CACHE_SIZE);
     private final OverlayManager overlayManager = new OverlayManager(Constants.DEFAULT_MAP_WIDTH,
             Constants.DEFAULT_MAP_HEIGHT);
     private final Viewport viewport = new Viewport(000,000,Constants.DEFAULT_MAP_WIDTH,
             0, 6, 0, 584);
+    private final BookmarkedLocationStorage bookmarkStorage = new InDiskBookmarkStorage(Constants.BOOKMARK_DATA_PATH);
+
     private PanAndZoomView panAndZoomView;
     private MapViewModel mapViewModel;
     private PanAndZoomPresenter panAndZoomPresenter;
     private PanAndZoomInputBoundary panAndZoomUseCase;
     private PanAndZoomController panAndZoomController;
+    private BookmarksViewModel bookmarksViewModel;
+    private BookmarksView bookmarksView;
+    private AddBookmarkInputBoundary addBookmarkUseCase;
+    private RemoveBookmarkInputBoundary removeBookmarkUseCase;
+    private ListBookmarksInputBoundary listBookmarksUseCase;
+    private AddBookmarkOutputBoundary addBookmarkPresenter;
+    private RemoveBookmarkOutputBoundary removeBookmarkPresenter;
+    private ListBookmarksPresenter listBookmarksPresenter;
+
+
 
     public AppBuilder() {
         borderPanel.setLayout(borderLayout);
         borderPanel.setPreferredSize(new Dimension(Constants.DEFAULT_PROGRAM_WIDTH, Constants.DEFAULT_PROGRAM_HEIGHT));
+    }
+
+    public AppBuilder addInfoPanelView(){
+        infoPanelViewModel = new InfoPanelViewModel();
+        infoPanelController = new InfoPanelController();
+        infoPanelUseCase = new InfoPanelInteractor();
+        infoPanelView = new InfoPanelView();
+        borderPanel.add(bookmarksView, BorderLayout.WEST);
+        return this;
+    }
+
+    public AppBuilder addBookmarkView(){
+
+        bookmarksViewModel = new BookmarksViewModel();
+        removeBookmarkPresenter = new RemoveBookmarkPresenter(bookmarksViewModel);
+        listBookmarksPresenter = new ListBookmarksPresenter(bookmarksViewModel);
+        addBookmarkPresenter = new AddBookmarkPresenter(bookmarksViewModel);
+        addBookmarkUseCase = new AddBookmarkUseCase(bookmarkStorage, addBookmarkPresenter);
+        removeBookmarkUseCase = new RemoveBookmarkUseCase(bookmarkStorage, removeBookmarkPresenter);
+        listBookmarksUseCase = new ListBookmarksUseCase(bookmarkStorage, listBookmarksPresenter);
+
+        ;
+        addBookmarkController = new AddBookmarkController(addBookmarkUseCase);
+        removeBookmarkController = new RemoveBookmarkController(removeBookmarkUseCase);
+        listBookmarksController = new ListBookmarksController(listBookmarksUseCase);
+        bookmarksView = new BookmarksView(bookmarksViewModel, addBookmarkController, removeBookmarkController,
+                listBookmarksController);
+        borderPanel.add(bookmarksView, BorderLayout.EAST);
+
+        return this;
     }
 
     public AppBuilder addProgramTimeView() {
@@ -150,9 +218,10 @@ public class AppBuilder {
                         updateOverlayUseCase,
                         updateMapTimeOutputBoundary
                     );
-        ProgramTimeController programTimeController = new ProgramTimeController(updateMapTimeInputBoundary, java.time.Duration.ofDays(3));
-        // TODO: move the ofDays(3) into entities as a business rule
-        TimeAnimationController timeAnimationController = new TimeAnimationController(updateMapTimeInputBoundary, 500);
+        ProgramTimeController programTimeController = new ProgramTimeController(updateMapTimeInputBoundary,
+                Constants.API_MAX_DAY_LIMIT_DURATION);
+        TimeAnimationController timeAnimationController = new TimeAnimationController(updateMapTimeInputBoundary,
+                Constants.TICK_LENGTH_MS);
         programTimeView.setProgramTimeController(programTimeController);
         programTimeView.setTimeAnimationController(timeAnimationController);
         return this;

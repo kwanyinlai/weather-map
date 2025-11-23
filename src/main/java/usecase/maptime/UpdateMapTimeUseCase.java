@@ -6,10 +6,10 @@ import usecase.weatherlayers.update.UpdateOverlayUseCase;
 
 public class UpdateMapTimeUseCase implements UpdateMapTimeInputBoundary {
     private final ProgramTime programTime;
-    private final UpdateOverlayUseCase updateOverlayUseCase;
+    private final UpdateOverlayInputBoundary updateOverlayUseCase;
     private final UpdateMapTimeOutputBoundary programTimePresenter;
 
-    public UpdateMapTimeUseCase(ProgramTime programTime, UpdateOverlayUseCase updateOverlayUseCase, UpdateMapTimeOutputBoundary programTimePresenter) {
+    public UpdateMapTimeUseCase(ProgramTime programTime, UpdateOverlayInputBoundary updateOverlayUseCase, UpdateMapTimeOutputBoundary programTimePresenter) {
         this.programTime = programTime;
         this.updateOverlayUseCase = updateOverlayUseCase;
         this.programTimePresenter = programTimePresenter;
@@ -29,12 +29,14 @@ public class UpdateMapTimeUseCase implements UpdateMapTimeInputBoundary {
 
     @Override
     public void execute(TickMapTimeInputData ticks){
-        programTime.incrementTime();
+        for(int i = 0; i < ticks.getTicks(); i++){
+            programTime.incrementTime();
+        }
         updateOverlayUseCase.update();
 
         UpdateMapTimeOutputData outputData = new UpdateMapTimeOutputData(
-                programTime.getCurrentTime().plus(ProgramTime.TIME_INCREMENT.multipliedBy(ticks.getTicks()))
-        );
+                programTime.getCurrentTime());
+
         programTimePresenter.updateTimeFromAnimator(
             outputData
         );

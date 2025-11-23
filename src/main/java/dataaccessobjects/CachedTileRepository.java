@@ -133,6 +133,7 @@ public class CachedTileRepository implements TileRepository {
             tileJobSystem.submitJob(tileJob);
             tileJob.getFuture().component2().thenAccept(future -> {
                 for (TileCompletedListener listener : listeners){
+                    tileCache.put(tile, future);
                     listener.onTileCompleted(tileJob.getFuture().component1(), future);
                 }
             }).exceptionally(e -> {
