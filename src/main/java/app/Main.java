@@ -15,6 +15,7 @@ public class Main {
                 .addWeatherLayersUseCase()
                 .addProgramTimeView()
                 .addUpdateMapTimeUseCase()
+                .addBookmarkView()
                 .build();
         application.pack();
         application.setLocationRelativeTo(null);
