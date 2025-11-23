@@ -13,7 +13,7 @@ import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
-public final class InfoPanelView extends JComponent {
+public final class InfoPanelView extends JPanel {
 
     private InfoPanelViewModel vm;
 
@@ -35,8 +35,8 @@ public final class InfoPanelView extends JComponent {
     private static final DateTimeFormatter HOUR_FMT =
             DateTimeFormatter.ofPattern("HH:mm").withZone(ZoneId.systemDefault());
 
-    public InfoPanelView(InfoPanelViewModel vm) {
-        this.vm = vm;
+    public InfoPanelView(InfoPanelViewModel infoPanelViewModel) {
+        this.vm = infoPanelViewModel;
         setOpaque(false);
         setPreferredSize(new Dimension(440, 560));
 
@@ -52,7 +52,6 @@ public final class InfoPanelView extends JComponent {
             @Override public void mouseClicked(MouseEvent e) {
                 if (closeRect.contains(e.getPoint()) && controller != null) {
                     controller.onCloseRequested();
-                    setVisible(false);
                 }
             }
         });
@@ -64,11 +63,10 @@ public final class InfoPanelView extends JComponent {
 
     public void refresh() { repaint(); }
 
+
     @Override
     protected void paintComponent(Graphics g0) {
-        if (vm != null && (vm.error == InfoPanelError.HIDDEN_BY_ZOOM
-                || vm.error == InfoPanelError.USER_CLOSED)) {
-            if (isVisible()) setVisible(false);
+        if (vm == null || !vm.visible) {
             return;
         } else if (!isVisible()) {
             setVisible(true);

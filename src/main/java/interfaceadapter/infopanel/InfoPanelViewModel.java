@@ -5,6 +5,7 @@ import java.time.Instant;
 import java.util.List;
 
 public class InfoPanelViewModel {
+    public boolean visible = false;
     public boolean loading;
     public InfoPanelError error;
     public String placeName;

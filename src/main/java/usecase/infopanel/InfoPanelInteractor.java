@@ -35,30 +35,30 @@ public class InfoPanelInteractor implements InfoPanelInputBoundary {
                 .parse(new ByteArrayInputStream(xml.getBytes(StandardCharsets.UTF_8)));
         doc.getDocumentElement().normalize();
 
-        // Place
+        // place
         String place = "Selected location";
         NodeList locList = doc.getElementsByTagName("location");
         if (locList.getLength() > 0) {
             Element loc = (Element) locList.item(0);
-            String name = text(loc, "name");
+            String name = textOf(loc, "name");
             if (name != null && !name.isBlank()) place = name;
         }
 
-        // Current
+        // current
         Double curTemp = null;
         String condition = null;
         NodeList curList = doc.getElementsByTagName("current");
         if (curList.getLength() > 0) {
             Element cur = (Element) curList.item(0);
-            curTemp = toDouble(text(cur, "temp_c"));
+            curTemp = toDouble(textOf(cur, "temp_c"));
             NodeList condList = cur.getElementsByTagName("condition");
             if (condList.getLength() > 0) {
                 Element c = (Element) condList.item(0);
-                condition = text(c, "text");
+                condition = textOf(c, "text");
             }
         }
 
-        // Hourly temps (today)
+        // hourly temps (today)
         List<Double> hourlyTemps = new ArrayList<>();
         NodeList days = doc.getElementsByTagName("forecastday");
         if (days.getLength() > 0) {
@@ -66,22 +66,22 @@ public class InfoPanelInteractor implements InfoPanelInputBoundary {
             NodeList hours = day0.getElementsByTagName("hour");
             for (int i = 0; i < hours.getLength(); i++) {
                 Element h = (Element) hours.item(i);
-                hourlyTemps.add(toDouble(text(h, "temp_c")));
+                hourlyTemps.add(toDouble(textOf(h, "temp_c")));
             }
         }
 
-        // Extra
+        // extra
         Map<String, String> extra = new HashMap<>();
         if (curList.getLength() > 0) {
             Element cur = (Element) curList.item(0);
-            put(extra, "humidity",    text(cur, "humidity"));
-            put(extra, "wind_kph",    text(cur, "wind_kph"));
-            put(extra, "wind_dir",    text(cur, "wind_dir"));
-            put(extra, "pressure_mb", text(cur, "pressure_mb"));
-            put(extra, "precip_mm",   text(cur, "precip_mm"));
-            put(extra, "feelslike_c", text(cur, "feelslike_c"));
-            put(extra, "uv",          text(cur, "uv"));
-            put(extra, "cloud",       text(cur, "cloud"));
+            put(extra, "humidity",    textOf(cur, "humidity"));
+            put(extra, "wind_kph",    textOf(cur, "wind_kph"));
+            put(extra, "wind_dir",    textOf(cur, "wind_dir"));
+            put(extra, "pressure_mb", textOf(cur, "pressure_mb"));
+            put(extra, "precip_mm",   textOf(cur, "precip_mm"));
+            put(extra, "feelslike_c", textOf(cur, "feelslike_c"));
+            put(extra, "uv",          textOf(cur, "uv"));
+            put(extra, "cloud",       textOf(cur, "cloud"));
         }
 
         return new InfoPanelOutputData(
@@ -95,16 +95,18 @@ public class InfoPanelInteractor implements InfoPanelInputBoundary {
     }
 
     // helpers
-    private static String text(Element parent, String tag) {
+    private static String textOf(Element parent, String tag) {
         NodeList list = parent.getElementsByTagName(tag);
         if (list.getLength() == 0) return null;
         Node n = list.item(0).getFirstChild();
         return n == null ? null : n.getNodeValue();
     }
+
     private static Double toDouble(String s) {
         try { return s == null ? null : Double.valueOf(s); }
         catch (Exception e) { return null; }
     }
+
     private static void put(Map<String,String> m, String k, String v) {
         if (v != null && !v.isBlank()) m.put(k, v);
     }
