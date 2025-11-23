@@ -2,6 +2,8 @@ package entity;
 
 //import org.openstreetmap.gui.jmapviewer.OsmMercator;
 
+import java.util.Objects;
+
 public class TileCoords {
     public final int x;
     public final int y;
@@ -27,6 +29,20 @@ public class TileCoords {
 //        double lat = merc.yToLat(py, zoom);
 //        return new Location(lat, lon);
         return null;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o instanceof TileCoords) {
+            TileCoords other = (TileCoords) o;
+            return this.x == other.x && this.y == other.y && this.zoom == other.zoom;
+        }
+        return false;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(this.x, this.y, this.zoom);
     }
 }
 
