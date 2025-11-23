@@ -13,9 +13,11 @@ public class Main {
                 .addLegendView()
                 .addChangeOpacityView()
                 .addWeatherLayersUseCase()
+                .addMapSettingsPersistence()
                 .addProgramTimeView()
                 .addUpdateMapTimeUseCase()
                 .addBookmarkView()
+                .addSettingsAndBookmarkSidePanel()
 //                .addInfoPanelView()
                 .build();
         application.pack();
