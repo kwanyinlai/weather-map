@@ -18,6 +18,8 @@ import interfaceadapter.bookmark.listbookmark.ListBookmarksController;
 import interfaceadapter.bookmark.listbookmark.ListBookmarksPresenter;
 import interfaceadapter.bookmark.removebookmark.RemoveBookmarkController;
 import interfaceadapter.bookmark.removebookmark.RemoveBookmarkPresenter;
+import interfaceadapter.infopanel.InfoPanelController;
+import interfaceadapter.infopanel.InfoPanelViewModel;
 import interfaceadapter.maptime.programtime.ProgramTimeController;
 import interfaceadapter.maptime.programtime.ProgramTimePresenter;
 import interfaceadapter.maptime.timeanimation.TimeAnimationController;
@@ -31,6 +33,7 @@ import usecase.bookmark.listbookmark.ListBookmarksUseCase;
 import usecase.bookmark.removebookmark.RemoveBookmarkInputBoundary;
 import usecase.bookmark.removebookmark.RemoveBookmarkOutputBoundary;
 import usecase.bookmark.removebookmark.RemoveBookmarkUseCase;
+import usecase.infopanel.InfoPanelInteractor;
 import usecase.maptime.UpdateMapTimeInputBoundary;
 import usecase.weatherLayers.layers.*;
 import usecase.weatherLayers.update.UpdateOverlayOutputBoundary;
@@ -98,9 +101,19 @@ public class AppBuilder {
     private final ListBookmarksPresenter listBookmarksPresenter = new ListBookmarksPresenter(bookmarksViewModel);
 
 
+
     public AppBuilder() {
         borderPanel.setLayout(borderLayout);
         borderPanel.setPreferredSize(new Dimension(Constants.DEFAULT_PROGRAM_WIDTH, Constants.DEFAULT_PROGRAM_HEIGHT));
+    }
+
+    public AppBuilder addInfoPanelView(){
+        infoPanelViewModel = new InfoPanelViewModel();
+        infoPanelController = new InfoPanelController();
+        infoPanelUseCase = new InfoPanelInteractor();
+        infoPanelView = new InfoPanelView();
+        borderPanel.add(bookmarksView, BorderLayout.WEST);
+        return this;
     }
 
     public AppBuilder addBookmarkView(){
@@ -109,6 +122,9 @@ public class AppBuilder {
         addBookmarkUseCase = new AddBookmarkUseCase(bookmarkStorage, addBookmarkPresenter);
         removeBookmarkUseCase = new RemoveBookmarkUseCase(bookmarkStorage, removeBookmarkPresenter);
         listBookmarksUseCase = new ListBookmarksUseCase(bookmarkStorage, listBookmarksPresenter);
+        addBookmarkPresenter = new AddBookmarkPresenter(bookmarksViewModel);
+        removeBookmarkPresenter = new RemoveBookmarkPresenter(bookmarksViewModel);
+        listBookmarksPresenter = new ListBookmarksPresenter(bookmarksViewModel);
         AddBookmarkController addBookmarkController = new AddBookmarkController(addBookmarkUseCase);
         RemoveBookmarkController removeBookmarkController = new RemoveBookmarkController(removeBookmarkUseCase);
         ListBookmarksController listBookmarksController = new ListBookmarksController(listBookmarksUseCase);
