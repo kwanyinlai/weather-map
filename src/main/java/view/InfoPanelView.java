@@ -1,9 +1,13 @@
 package view;
 
+import interfaceadapter.infopanel.InfoPanelController;
 import interfaceadapter.infopanel.InfoPanelViewModel;
+import usecase.infopanel.InfoPanelError;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
@@ -13,10 +17,17 @@ public final class InfoPanelView extends JComponent {
 
     private InfoPanelViewModel vm;
 
+    private InfoPanelController controller;
+
+    private Rectangle closeRect = new Rectangle();
+    private boolean hoverClose = false;
+
     private static final int PAD = 18, RADIUS = 20;
     private static final Color BG = new Color(255,255,255,235);
     private static final Color STROKE = new Color(30,30,30);
     private static final Color SUBTLE = new Color(0,0,0,110);
+    private static final Color CLOSE_BG = new Color(0,0,0,30);
+    private static final Color CLOSE_BG_HOVER = new Color(0,0,0,60);
     private static final Font F_HEADER = new Font("SansSerif", Font.BOLD, 20);
     private static final Font F_CITY   = new Font("SansSerif", Font.BOLD, 26);
     private static final Font F_BIG    = new Font("SansSerif", Font.PLAIN, 18);
@@ -28,15 +39,41 @@ public final class InfoPanelView extends JComponent {
         this.vm = vm;
         setOpaque(false);
         setPreferredSize(new Dimension(440, 560));
+
+        addMouseMotionListener(new MouseAdapter() {
+            @Override public void mouseMoved(MouseEvent e) {
+                boolean h = closeRect.contains(e.getPoint());
+                if (h != hoverClose) { hoverClose = h; repaint(closeRect); }
+                setCursor(h ? Cursor.getPredefinedCursor(Cursor.HAND_CURSOR)
+                        : Cursor.getDefaultCursor());
+            }
+        });
+        addMouseListener(new MouseAdapter() {
+            @Override public void mouseClicked(MouseEvent e) {
+                if (closeRect.contains(e.getPoint()) && controller != null) {
+                    controller.onCloseRequested();
+                    setVisible(false);
+                }
+            }
+        });
     }
 
-    public void setViewModel(InfoPanelViewModel vm) {
-        this.vm = vm;
-        repaint();
-    }
+    public void setController(InfoPanelController controller) { this.controller = controller; }
+
+    public void setViewModel(InfoPanelViewModel vm) { this.vm = vm; repaint(); }
+
+    public void refresh() { repaint(); }
 
     @Override
     protected void paintComponent(Graphics g0) {
+        if (vm != null && (vm.error == InfoPanelError.HIDDEN_BY_ZOOM
+                || vm.error == InfoPanelError.USER_CLOSED)) {
+            if (isVisible()) setVisible(false);
+            return;
+        } else if (!isVisible()) {
+            setVisible(true);
+        }
+
         Graphics2D g = (Graphics2D) g0.create();
         g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
@@ -45,6 +82,20 @@ public final class InfoPanelView extends JComponent {
         g.fillRoundRect(0,0,w,h,RADIUS,RADIUS);
         g.setColor(STROKE);
         g.drawRoundRect(0,0,w-1,h-1,RADIUS,RADIUS);
+
+        int btnSize = 28;
+        closeRect.setBounds(w - PAD - btnSize, PAD - 4, btnSize, btnSize);
+        g.setColor(hoverClose ? CLOSE_BG_HOVER : CLOSE_BG);
+        g.fillRoundRect(closeRect.x, closeRect.y, closeRect.width, closeRect.height, 10, 10);
+        g.setColor(STROKE);
+        g.drawRoundRect(closeRect.x, closeRect.y, closeRect.width, closeRect.height, 10, 10);
+        // 画 ×
+        g.setFont(F_BIG);
+        FontMetrics fmClose = g.getFontMetrics();
+        String closeChar = "\u2715"; // ×
+        int cx = closeRect.x + (closeRect.width - fmClose.stringWidth(closeChar)) / 2;
+        int cy = closeRect.y + (closeRect.height + fmClose.getAscent() - fmClose.getDescent()) / 2;
+        g.drawString(closeChar, cx, cy);
 
         int x = PAD, y = PAD;
 
