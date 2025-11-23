@@ -41,4 +41,12 @@ public class Location {
         return new Location(getNormalizedLatitude(), getNormalizedLongitude());
     }
 
- }
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof Location) {
+            Location loc = (Location) obj;
+            return latitude == loc.getLatitude() && longitude == loc.getLongitude();
+        }
+        return false;
+    }
+}

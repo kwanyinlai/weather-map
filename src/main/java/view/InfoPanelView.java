@@ -41,14 +41,17 @@ public final class InfoPanelView extends JComponent {
         g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
         int w = getWidth(), h = getHeight();
-        g.setColor(BG); g.fillRoundRect(0,0,w,h,RADIUS,RADIUS);
-        g.setColor(STROKE); g.drawRoundRect(0,0,w-1,h-1,RADIUS,RADIUS);
+        g.setColor(BG);
+        g.fillRoundRect(0,0,w,h,RADIUS,RADIUS);
+        g.setColor(STROKE);
+        g.drawRoundRect(0,0,w-1,h-1,RADIUS,RADIUS);
 
         int x = PAD, y = PAD;
 
         if (vm == null || vm.loading) {
             y += drawLeft(g, "Loading weather…", x, y, F_BIG, STROKE);
-            g.dispose(); return;
+            g.dispose();
+            return;
         }
 
         // Header
@@ -108,14 +111,16 @@ public final class InfoPanelView extends JComponent {
     private static String fallback(String fb, String s){ return (s == null || s.trim().isEmpty()) ? fb : s; }
 
     private static int drawLeft(Graphics2D g, String t, int x, int y, Font f, Color c){
-        g.setFont(f); g.setColor(c);
+        g.setFont(f);
+        g.setColor(c);
         FontMetrics fm = g.getFontMetrics();
         g.drawString(t, x, y + fm.getAscent());
         return fm.getHeight();
     }
 
     private static int drawRight(Graphics2D g, String t, int rx, int y, Font f, Color c){
-        g.setFont(f); g.setColor(c);
+        g.setFont(f);
+        g.setColor(c);
         FontMetrics fm = g.getFontMetrics();
         int tw = fm.stringWidth(t);
         g.drawString(t, rx - tw, y + fm.getAscent());

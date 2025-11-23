@@ -7,26 +7,28 @@ import java.time.Instant;
 import constants.Constants;
 import entity.ProgramTime;
 import entity.Viewport;
-import interfaceadapter.maptime.ProgramTimeController;
-import interfaceadapter.maptime.ProgramTimePresenter;
+import interfaceadapter.maptime.programtime.ProgramTimeController;
+import interfaceadapter.maptime.programtime.ProgramTimePresenter;
+import interfaceadapter.maptime.timeanimation.TimeAnimationController;
 import interfaceadapter.weatherLayers.*;
+import org.openstreetmap.gui.jmapviewer.JMapViewer;
 import usecase.maptime.UpdateMapTimeInputBoundary;
-import usecase.weatherLayers.layers.ChangeLayerOutputBoundary;
-import usecase.weatherLayers.layers.ChangeLayerUseCase;
-import usecase.weatherLayers.layers.ChangeOpacityUseCase;
+import usecase.weatherLayers.layers.*;
 import usecase.weatherLayers.update.UpdateOverlayOutputBoundary;
 import usecase.weatherLayers.update.UpdateOverlaySizeUseCase;
 import usecase.weatherLayers.update.UpdateOverlayUseCase;
 import usecase.maptime.UpdateMapTimeOutputBoundary;
 import usecase.maptime.UpdateMapTimeUseCase;
-import view.ChangeWeatherLayersView;
-import view.DisplayOverlayView;
-import view.MapOverlayStructureView;
-import view.ProgramTimeView;
-import interfaceadapter.maptime.ProgramTimeViewModel;
+import view.*;
+import interfaceadapter.maptime.programtime.ProgramTimeViewModel;
 import dataaccessinterface.TileRepository;
 import dataaccessobjects.CachedTileRepository;
 import entity.OverlayManager;
+import interfaceadapter.mapinteraction.MapViewModel;
+import interfaceadapter.mapinteraction.PanAndZoomController;
+import interfaceadapter.mapinteraction.PanAndZoomPresenter;
+import usecase.mapinteraction.PanAndZoomUseCase;
+import usecase.mapinteraction.PanAndZoomInputBoundary;
 
 public class AppBuilder {
     private final JPanel borderPanel = new JPanel();
@@ -39,6 +41,9 @@ public class AppBuilder {
 
     private UpdateOverlayViewModel overlayViewModel;
 
+    private LegendsView legendsView;
+    private LegendViewModel legendViewModel;
+
     private UpdateOverlayUseCase updateOverlayUseCase;
 
     private WeatherLayersViewModel weatherLayersViewModel;
@@ -49,14 +54,19 @@ public class AppBuilder {
 
 
     private MapOverlayStructureView mapOverlayStructure;
+    private JMapViewer mapViewer = new JMapViewer();
 
     // initialising core entities
     private final ProgramTime programTime = new ProgramTime(Instant.now());
-    private final TileRepository tileRepository = new CachedTileRepository(100); // TODO: change cache size
     private final OverlayManager overlayManager = new OverlayManager(Constants.DEFAULT_MAP_WIDTH,
             Constants.DEFAULT_MAP_HEIGHT);
-    private final Viewport viewport = new Viewport(300,300,Constants.DEFAULT_MAP_WIDTH,
-            0, 6, 0, Constants.DEFAULT_MAP_HEIGHT);
+    private final Viewport viewport = new Viewport(000,000,Constants.DEFAULT_MAP_WIDTH,
+            0, 6, 0, 584);
+    private PanAndZoomView panAndZoomView;
+    private MapViewModel mapViewModel;
+    private PanAndZoomPresenter panAndZoomPresenter;
+    private PanAndZoomInputBoundary panAndZoomUseCase;
+    private PanAndZoomController panAndZoomController;
 
     public AppBuilder() {
         borderPanel.setLayout(borderLayout);
@@ -72,7 +82,7 @@ public class AppBuilder {
 
     public AppBuilder addChangeOpacityView(){
         weatherLayersViewModel = new WeatherLayersViewModel(0.5);
-        changeWeatherView = new ChangeWeatherLayersView(weatherLayersViewModel);
+        changeWeatherView = new ChangeWeatherLayersView(weatherLayersViewModel, mapViewer);
         borderPanel.add(changeWeatherView, BorderLayout.EAST);
         return this;
     }
@@ -92,21 +102,30 @@ public class AppBuilder {
         
         mapOverlayStructure = new MapOverlayStructureView();
         mapOverlayStructure.addPropertyChangeListener(weatherOverlayView);
-        //mapOverlayStructure.addComponent(mapComponent, 1);
+        mapOverlayStructure.addComponent(panAndZoomView, 1);
         mapOverlayStructure.addComponent(weatherOverlayView, 2);
         //...
         borderPanel.add(mapOverlayStructure, BorderLayout.CENTER);
         return this;
     }
 
+    public AppBuilder addLegendView(){
+        legendViewModel = new LegendViewModel();
+        legendsView = new LegendsView(legendViewModel);
+        borderPanel.add(legendsView, BorderLayout.NORTH);
+        return this;
+    }
+
     public AppBuilder addWeatherLayersUseCase(){
         ChangeLayerOutputBoundary layerOutputBoundary = new WeatherLayersPresenter(weatherLayersViewModel);
-        changeLayerUseCase = new ChangeLayerUseCase(overlayManager, layerOutputBoundary);
+        UpdateLegendOutputBoundary legendOutputBoundary = new LegendPresenter(legendViewModel);
+        changeLayerUseCase = new ChangeLayerUseCase(overlayManager, layerOutputBoundary, legendOutputBoundary);
         changeOpacityUseCase = new ChangeOpacityUseCase(overlayManager);
         WeatherLayersController layersController = new WeatherLayersController(changeLayerUseCase, changeOpacityUseCase);
         changeWeatherView.addLayerController(layersController);
         UpdateOverlayController updateCont = new UpdateOverlayController(updateOverlayUseCase);
         changeWeatherView.addUpdateController(updateCont);
+        viewport.addListener(updateCont);
         return this;
     }
 
@@ -115,7 +134,7 @@ public class AppBuilder {
         final UpdateOverlayOutputBoundary output = new UpdateOverlayPresenter(overlayViewModel);
          updateOverlayUseCase = new UpdateOverlayUseCase(
                 overlayManager,
-                tileRepository,
+                CachedTileRepository.getInstance(),
                 programTime,
                  viewport,
                  output
@@ -131,8 +150,33 @@ public class AppBuilder {
                         updateOverlayUseCase,
                         updateMapTimeOutputBoundary
                     );
-        ProgramTimeController controller = new ProgramTimeController(updateMapTimeInputBoundary, java.time.Duration.ofDays(3));
-        programTimeView.setProgramTimeController(controller);
+        ProgramTimeController programTimeController = new ProgramTimeController(updateMapTimeInputBoundary, java.time.Duration.ofDays(3));
+        // TODO: move the ofDays(3) into entities as a business rule
+        TimeAnimationController timeAnimationController = new TimeAnimationController(updateMapTimeInputBoundary, 500);
+        programTimeView.setProgramTimeController(programTimeController);
+        programTimeView.setTimeAnimationController(timeAnimationController);
+        return this;
+    }
+    public AppBuilder addPanZoomView() {
+        mapViewModel = new MapViewModel();
+        panAndZoomView = new PanAndZoomView(mapViewModel, mapViewer);
+        panAndZoomPresenter = new PanAndZoomPresenter(
+                viewport,
+                panAndZoomView.getMapViewer(),
+                mapViewModel
+        );
+        panAndZoomUseCase = new PanAndZoomUseCase(viewport);
+        panAndZoomController = new PanAndZoomController(
+               panAndZoomUseCase,
+                panAndZoomView.getMapViewer()
+        );
+        panAndZoomView.setController(panAndZoomController);
+        viewport.getSupport().addPropertyChangeListener(evt -> {
+            if (updateOverlayUseCase != null) {
+                updateOverlayUseCase.update();
+            }
+        });
+
         return this;
     }
 
@@ -142,6 +186,7 @@ public class AppBuilder {
 
         application.add(borderPanel);
         updateOverlayUseCase.update();
+
         return application;
     }
 

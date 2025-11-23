@@ -6,4 +6,7 @@ public interface UpdateMapTimeOutputBoundary {
      * @param time new program time
      */
     void updateTime(UpdateMapTimeOutputData time);
+    void updateTimeFromAnimator(UpdateMapTimeOutputData time);
+    void incrementTime();
+
 }

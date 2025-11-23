@@ -1,5 +1,9 @@
 package entity;
 
+import dataaccessinterface.TileNotFoundException;
+import dataaccessinterface.TileRepository;
+import dataaccessobjects.tilejobs.TileCompletedListener;
+
 import java.awt.*;
 import java.awt.image.*;
 import java.util.ArrayList;
@@ -27,6 +31,41 @@ public class OverlayManager {
         this.overlay = new BufferedImage(size.width, size.height, BufferedImage.TYPE_INT_ARGB);
     }
 
+    /**
+     * Clear the overlay area that is outside the map area
+     * @param tl the viewport's top left tile coordinate
+     * @param br the viewport's bottom right tile coordinate
+     * @param zoom
+     */
+    public void clear(Vector tl, Vector br, int zoom){
+        if (tl.x < 0 || tl.y < 0){
+            double xFactor = Math.abs(tl.x) / (br.x - tl.x);
+            double yFactor = Math.abs(tl.y) / (br.y - tl.y);
+            clearArea(0,0, (int)(overlay.getWidth() * xFactor), overlay.getHeight());
+            clearArea(0,0, overlay.getWidth(), (int)(overlay.getHeight()* yFactor));
+        }
+        if (br.x > Math.pow(2, zoom) || br.y > Math.pow(2, zoom)){
+            double xFactor = Math.abs(br.x) / (br.x - tl.x);
+            double yFactor = Math.abs(br.y) / (br.y - tl.y);
+            clearArea((int)(overlay.getWidth() * (1 - xFactor)), 0,
+                    (int)(overlay.getWidth() * xFactor), overlay.getHeight());
+            clearArea(0, (int)(overlay.getHeight()* (1 - yFactor)),
+                    overlay.getWidth(), (int)(overlay.getHeight() * (yFactor)));
+        }
+
+
+    }
+
+    private void clearArea(int tx, int ty, int width, int height){
+        Graphics2D g = (Graphics2D) overlay.getGraphics();
+        g.setBackground(new Color(0,0,0,0));
+        g.clearRect(tx, ty, width, height);
+        g.dispose();
+    }
+
+    public void clearAll(){
+        clearArea(0,0, overlay.getWidth(), overlay.getHeight());
+    }
 
     public void setSelected(WeatherType selection) throws LayerNotFoundException {
         // Change the selected layer. Raise LayerNotFoundException if selection is not an added overlay type.
@@ -62,7 +101,6 @@ public class OverlayManager {
      **/
     public void drawTileToOverlay(Vector tl, Vector br, WeatherTile tile, BufferedImage tileImg){
         //
-
         TileCoords tc = tile.getCoordinates();
         //convert tile location to Vector for convenience.
         Vector tileCoord = new Vector(tc.getX(),tc.getY());
@@ -87,7 +125,7 @@ public class OverlayManager {
         // same as c * "scale" = c / (2^zoom * 256)
         double pngToTileFactor = scaleToOvl / 256 ;
         //apply scale to the tile image.
-        Image scaledTileImg = tileImg.getScaledInstance((int)(256*pngToTileFactor), -1, Image.SCALE_AREA_AVERAGING);
+        Image scaledTileImg = tileImg.getScaledInstance((int)(256*pngToTileFactor), -1, Image.SCALE_FAST);
 
         //draw tile image onto overlay with selected layer's opacity.
         Graphics2D g = this.overlay.createGraphics();
@@ -95,8 +133,6 @@ public class OverlayManager {
         g.setComposite(alphaComposite);
         g.drawImage(scaledTileImg, (int)tileCoord.x, (int)tileCoord.y, null);
         g.dispose();
-
     }
-
 }
 
