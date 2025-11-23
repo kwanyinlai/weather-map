@@ -43,7 +43,7 @@ public class ChangeWeatherLayersView extends JPanel{
         );
 
         //drop down menu for basemap options
-        if (System.getenv("API_KEY") != null) {
+        if (System.getenv("THUNDERFOREST_KEY") != null) {
            JComboBox<TileSource> basemapDropdown = new JComboBox<>(new TileSource[]{
                     new OsmTileSource.Mapnik(),
                     new OsmTileSource.CycleMap(),
@@ -61,6 +61,8 @@ public class ChangeWeatherLayersView extends JPanel{
             this.add(basemapDropdown);
         }
         else{
+            //https://www.thunderforest.com/docs/apikeys/
+            //Set env variable THUNDERFOREST_KEY={YOUR KEY}
             JLabel warning = new JLabel("<html>Missing Thunderforest API key.<br>Basemap cannot be switched.</html>");
             warning.setSize(200,200);
             this.add(warning);
