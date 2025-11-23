@@ -12,6 +12,12 @@ import dataaccessobjects.InDiskBookmarkStorage;
 import dataaccessobjects.OkHttpsPointWeatherGatewayXml;
 import entity.ProgramTime;
 import entity.Viewport;
+import entity.Location;
+import interfaceadapter.bookmark.visitbookmark.VisitBookmarkController;
+import interfaceadapter.bookmark.visitbookmark.VisitBookmarkPresenter;
+import usecase.bookmark.visitbookmark.VisitBookmarkInputBoundary;
+import usecase.bookmark.visitbookmark.VisitBookmarkOutputBoundary;
+import usecase.bookmark.visitbookmark.VisitBookmarkUseCase;
 import interfaceadapter.bookmark.BookmarksViewModel;
 import interfaceadapter.bookmark.addbookmark.AddBookmarkController;
 import interfaceadapter.bookmark.addbookmark.AddBookmarkPresenter;
@@ -101,6 +107,9 @@ public class AppBuilder {
     private AddBookmarkOutputBoundary addBookmarkPresenter;
     private RemoveBookmarkOutputBoundary removeBookmarkPresenter;
     private ListBookmarksPresenter listBookmarksPresenter;
+    private VisitBookmarkInputBoundary visitBookmarkUseCase;
+    private VisitBookmarkOutputBoundary visitBookmarkPresenter;
+    private VisitBookmarkController visitBookmarkController;
 
 
 
@@ -109,14 +118,14 @@ public class AppBuilder {
         borderPanel.setPreferredSize(new Dimension(Constants.DEFAULT_PROGRAM_WIDTH, Constants.DEFAULT_PROGRAM_HEIGHT));
     }
 
-    public AppBuilder addInfoPanelView(){
-        infoPanelViewModel = new InfoPanelViewModel();
-        infoPanelController = new InfoPanelController();
-        infoPanelUseCase = new InfoPanelInteractor();
-        infoPanelView = new InfoPanelView();
-        borderPanel.add(bookmarksView, BorderLayout.WEST);
-        return this;
-    }
+//    public AppBuilder addInfoPanelView(){
+//        infoPanelViewModel = new InfoPanelViewModel();
+//        infoPanelController = new InfoPanelController();
+//        infoPanelUseCase = new InfoPanelInteractor();
+//        infoPanelView = new InfoPanelView();
+//        borderPanel.add(bookmarksView, BorderLayout.WEST);
+//        return this;
+//    }
 
     public AppBuilder addBookmarkView(){
 
@@ -124,20 +133,44 @@ public class AppBuilder {
         removeBookmarkPresenter = new RemoveBookmarkPresenter(bookmarksViewModel);
         listBookmarksPresenter = new ListBookmarksPresenter(bookmarksViewModel);
         addBookmarkPresenter = new AddBookmarkPresenter(bookmarksViewModel);
+
         addBookmarkUseCase = new AddBookmarkUseCase(bookmarkStorage, addBookmarkPresenter);
         removeBookmarkUseCase = new RemoveBookmarkUseCase(bookmarkStorage, removeBookmarkPresenter);
         listBookmarksUseCase = new ListBookmarksUseCase(bookmarkStorage, listBookmarksPresenter);
 
-        ;
-        addBookmarkController = new AddBookmarkController(addBookmarkUseCase);
-        removeBookmarkController = new RemoveBookmarkController(removeBookmarkUseCase);
-        listBookmarksController = new ListBookmarksController(listBookmarksUseCase);
-        bookmarksView = new BookmarksView(bookmarksViewModel, addBookmarkController, removeBookmarkController,
-                listBookmarksController);
+        AddBookmarkController addBookmarkController =
+                new AddBookmarkController(addBookmarkUseCase);
+        RemoveBookmarkController removeBookmarkController =
+                new RemoveBookmarkController(removeBookmarkUseCase);
+        ListBookmarksController listBookmarksController =
+                new ListBookmarksController(listBookmarksUseCase);
+
+        visitBookmarkPresenter = new VisitBookmarkPresenter(bookmarksViewModel);
+        visitBookmarkUseCase = new VisitBookmarkUseCase(
+                viewport,
+                updateOverlayUseCase,
+                panAndZoomPresenter,
+                visitBookmarkPresenter
+        );
+        visitBookmarkController = new VisitBookmarkController(visitBookmarkUseCase);
+
+        bookmarksView = new BookmarksView(
+                bookmarksViewModel,
+                addBookmarkController,
+                removeBookmarkController,
+                listBookmarksController,
+                visitBookmarkController   // NEW PARAM
+        );
+
+        // If you previously set a preferred size, keep it here:
+        // bookmarksView.setPreferredSize(new Dimension(260, 0));
+
         borderPanel.add(bookmarksView, BorderLayout.EAST);
 
         return this;
     }
+
+
 
     public AppBuilder addProgramTimeView() {
         programTimeViewModel = new ProgramTimeViewModel();
@@ -238,13 +271,36 @@ public class AppBuilder {
         );
         panAndZoomView.setController(panAndZoomController);
         viewport.getSupport().addPropertyChangeListener(evt -> {
+            // Refresh weather overlay when the viewport changes.
             if (updateOverlayUseCase != null) {
                 updateOverlayUseCase.update();
             }
+            // Keep the bookmark Lat/Lon fields in sync with the viewport centre.
+            syncLatLonFieldsToViewport();
         });
 
         return this;
     }
+
+    /**
+     * Syncs the bookmark input fields with the current viewport position.
+     * Assumes the viewport can provide its centre as a Location.
+     */
+    private void syncLatLonFieldsToViewport() {
+        if (bookmarksView == null || viewport == null) {
+            return;
+        }
+
+        Location centre = viewport.getCentre();
+
+        if (centre != null) {
+            bookmarksView.setCoordinates(
+                    centre.getLatitude(),
+                    centre.getLongitude()
+            );
+        }
+    }
+
 
     public JFrame build() {
         final JFrame application = new JFrame("Weather Map");

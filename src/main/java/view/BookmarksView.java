@@ -6,13 +6,16 @@ import interfaceadapter.bookmark.BookmarksViewModel.BookmarksState;
 import interfaceadapter.bookmark.addbookmark.AddBookmarkController;
 import interfaceadapter.bookmark.removebookmark.RemoveBookmarkController;
 import interfaceadapter.bookmark.listbookmark.ListBookmarksController;
+import interfaceadapter.bookmark.visitbookmark.VisitBookmarkController;
 
 import javax.swing.*;
+import javax.swing.text.NumberFormatter;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.text.NumberFormat;
 import java.util.List;
 
 /**
@@ -28,18 +31,19 @@ public final class BookmarksView extends JPanel implements PropertyChangeListene
     private final AddBookmarkController addBookmarkController;
     private final RemoveBookmarkController removeBookmarkController;
     private final ListBookmarksController listBookmarksController;
+    private final VisitBookmarkController visitBookmarkController;
 
     // UI components
     private final JTextField nameField = new JTextField(15);
-    private final JTextField latitudeField = new JTextField(8);
-    private final JTextField longitudeField = new JTextField(8);
+    private final JFormattedTextField latitudeField;
+    private final JFormattedTextField longitudeField;
 
     private final DefaultListModel<String> bookmarksListModel = new DefaultListModel<>();
     private final JList<String> bookmarksList = new JList<>(bookmarksListModel);
 
     private final JButton addButton = new JButton("Add");
     private final JButton removeButton = new JButton("Remove");
-    private final JButton refreshButton = new JButton("Refresh");
+    private final JButton visitButton = new JButton("Visit");
 
     private final JLabel errorLabel = new JLabel();
 
@@ -54,12 +58,35 @@ public final class BookmarksView extends JPanel implements PropertyChangeListene
     public BookmarksView(BookmarksViewModel viewModel,
                          AddBookmarkController addBookmarkController,
                          RemoveBookmarkController removeBookmarkController,
-                         ListBookmarksController listBookmarksController) {
+                         ListBookmarksController listBookmarksController,
+                         VisitBookmarkController visitBookmarkController) {
 
         this.viewModel = viewModel;
         this.addBookmarkController = addBookmarkController;
         this.removeBookmarkController = removeBookmarkController;
         this.listBookmarksController = listBookmarksController;
+        this.visitBookmarkController = visitBookmarkController;
+
+        // Create formatted text fields for latitude and longitude that accept doubles
+        NumberFormat numberFormat = NumberFormat.getNumberInstance();
+        numberFormat.setGroupingUsed(false);
+        NumberFormatter latFormatter = new NumberFormatter(numberFormat);
+        latFormatter.setValueClass(Double.class);
+        latFormatter.setAllowsInvalid(true);
+        latFormatter.setMinimum(-90.0);
+        latFormatter.setMaximum(90.0);
+        latitudeField = new JFormattedTextField(latFormatter);
+        latitudeField.setColumns(8);
+        latitudeField.setFocusLostBehavior(JFormattedTextField.PERSIST);
+
+        NumberFormatter lonFormatter = new NumberFormatter(numberFormat);
+        lonFormatter.setValueClass(Double.class);
+        lonFormatter.setAllowsInvalid(true);
+        lonFormatter.setMinimum(-180.0);
+        lonFormatter.setMaximum(180.0);
+        longitudeField = new JFormattedTextField(lonFormatter);
+        longitudeField.setColumns(8);
+        longitudeField.setFocusLostBehavior(JFormattedTextField.PERSIST);
 
         setLayout(new BorderLayout());
         buildUi();
@@ -75,20 +102,32 @@ public final class BookmarksView extends JPanel implements PropertyChangeListene
      * Builds the Swing UI components and layout.
      */
     private void buildUi() {
-        // Top panel: inputs for a new / existing bookmark.
+        // Top panel: inputs for a new / existing bookmark, stacked vertically.
         JPanel inputPanel = new JPanel();
-        inputPanel.setLayout(new FlowLayout(FlowLayout.LEFT));
+        inputPanel.setLayout(new BoxLayout(inputPanel, BoxLayout.Y_AXIS));
 
-        inputPanel.add(new JLabel("Name:"));
-        inputPanel.add(nameField);
+        // Name row
+        JPanel namePanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        namePanel.add(new JLabel("Name:"));
+        namePanel.add(nameField);
 
-        inputPanel.add(new JLabel("Lat:"));
-        inputPanel.add(latitudeField);
+        // Latitude row
+        JPanel latPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        latPanel.add(new JLabel("Lat:"));
+        latPanel.add(latitudeField);
 
-        inputPanel.add(new JLabel("Lon:"));
-        inputPanel.add(longitudeField);
+        // Longitude row
+        JPanel lonPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        lonPanel.add(new JLabel("Lon:"));
+        lonPanel.add(longitudeField);
+
+        // Vertically display the rows
+        inputPanel.add(namePanel);
+        inputPanel.add(latPanel);
+        inputPanel.add(lonPanel);
 
         add(inputPanel, BorderLayout.NORTH);
+
 
         // Center: list of bookmarks.
         bookmarksList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
@@ -103,7 +142,7 @@ public final class BookmarksView extends JPanel implements PropertyChangeListene
         buttonsPanel.setLayout(new FlowLayout(FlowLayout.LEFT));
         buttonsPanel.add(addButton);
         buttonsPanel.add(removeButton);
-        buttonsPanel.add(refreshButton);
+        buttonsPanel.add(visitButton);
 
         bottomPanel.add(buttonsPanel, BorderLayout.NORTH);
 
@@ -129,10 +168,26 @@ public final class BookmarksView extends JPanel implements PropertyChangeListene
                 String lonText = longitudeField.getText().trim();
 
                 try {
-                    double latitude = Double.parseDouble(latText);
-                    double longitude = Double.parseDouble(lonText);
+                    Object latValue = latitudeField.getValue();
+                    Object lonValue = longitudeField.getValue();
+                    
+                    double latitude;
+                    double longitude;
+                    
+                    if (latValue instanceof Number) {
+                        latitude = ((Number) latValue).doubleValue();
+                    } else {
+                        latitude = Double.parseDouble(latText);
+                    }
+                    
+                    if (lonValue instanceof Number) {
+                        longitude = ((Number) lonValue).doubleValue();
+                    } else {
+                        longitude = Double.parseDouble(lonText);
+                    }
+                    
                     addBookmarkController.addBookmark(name, latitude, longitude);
-                } catch (NumberFormatException ex) {
+                } catch (NumberFormatException | NullPointerException ex) {
                     // Local validation error – show directly in the view.
                     errorLabel.setText("Latitude and longitude must be valid numbers.");
                 }
@@ -144,50 +199,56 @@ public final class BookmarksView extends JPanel implements PropertyChangeListene
         removeButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                String selected = bookmarksList.getSelectedValue();
-                String name;
-                double latitude;
-                double longitude;
-
-                if (selected != null) {
-                    // Expected format: "name (lat, lon)"
-                    int parenIndex = selected.indexOf('(');
-                    int commaIndex = selected.indexOf(',');
-                    int closeIndex = selected.indexOf(')');
-                    if (parenIndex > 0 && commaIndex > parenIndex && closeIndex > commaIndex) {
-                        name = selected.substring(0, parenIndex).trim();
-                        String latText = selected.substring(parenIndex + 1, commaIndex).trim();
-                        String lonText = selected.substring(commaIndex + 1, closeIndex).trim();
-                        try {
-                            latitude = Double.parseDouble(latText);
-                            longitude = Double.parseDouble(lonText);
-                        } catch (NumberFormatException ex) {
-                            // Fall back to text fields if parsing fails.
-                            handleRemoveUsingFields();
-                            return;
-                        }
-                    } else {
-                        // Unexpected format; fall back to fields.
-                        handleRemoveUsingFields();
+                int selectedIndex = bookmarksList.getSelectedIndex();
+                
+                if (selectedIndex >= 0) {
+                    
+                    BookmarksState state = viewModel.getState();
+                    if (state != null && state.getBookmarks() != null
+                            && selectedIndex < state.getBookmarks().size()) {
+                        BookmarkedLocation selected = state.getBookmarks().get(selectedIndex);
+                        removeBookmarkController.removeBookmark(
+                                selected.getName(),
+                                selected.getLatitude(),
+                                selected.getLongitude()
+                        );
                         return;
                     }
-                } else {
-                    // No selected item; use fields.
-                    handleRemoveUsingFields();
+                }
+                
+                // No selected item or state unavailable; use text fields.
+                handleRemoveUsingFields();
+            }
+        });
+
+        // Visit selected bookmark: move viewport to its coordinates.
+        visitButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                int selectedIndex = bookmarksList.getSelectedIndex();
+                if (selectedIndex < 0) {
+                    errorLabel.setText("Select a bookmark to visit.");
                     return;
                 }
 
-                removeBookmarkController.removeBookmark(name, latitude, longitude);
+                BookmarksState state = viewModel.getState();
+                if (state == null || state.getBookmarks() == null
+                        || selectedIndex >= state.getBookmarks().size()) {
+                    errorLabel.setText("Unable to determine selected bookmark.");
+                    return;
+                }
+
+                BookmarkedLocation selected =
+                        state.getBookmarks().get(selectedIndex);
+
+                visitBookmarkController.visitBookmark(
+                        selected.getLatitude(),
+                        selected.getLongitude()
+                );
             }
         });
 
-        // Refresh / list bookmarks.
-        refreshButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                listBookmarksController.listBookmarks();
-            }
-        });
+
     }
 
     /**
@@ -198,12 +259,38 @@ public final class BookmarksView extends JPanel implements PropertyChangeListene
         String latText = latitudeField.getText().trim();
         String lonText = longitudeField.getText().trim();
         try {
-            double latitude = Double.parseDouble(latText);
-            double longitude = Double.parseDouble(lonText);
+            Object latValue = latitudeField.getValue();
+            Object lonValue = longitudeField.getValue();
+            
+            double latitude;
+            double longitude;
+            
+            if (latValue instanceof Number) {
+                latitude = ((Number) latValue).doubleValue();
+            } else {
+                latitude = Double.parseDouble(latText);
+            }
+            
+            if (lonValue instanceof Number) {
+                longitude = ((Number) lonValue).doubleValue();
+            } else {
+                longitude = Double.parseDouble(lonText);
+            }
+            
             removeBookmarkController.removeBookmark(name, latitude, longitude);
-        } catch (NumberFormatException ex) {
+        } catch (NumberFormatException | NullPointerException ex) {
             errorLabel.setText("Latitude and longitude must be valid numbers.");
         }
+    }
+
+    /**
+     * Updates the latitude and longitude text fields to match the given coordinates.
+     * Intended to be called when the map viewport changes.
+     */
+    public void setCoordinates(double latitude, double longitude) {
+        // If you're worried about threads, you can wrap this in SwingUtilities.invokeLater.
+        latitudeField.setValue(latitude);
+        longitudeField.setValue(longitude);
     }
 
     /**
