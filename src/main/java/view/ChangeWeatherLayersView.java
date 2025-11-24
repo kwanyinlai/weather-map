@@ -41,6 +41,8 @@ public class ChangeWeatherLayersView extends JPanel{
             this.add(basemapDropdown);
         }
         else{
+            //https://www.thunderforest.com/docs/apikeys/
+            //Set env variable THUNDERFOREST_KEY={YOUR KEY}
             JLabel warning = new JLabel("<html>Missing Thunderforest API key.<br>Basemap cannot be switched.</html>");
             warning.setSize(200,200);
             this.add(warning);

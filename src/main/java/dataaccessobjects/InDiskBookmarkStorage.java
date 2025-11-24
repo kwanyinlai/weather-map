@@ -63,27 +63,34 @@ public final class InDiskBookmarkStorage implements BookmarkedLocationStorage {
     }
 
     /**
-     * Removes the first persisted bookmark that matches the given entity by name and
+     * Removes all persisted bookmarks that match the given entity by name and
      * latitude/longitude, then persists the updated collection.
      *
      * @param b The bookmark to remove.
-     * @return {@code true} if a matching bookmark was found and removed; {@code false} otherwise.
+     * @return {@code true} if at least one matching bookmark was found and removed; {@code false} otherwise.
      * @throws dataaccessobjects.BookmarkPersistenceException If writing to disk fails.
      */
     @Override
     public synchronized boolean removeBookmarkedLocation(BookmarkedLocation b) {
         JSONArray arr = readArray();
+        boolean removed = false;
 
-        for (int i = 0; i < arr.length(); i++) {
+        // Iterate backwards to avoid index issues when removing elements
+        for (int i = arr.length() - 1; i >= 0; i--) {
             JSONObject obj = arr.getJSONObject(i);
 
             if (jsonMatchesBookmark(obj, b)) {
                 arr.remove(i);
-                writeArray(arr);
-                return true;
+                removed = true;
             }
         }
-        return false;
+
+        // Only write if something was removed
+        if (removed) {
+            writeArray(arr);
+        }
+
+        return removed;
     }
 
 

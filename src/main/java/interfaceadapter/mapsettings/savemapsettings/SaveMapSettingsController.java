@@ -28,13 +28,15 @@ public final class SaveMapSettingsController {
      * @param centerLatitude  current map center latitude
      * @param centerLongitude current map center longitude
      * @param zoomLevel       current zoom level
+     * @param weatherType     currently selected weather type (may be null)
      */
     public void saveMapSettings(double centerLatitude,
                                 double centerLongitude,
-                                int zoomLevel) {
+                                int zoomLevel,
+                                entity.WeatherType weatherType) {
 
         SaveMapSettingsInputData inputData =
-                new SaveMapSettingsInputData(centerLatitude, centerLongitude, zoomLevel);
+                new SaveMapSettingsInputData(centerLatitude, centerLongitude, zoomLevel, weatherType);
 
         saveMapSettingsInputBoundary.saveMapSettings(inputData);
     }

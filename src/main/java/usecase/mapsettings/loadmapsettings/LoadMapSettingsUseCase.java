@@ -2,6 +2,7 @@ package usecase.mapsettings.loadmapsettings;
 
 import dataaccessinterface.SavedMapOverlaySettings;
 import entity.Location;
+import entity.WeatherType;
 
 /**
  * Interactor for the "load map settings" use case.
@@ -34,9 +35,10 @@ public final class LoadMapSettingsUseCase implements LoadMapSettingsInputBoundar
                 return;
             }
 
-            // Retrieve the saved center location and zoom level.
+            // Retrieve the saved center location, zoom level, and weather type.
             Location center = savedMapOverlaySettings.getSavedCenterLocation();
             int zoomLevel = savedMapOverlaySettings.getSavedZoomLevel();
+            WeatherType weatherType = savedMapOverlaySettings.getSavedWeatherType();
 
             // Convert the location for the output data.
             double latitude = center.getLatitude();
@@ -44,7 +46,7 @@ public final class LoadMapSettingsUseCase implements LoadMapSettingsInputBoundar
 
             // Wrap in an output data object.
             LoadMapSettingsOutputData outputData =
-                    new LoadMapSettingsOutputData(latitude, longitude, zoomLevel);
+                    new LoadMapSettingsOutputData(latitude, longitude, zoomLevel, weatherType);
 
             // Hand the data to the presenter.
             outputBoundary.presentLoadedSettings(outputData);

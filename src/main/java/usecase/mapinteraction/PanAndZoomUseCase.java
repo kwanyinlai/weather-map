@@ -5,8 +5,10 @@ import java.awt.*;
 
 public class PanAndZoomUseCase implements PanAndZoomInputBoundary {
     private final Viewport viewport;
-    public PanAndZoomUseCase(Viewport viewport) {
+    private final PanAndZoomOutputBoundary outputBoundary;
+    public PanAndZoomUseCase(Viewport viewport, PanAndZoomOutputBoundary outputBoundary) {
         this.viewport = viewport;
+        this.outputBoundary = outputBoundary;
     }
 
     @Override
@@ -17,6 +19,6 @@ public class PanAndZoomUseCase implements PanAndZoomInputBoundary {
         viewport.setViewSize(new Dimension(input.getViewWidth(), input.getViewHeight()));
 
         viewport.getSupport().firePropertyChange("viewportUpdated", null, viewport);
-
+        outputBoundary.present(new PanAndZoomOutputData(viewport, true));
     }
 }
