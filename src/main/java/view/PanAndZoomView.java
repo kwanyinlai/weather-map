@@ -5,9 +5,12 @@ import org.openstreetmap.gui.jmapviewer.JMapViewer;
 
 import javax.swing.*;
 import java.awt.*;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+import java.util.Objects;
 
 // PanAndZoomView.java
-public class PanAndZoomView extends JPanel {
+public class PanAndZoomView extends JPanel implements PropertyChangeListener {
     private final JMapViewer mapViewer;
     private final MapViewModel  viewModel;
     private final JLabel errorLabel;
@@ -21,7 +24,6 @@ public class PanAndZoomView extends JPanel {
         add(mapViewer, BorderLayout.CENTER);
         add(errorLabel, BorderLayout.SOUTH);
         errorLabel.setForeground(Color.RED);
-        //this.viewModel.addPropertyChangeListener(this::onViewModelChanged);
         mapViewer.setFocusable(true);
         mapViewer.requestFocusInWindow();
         mapViewer.setRequestFocusEnabled(true);
@@ -40,4 +42,15 @@ public class PanAndZoomView extends JPanel {
 
     public void setController(PanAndZoomController controller) {
     }
+
+    @Override
+    public void propertyChange(PropertyChangeEvent evt) {
+        //Listener listening to size change in MapOverlayStructureView and listening to viewmodel's change.
+        if(Objects.equals(evt.getPropertyName(), "size")) {
+            this.setBounds(new Rectangle((Dimension)evt.getNewValue()));
+            mapViewer.setBounds(new Rectangle((Dimension)evt.getNewValue()));
+            mapViewer.setSize((Dimension) evt.getNewValue());
+        }
+    }
+
 }

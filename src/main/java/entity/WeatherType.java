@@ -4,8 +4,7 @@ public enum WeatherType {
     Tmp2m,
     Precip,
     Pressure,
-    Wind,
-    Invalid;
+    Wind;
 
     @Override
     public String toString() {

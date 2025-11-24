@@ -31,7 +31,7 @@ import interfaceadapter.infopanel.InfoPanelViewModel;
 import interfaceadapter.maptime.programtime.ProgramTimeController;
 import interfaceadapter.maptime.programtime.ProgramTimePresenter;
 import interfaceadapter.maptime.timeanimation.TimeAnimationController;
-import interfaceadapter.weatherLayers.*;
+import interfaceadapter.weatherlayers.*;
 import org.openstreetmap.gui.jmapviewer.JMapViewer;
 import usecase.bookmark.addbookmark.AddBookmarkInputBoundary;
 import usecase.bookmark.addbookmark.AddBookmarkOutputBoundary;
@@ -44,10 +44,10 @@ import usecase.bookmark.removebookmark.RemoveBookmarkUseCase;
 import usecase.infopanel.InfoPanelInteractor;
 import usecase.infopanel.PointWeatherFetcher;
 import usecase.maptime.UpdateMapTimeInputBoundary;
-import usecase.weatherLayers.layers.*;
-import usecase.weatherLayers.update.UpdateOverlayOutputBoundary;
-import usecase.weatherLayers.update.UpdateOverlaySizeUseCase;
-import usecase.weatherLayers.update.UpdateOverlayUseCase;
+import usecase.weatherlayers.layers.*;
+import usecase.weatherlayers.update.UpdateOverlayOutputBoundary;
+import usecase.weatherlayers.update.UpdateOverlaySizeUseCase;
+import usecase.weatherlayers.update.UpdateOverlayUseCase;
 import usecase.maptime.UpdateMapTimeOutputBoundary;
 import usecase.maptime.UpdateMapTimeUseCase;
 import view.*;
@@ -241,10 +241,11 @@ public class AppBuilder {
         
         mapOverlayStructure = new MapOverlayStructureView();
         mapOverlayStructure.addPropertyChangeListener(weatherOverlayView);
+        mapOverlayStructure.addPropertyChangeListener(panAndZoomView);
         mapOverlayStructure.addComponent(panAndZoomView, 1);
         mapOverlayStructure.addComponent(weatherOverlayView, 2);
-        //...
         borderPanel.add(mapOverlayStructure, BorderLayout.CENTER);
+        mapOverlayStructure.fireSizeChange();
         return this;
     }
 

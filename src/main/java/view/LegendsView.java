@@ -1,11 +1,10 @@
 package view;
 
 import constants.Constants;
-import interfaceadapter.weatherLayers.LegendViewModel;
+import interfaceadapter.weatherlayers.LegendViewModel;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.image.BufferedImage;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 
@@ -22,8 +21,7 @@ public class LegendsView extends JPanel implements PropertyChangeListener {
         label.setIcon(imageIcon);
         this.add(label);
     }
-//this.setBounds((int)(Constants.DEFAULT_MAP_WIDTH * 0.5), (int)(Constants.DEFAULT_MAP_HEIGHT * 0.8),
-//    Constants.DEFAULT_MAP_WIDTH, Constants.DEFAULT_MAP_HEIGHT);
+
     @Override
     public void propertyChange(PropertyChangeEvent evt) {
         imageIcon.setImage(legendView.getState().getImage().getScaledInstance(Constants.DEFAULT_PROGRAM_WIDTH ,-1,
