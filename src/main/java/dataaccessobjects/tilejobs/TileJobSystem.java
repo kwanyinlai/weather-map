@@ -10,20 +10,29 @@ import java.util.Set;
 import java.util.concurrent.*;
 
 public class TileJobSystem {
-    private final ExecutorService executor;
     private final LinkedBlockingDeque<TileJob> queue = new LinkedBlockingDeque<>();
     private final Set<TileJob> processingJobs = Collections.synchronizedSet(new HashSet<>());
 
     public TileJobSystem(int numWorkers) {
-        executor = Executors.newFixedThreadPool(numWorkers);
-        for (int i = 0; i < numWorkers; i++) {
-            executor.submit(this::worker);
+
+        ExecutorService executor = null;
+        try {
+            executor = Executors.newFixedThreadPool(numWorkers);
+            // this SonarQube rule can't be resolved because in the current version of Java
+            // Executor cannot be auto-closed with try-with-resources
+            for (int i = 0; i < numWorkers; i++) {
+                executor.submit(this::worker);
+            }
+        }
+        finally {
+            assert executor != null;
+            executor.shutdown();
         }
     }
 
     public void submitJob(TileJob job){
         processingJobs.add(job);
-        queue.offer(job);
+        queue.add(job);
     }
 
     private void processJob(TileJob job){
@@ -41,7 +50,7 @@ public class TileJobSystem {
     }
 
     private void worker(){
-        while (true){
+        while (Thread.currentThread().isAlive()){
             try {
                 TileJob job = queue.take();
                 processJob(job);
