@@ -12,12 +12,12 @@ import java.util.Objects;
 // PanAndZoomView.java
 public class PanAndZoomView extends JPanel implements PropertyChangeListener {
     private final JMapViewer mapViewer;
-    private final MapViewModel  viewModel;
-    private final JLabel errorLabel;
+    private final transient MapViewModel viewModel;
+
     public PanAndZoomView(MapViewModel mapViewModel, JMapViewer mapViewer) {
         this.viewModel = mapViewModel;
         this.mapViewer = mapViewer;
-        this.errorLabel = new JLabel(" ");
+        JLabel errorLabel = new JLabel(" ");
         mapViewer.setZoomContolsVisible(true);
         mapViewer.setPreferredSize(new Dimension(600, 600));
         setLayout(new BorderLayout());

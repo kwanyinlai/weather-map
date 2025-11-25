@@ -11,8 +11,8 @@ import java.beans.PropertyChangeListener;
 import java.util.Objects;
 
 public class DisplayOverlayView extends JPanel implements PropertyChangeListener {
-    private final UpdateOverlayViewModel view;
-    private final UpdateOverlaySizeController sizeController;
+    private final transient UpdateOverlayViewModel view;
+    private final transient UpdateOverlaySizeController sizeController;
     private final ImageIcon imageIcon;
 
     public DisplayOverlayView(UpdateOverlaySizeController sizeCont,
