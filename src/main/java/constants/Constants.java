@@ -23,4 +23,6 @@ public class Constants {
     public static final Path MAP_SETTINGS_DATA_PATH = Paths.get("data/map-settings.json");
     public static final int ZOOM_THRESHOLD = 1000;
     public static final int TILE_FETCH_WORKERS = 8;
+
+    private Constants() { // intentionally empty }
 }
