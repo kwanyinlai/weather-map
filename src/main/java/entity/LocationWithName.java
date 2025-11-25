@@ -1,5 +1,7 @@
 package entity;
 
+import org.openstreetmap.gui.jmapviewer.Coordinate;
+
 public class LocationWithName extends  Location {
         private final String name;
 
@@ -11,6 +13,10 @@ public class LocationWithName extends  Location {
 
         public String getName() {
             return name;
+        }
+
+        public Coordinate getCoordinate() {
+            return new Coordinate(getLatitude(), getLongitude());
         }
 
         @Override

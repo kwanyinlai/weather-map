@@ -122,6 +122,7 @@ public class AppBuilder {
     private PanAndZoomController panAndZoomController;
     private BookmarksViewModel bookmarksViewModel;
     private BookmarksView bookmarksView;
+    private SearchBarView searchBarView;
     private AddBookmarkInputBoundary addBookmarkUseCase;
     private RemoveBookmarkInputBoundary removeBookmarkUseCase;
     private ListBookmarksInputBoundary listBookmarksUseCase;
@@ -159,11 +160,8 @@ public AppBuilder addSearchBarView() {
     SearchBarPresenter presenter = new SearchBarPresenter(viewModel);
     usecase.searchbar.SearchBarUsecase usecase = new SearchBarUsecase(api, presenter);
     SearchBarController controller = new SearchBarController(usecase);
-    SearchBarView view= new SearchBarView(viewModel, controller);
-    view.setPreferredSize(new Dimension(100, 150));
-    if (bookmarkAndSettingsStructure != null) {
-        bookmarkAndSettingsStructure.addComponent(view);
-    }
+    searchBarView= new SearchBarView(viewModel, controller, mapViewer);
+    searchBarView.setPreferredSize(new Dimension(10, 10));
 
     return this;
 }
@@ -231,6 +229,10 @@ public AppBuilder addSearchBarView() {
      */
     public AppBuilder addSettingsAndBookmarkSidePanel() {
         bookmarkAndSettingsStructure = new BookmarkAndMapSettingsStructureView();
+        if (searchBarView != null) {
+            bookmarkAndSettingsStructure.addComponent(searchBarView);
+        }
+
         
         // Add the map settings/opacity view first (on top)
         if (changeWeatherView != null) {
@@ -243,7 +245,7 @@ public AppBuilder addSearchBarView() {
         }
         
         // Combined structure to the east side of the border panel
-        borderPanel.add(bookmarkAndSettingsStructure, BorderLayout.EAST);
+        borderPanel.add(bookmarkAndSettingsStructure, BorderLayout.EAST, BoxLayout.Y_AXIS);
         
         return this;
     }

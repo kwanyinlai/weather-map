@@ -17,9 +17,9 @@ public class Main {
                 .addProgramTimeView()
                 .addUpdateMapTimeUseCase()
                 .addBookmarkView()
+                .addSearchBarView()
                 .addSettingsAndBookmarkSidePanel()
 //                .addInfoPanelView()
-                .addSearchBarView()
                 .build();
         application.pack();
         application.setLocationRelativeTo(null);
