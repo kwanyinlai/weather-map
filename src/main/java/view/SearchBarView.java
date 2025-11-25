@@ -7,7 +7,7 @@ import java.awt.*;
 import java.util.List;
 import java.awt.event.ActionEvent;
 
-public class SearchBarView extends JFrame {
+public class SearchBarView extends JPanel {
     private final JTextField searchField = new JTextField(25);
     private final JList<LocationWithName> resultList = new JList<>();
     private final SearchBarController controller;

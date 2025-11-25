@@ -1,10 +1,19 @@
 package app;
 
+import usecase.weatherlayers.layers.ChangeLayersOutputData;
 import javax.swing.*;
 import java.awt.*;
 import java.nio.file.Paths;
 import java.time.Instant;
 import java.util.List;
+import view.SearchBarView;
+import interfaceadapter.searchbar.SearchBarController;
+import interfaceadapter.searchbar.SearchBarPresenter;
+import interfaceadapter.searchbar.SearchBarViewModel;
+import usecase.searchbar.SearchBarUsecase;
+import usecase.searchbar.SearchBarOutputBoundary;
+import dataaccessobjects.OpenWeatherGeocodingAPI;
+import dataaccessinterface.GeocodingAPI;
 
 import constants.Constants;
 import dataaccessinterface.BookmarkedLocationStorage;
@@ -99,7 +108,6 @@ public class AppBuilder {
 
     // initialising core entities
     private final ProgramTime programTime = new ProgramTime(Instant.now());
-    private final TileRepository tileRepository = new CachedTileRepository(Constants.CACHE_SIZE);
     private final OverlayManager overlayManager = new OverlayManager(Constants.DEFAULT_MAP_WIDTH,
             Constants.DEFAULT_MAP_HEIGHT);
     private final Viewport viewport = new Viewport(000,000,Constants.DEFAULT_MAP_WIDTH,
@@ -145,6 +153,20 @@ public class AppBuilder {
 //        borderPanel.add(bookmarksView, BorderLayout.WEST);
 //        return this;
 //    }
+public AppBuilder addSearchBarView() {
+    SearchBarViewModel viewModel = new SearchBarViewModel();
+    GeocodingAPI api= new OpenWeatherGeocodingAPI();
+    SearchBarPresenter presenter = new SearchBarPresenter(viewModel);
+    usecase.searchbar.SearchBarUsecase usecase = new SearchBarUsecase(api, presenter);
+    SearchBarController controller = new SearchBarController(usecase);
+    SearchBarView view= new SearchBarView(viewModel, controller);
+    view.setPreferredSize(new Dimension(100, 150));
+    if (bookmarkAndSettingsStructure != null) {
+        bookmarkAndSettingsStructure.addComponent(view);
+    }
+
+    return this;
+}
 
     public AppBuilder addBookmarkView(){
 
@@ -261,7 +283,7 @@ public class AppBuilder {
         // Wrap with a presenter that saves settings when layer changes
         layerOutputBoundaryWrapper = new ChangeLayerOutputBoundary() {
             @Override
-            public void updateOpacity(usecase.weatherLayers.layers.ChangeLayersOutputData data) {
+            public void updateOpacity(usecase.weatherlayers.layers.ChangeLayersOutputData data) {
                 baseLayerPresenter.updateOpacity(data);
                 // Save settings after layer change
                 if (saveMapSettingsController != null) {

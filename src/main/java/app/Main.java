@@ -19,6 +19,7 @@ public class Main {
                 .addBookmarkView()
                 .addSettingsAndBookmarkSidePanel()
 //                .addInfoPanelView()
+                .addSearchBarView()
                 .build();
         application.pack();
         application.setLocationRelativeTo(null);

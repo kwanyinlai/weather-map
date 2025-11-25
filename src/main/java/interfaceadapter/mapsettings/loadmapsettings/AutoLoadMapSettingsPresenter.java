@@ -7,7 +7,7 @@ import entity.WeatherType;
 import org.openstreetmap.gui.jmapviewer.OsmMercator;
 import usecase.mapsettings.loadmapsettings.LoadMapSettingsOutputBoundary;
 import usecase.mapsettings.loadmapsettings.LoadMapSettingsOutputData;
-import usecase.weatherLayers.layers.ChangeLayerInputBoundary;
+import usecase.weatherlayers.layers.ChangeLayerInputBoundary;
 
 /**
  * Presenter for automatically loading map settings on startup.
@@ -54,7 +54,7 @@ public final class AutoLoadMapSettingsPresenter implements LoadMapSettingsOutput
         // Update weather layer if a saved type exists
         if (weatherType != null) {
             try {
-                changeLayerUseCase.change(new usecase.weatherLayers.layers.ChangeLayerInputData(weatherType));
+                changeLayerUseCase.change(new usecase.weatherlayers.layers.ChangeLayerInputData(weatherType));
             } catch (LayerNotFoundException e) {
                 // If the layer doesn't exist, just ignore it
             }

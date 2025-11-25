@@ -4,7 +4,7 @@ import entity.Viewport;
 import org.openstreetmap.gui.jmapviewer.OsmMercator;
 import usecase.mapinteraction.PanAndZoomOutputBoundary;
 import usecase.mapinteraction.PanAndZoomOutputData;
-import usecase.weatherLayers.update.UpdateOverlayUseCase;
+import usecase.weatherlayers.update.UpdateOverlayUseCase;
 
 /**
  * Use case: move the map viewport to a bookmarked location.
