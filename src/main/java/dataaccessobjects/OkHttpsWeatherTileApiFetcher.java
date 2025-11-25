@@ -1,5 +1,6 @@
 package dataaccessobjects;
 
+import constants.Constants;
 import dataaccessinterface.TileNotFoundException;
 import okhttp3.Request;
 import okhttp3.Response;
@@ -67,7 +68,7 @@ public class OkHttpsWeatherTileApiFetcher implements WeatherTileApiFetcher {
 
     public List<BufferedImage> getListOfWeatherTileImageData(List<WeatherTile> weatherTileList){
         List<BufferedImage> imageList = new ArrayList<>();
-        ExecutorService executor = Executors.newFixedThreadPool(4);
+        ExecutorService executor = Executors.newFixedThreadPool(Constants.TILE_FETCH_WORKERS);
         try{
 
             List<CompletableFuture<BufferedImage>> futures = new ArrayList<>();

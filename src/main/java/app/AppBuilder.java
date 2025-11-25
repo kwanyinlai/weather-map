@@ -332,7 +332,6 @@ public class AppBuilder {
         // Create presenter that applies settings directly to viewport and overlay manager
         AutoLoadMapSettingsPresenter autoLoadPresenter = new AutoLoadMapSettingsPresenter(
                 viewport,
-                overlayManager,
                 changeLayerUseCase
         );
         

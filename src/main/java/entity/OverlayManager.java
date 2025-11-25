@@ -1,9 +1,5 @@
 package entity;
 
-import dataaccessinterface.TileNotFoundException;
-import dataaccessinterface.TileRepository;
-import dataaccessobjects.tilejobs.TileCompletedListener;
-
 import java.awt.*;
 import java.awt.image.*;
 import java.util.ArrayList;
@@ -114,7 +110,7 @@ public class OverlayManager {
 
         //2. find a value s s.t. viewport * s = overlay. Assume same porportion,
         // so br.x() * s should = overlay.getWidth() and y*s = height.
-        double scaleToOvl = (double)this.overlay.getWidth() / botRight.x() ;
+        double scaleToOvl = this.overlay.getWidth() / botRight.x() ;
 
         //3. tc * c, top left of tile image is now aligned with the overlay image.
         tileCoord.scale(scaleToOvl);
