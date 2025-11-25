@@ -6,7 +6,6 @@ import java.time.Instant;
 
 import constants.Constants;
 import dataaccessinterface.BookmarkedLocationStorage;
-import dataaccessinterface.TileRepository;
 import dataaccessobjects.InDiskBookmarkStorage;
 import dataaccessobjects.OkHttpsPointWeatherGatewayXml;
 
