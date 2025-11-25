@@ -38,15 +38,15 @@ public class OverlayManager {
      * @param zoom
      */
     public void clear(Vector tl, Vector br, int zoom){
-        if (tl.x < 0 || tl.y < 0){
-            double xFactor = Math.abs(tl.x) / (br.x - tl.x);
-            double yFactor = Math.abs(tl.y) / (br.y - tl.y);
+        if (tl.x() < 0 || tl.y() < 0){
+            double xFactor = Math.abs(tl.x()) / (br.x() - tl.x());
+            double yFactor = Math.abs(tl.y()) / (br.y() - tl.y());
             clearArea(0,0, (int)(overlay.getWidth() * xFactor), overlay.getHeight());
             clearArea(0,0, overlay.getWidth(), (int)(overlay.getHeight()* yFactor));
         }
-        if (br.x > Math.pow(2, zoom) || br.y > Math.pow(2, zoom)){
-            double xFactor = Math.abs(br.x) / (br.x - tl.x);
-            double yFactor = Math.abs(br.y) / (br.y - tl.y);
+        if (br.x() > Math.pow(2, zoom) || br.y() > Math.pow(2, zoom)){
+            double xFactor = Math.abs(br.x()) / (br.x() - tl.x());
+            double yFactor = Math.abs(br.y()) / (br.y() - tl.y());
             clearArea((int)(overlay.getWidth() * (1 - xFactor)), 0,
                     (int)(overlay.getWidth() * xFactor), overlay.getHeight());
             clearArea(0, (int)(overlay.getHeight()* (1 - yFactor)),
@@ -113,8 +113,8 @@ public class OverlayManager {
         botRight.sub(topLeft);
 
         //2. find a value s s.t. viewport * s = overlay. Assume same porportion,
-        // so br.x * s should = overlay.getWidth() and y*s = height.
-        double scaleToOvl = (double)this.overlay.getWidth() / botRight.x ;
+        // so br.x() * s should = overlay.getWidth() and y*s = height.
+        double scaleToOvl = (double)this.overlay.getWidth() / botRight.x() ;
 
         //3. tc * c, top left of tile image is now aligned with the overlay image.
         tileCoord.scale(scaleToOvl);
@@ -131,7 +131,7 @@ public class OverlayManager {
         Graphics2D g = this.overlay.createGraphics();
         AlphaComposite alphaComposite = AlphaComposite.getInstance(AlphaComposite.SRC, getSelectedOpacity());
         g.setComposite(alphaComposite);
-        g.drawImage(scaledTileImg, (int)tileCoord.x, (int)tileCoord.y, null);
+        g.drawImage(scaledTileImg, (int)tileCoord.x(), (int)tileCoord.y(), null);
         g.dispose();
     }
 }
