@@ -10,7 +10,7 @@ import java.util.List;
 import java.awt.event.ActionEvent;
 
 public class SearchBarView extends JPanel {
-    private JMapViewer mapViewer;
+    private final JMapViewer mapViewer;
     private final JTextField searchField = new JTextField(10);
     private final JList<LocationWithName> resultList = new JList<>();
     private final SearchBarController controller;
