@@ -11,8 +11,6 @@ import interfaceadapter.bookmark.visitbookmark.VisitBookmarkController;
 import javax.swing.*;
 import javax.swing.text.NumberFormatter;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.text.NumberFormat;
@@ -27,11 +25,10 @@ import java.util.List;
  */
 public final class BookmarksView extends JPanel implements PropertyChangeListener {
 
-    private final BookmarksViewModel viewModel;
-    private final AddBookmarkController addBookmarkController;
-    private final RemoveBookmarkController removeBookmarkController;
-    private final ListBookmarksController listBookmarksController;
-    private final VisitBookmarkController visitBookmarkController;
+    private final transient BookmarksViewModel viewModel;
+    private final transient AddBookmarkController addBookmarkController;
+    private final transient RemoveBookmarkController removeBookmarkController;
+    private final transient VisitBookmarkController visitBookmarkController;
 
     // UI components
     private final JTextField nameField = new JTextField(15);
@@ -64,7 +61,6 @@ public final class BookmarksView extends JPanel implements PropertyChangeListene
         this.viewModel = viewModel;
         this.addBookmarkController = addBookmarkController;
         this.removeBookmarkController = removeBookmarkController;
-        this.listBookmarksController = listBookmarksController;
         this.visitBookmarkController = visitBookmarkController;
 
         // Create formatted text fields for latitude and longitude that accept doubles
@@ -163,92 +159,83 @@ public final class BookmarksView extends JPanel implements PropertyChangeListene
      */
     private void hookUpActions() {
         // Add bookmark.
-        addButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                String name = nameField.getText().trim();
-                String latText = latitudeField.getText().trim();
-                String lonText = longitudeField.getText().trim();
+        addButton.addActionListener(e -> {
+            String name = nameField.getText().trim();
+            String latText = latitudeField.getText().trim();
+            String lonText = longitudeField.getText().trim();
 
-                try {
-                    Object latValue = latitudeField.getValue();
-                    Object lonValue = longitudeField.getValue();
-                    
-                    double latitude;
-                    double longitude;
-                    
-                    if (latValue instanceof Number) {
-                        latitude = ((Number) latValue).doubleValue();
-                    } else {
-                        latitude = Double.parseDouble(latText);
-                    }
-                    
-                    if (lonValue instanceof Number) {
-                        longitude = ((Number) lonValue).doubleValue();
-                    } else {
-                        longitude = Double.parseDouble(lonText);
-                    }
-                    
-                    addBookmarkController.addBookmark(name, latitude, longitude);
-                } catch (NumberFormatException | NullPointerException ex) {
-                    // Local validation error – show directly in the view.
-                    errorLabel.setText("Latitude and longitude must be valid numbers.");
+            try {
+                Object latValue = latitudeField.getValue();
+                Object lonValue = longitudeField.getValue();
+
+                double latitude;
+                double longitude;
+
+                if (latValue instanceof Number) {
+                    latitude = ((Number) latValue).doubleValue();
+                } else {
+                    latitude = Double.parseDouble(latText);
                 }
+
+                if (lonValue instanceof Number) {
+                    longitude = ((Number) lonValue).doubleValue();
+                } else {
+                    longitude = Double.parseDouble(lonText);
+                }
+
+                addBookmarkController.addBookmark(name, latitude, longitude);
+            } catch (NumberFormatException | NullPointerException ex) {
+                // Local validation error – show directly in the view.
+                errorLabel.setText("Latitude and longitude must be valid numbers.");
             }
         });
 
         // Remove bookmark. If a list item is selected, remove that; otherwise
         // fall back to the values typed in the text fields.
-        removeButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                int selectedIndex = bookmarksList.getSelectedIndex();
-                
-                if (selectedIndex >= 0) {
-                    
-                    BookmarksState state = viewModel.getState();
-                    if (state != null && state.getBookmarks() != null
-                            && selectedIndex < state.getBookmarks().size()) {
-                        BookmarkedLocation selected = state.getBookmarks().get(selectedIndex);
-                        removeBookmarkController.removeBookmark(
-                                selected.getName(),
-                                selected.getLatitude(),
-                                selected.getLongitude()
-                        );
-                        return;
-                    }
+        removeButton.addActionListener(e -> {
+            int selectedIndex = bookmarksList.getSelectedIndex();
+
+            if (selectedIndex >= 0) {
+
+                BookmarksState state = viewModel.getState();
+                if (state != null && state.getBookmarks() != null
+                        && selectedIndex < state.getBookmarks().size()) {
+                    BookmarkedLocation selected = state.getBookmarks().get(selectedIndex);
+                    removeBookmarkController.removeBookmark(
+                            selected.getName(),
+                            selected.getLatitude(),
+                            selected.getLongitude()
+                    );
+                    return;
                 }
-                
-                // No selected item or state unavailable; use text fields.
-                handleRemoveUsingFields();
             }
+
+            // No selected item or state unavailable; use text fields.
+            handleRemoveUsingFields();
         });
 
         // Visit selected bookmark: move viewport to its coordinates.
-        visitButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                int selectedIndex = bookmarksList.getSelectedIndex();
-                if (selectedIndex < 0) {
-                    errorLabel.setText("Select a bookmark to visit.");
-                    return;
-                }
-
-                BookmarksState state = viewModel.getState();
-                if (state == null || state.getBookmarks() == null
-                        || selectedIndex >= state.getBookmarks().size()) {
-                    errorLabel.setText("Unable to determine selected bookmark.");
-                    return;
-                }
-
-                BookmarkedLocation selected =
-                        state.getBookmarks().get(selectedIndex);
-
-                visitBookmarkController.visitBookmark(
-                        selected.getLatitude(),
-                        selected.getLongitude()
-                );
+        visitButton.addActionListener(e -> {
+            int selectedIndex = bookmarksList.getSelectedIndex();
+            if (selectedIndex < 0) {
+                errorLabel.setText("Select a bookmark to visit.");
+                return;
             }
+
+            BookmarksState state = viewModel.getState();
+            if (state == null || state.getBookmarks() == null
+                    || selectedIndex >= state.getBookmarks().size()) {
+                errorLabel.setText("Unable to determine selected bookmark.");
+                return;
+            }
+
+            BookmarkedLocation selected =
+                    state.getBookmarks().get(selectedIndex);
+
+            visitBookmarkController.visitBookmark(
+                    selected.getLatitude(),
+                    selected.getLongitude()
+            );
         });
 
 

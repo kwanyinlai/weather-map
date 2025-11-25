@@ -2,14 +2,13 @@ package app;
 
 import javax.swing.*;
 import java.awt.*;
-import java.nio.file.Paths;
 import java.time.Instant;
-import java.util.List;
 
 import constants.Constants;
 import dataaccessinterface.BookmarkedLocationStorage;
 import dataaccessobjects.InDiskBookmarkStorage;
 import dataaccessobjects.OkHttpsPointWeatherGatewayXml;
+
 import entity.ProgramTime;
 import entity.Viewport;
 import entity.Location;
@@ -72,67 +71,34 @@ import entity.WeatherType;
 
 public class AppBuilder {
     private final JPanel borderPanel = new JPanel();
-    private final BorderLayout borderLayout = new BorderLayout();
-
     private DisplayOverlayView weatherOverlayView;
-
     private ProgramTimeView programTimeView;
     private ProgramTimeViewModel programTimeViewModel;
-
     private UpdateOverlayViewModel overlayViewModel;
-
-    private LegendsView legendsView;
     private LegendViewModel legendViewModel;
-
     private UpdateOverlayUseCase updateOverlayUseCase;
-
     private WeatherLayersViewModel weatherLayersViewModel;
     private ChangeWeatherLayersView changeWeatherView;
-    private ChangeOpacityUseCase changeOpacityUseCase;
     private ChangeLayerUseCase changeLayerUseCase;
-    private UpdateOverlaySizeUseCase updateOverlaySizeUseCase;
-
-
-    private MapOverlayStructureView mapOverlayStructure;
-    private BookmarkAndMapSettingsStructureView bookmarkAndSettingsStructure;
-    private JMapViewer mapViewer = new JMapViewer();
+    private final JMapViewer mapViewer = new JMapViewer();
 
     // initialising core entities
     private final ProgramTime programTime = new ProgramTime(Instant.now());
-    private final TileRepository tileRepository = new CachedTileRepository(Constants.CACHE_SIZE);
     private final OverlayManager overlayManager = new OverlayManager(Constants.DEFAULT_MAP_WIDTH,
             Constants.DEFAULT_MAP_HEIGHT);
     private final Viewport viewport = new Viewport(000,000,Constants.DEFAULT_MAP_WIDTH,
             0, 6, 0, 584);
     private final BookmarkedLocationStorage bookmarkStorage = new InDiskBookmarkStorage(Constants.BOOKMARK_DATA_PATH);
     private final SavedMapOverlaySettings mapSettingsStorage = new InDiskMapOverlaySettingsStorage(Constants.MAP_SETTINGS_DATA_PATH);
-
     private PanAndZoomView panAndZoomView;
-    private MapViewModel mapViewModel;
     private PanAndZoomPresenter panAndZoomPresenter;
-    private PanAndZoomInputBoundary panAndZoomUseCase;
-    private PanAndZoomController panAndZoomController;
-    private BookmarksViewModel bookmarksViewModel;
     private BookmarksView bookmarksView;
-    private AddBookmarkInputBoundary addBookmarkUseCase;
-    private RemoveBookmarkInputBoundary removeBookmarkUseCase;
-    private ListBookmarksInputBoundary listBookmarksUseCase;
-    private AddBookmarkOutputBoundary addBookmarkPresenter;
-    private RemoveBookmarkOutputBoundary removeBookmarkPresenter;
-    private ListBookmarksPresenter listBookmarksPresenter;
-    private VisitBookmarkInputBoundary visitBookmarkUseCase;
-    private VisitBookmarkOutputBoundary visitBookmarkPresenter;
-    private VisitBookmarkController visitBookmarkController;
-
-    private LoadMapSettingsInputBoundary loadMapSettingsUseCase;
-    private SaveMapSettingsInputBoundary saveMapSettingsUseCase;
     private LoadMapSettingsController loadMapSettingsController;
     private SaveMapSettingsController saveMapSettingsController;
-    private ChangeLayerOutputBoundary layerOutputBoundaryWrapper;
-
 
 
     public AppBuilder() {
+        BorderLayout borderLayout = new BorderLayout();
         borderPanel.setLayout(borderLayout);
         borderPanel.setPreferredSize(new Dimension(Constants.DEFAULT_PROGRAM_WIDTH, Constants.DEFAULT_PROGRAM_HEIGHT));
     }
@@ -147,6 +113,16 @@ public class AppBuilder {
 //    }
 
     public AppBuilder addBookmarkView(){
+        VisitBookmarkOutputBoundary visitBookmarkPresenter;
+        VisitBookmarkInputBoundary visitBookmarkUseCase;
+        ListBookmarksPresenter listBookmarksPresenter;
+        RemoveBookmarkOutputBoundary removeBookmarkPresenter;
+        AddBookmarkOutputBoundary addBookmarkPresenter;
+        ListBookmarksInputBoundary listBookmarksUseCase;
+        RemoveBookmarkInputBoundary removeBookmarkUseCase;
+        AddBookmarkInputBoundary addBookmarkUseCase;
+        BookmarksViewModel bookmarksViewModel;
+        VisitBookmarkController visitBookmarkController;
 
         bookmarksViewModel = new BookmarksViewModel();
         removeBookmarkPresenter = new RemoveBookmarkPresenter(bookmarksViewModel);
@@ -208,6 +184,7 @@ public class AppBuilder {
      * @return this AppBuilder instance
      */
     public AppBuilder addSettingsAndBookmarkSidePanel() {
+        BookmarkAndMapSettingsStructureView bookmarkAndSettingsStructure;
         bookmarkAndSettingsStructure = new BookmarkAndMapSettingsStructureView();
         
         // Add the map settings/opacity view first (on top)
@@ -227,6 +204,7 @@ public class AppBuilder {
     }
 
     public AppBuilder createOverlayView(){
+        UpdateOverlaySizeUseCase updateOverlaySizeUseCase;
         updateOverlaySizeUseCase = new UpdateOverlaySizeUseCase(overlayManager, viewport);
         UpdateOverlaySizeController sizeController = new UpdateOverlaySizeController(updateOverlaySizeUseCase, updateOverlayUseCase);
         weatherOverlayView = new DisplayOverlayView(sizeController, overlayViewModel);
@@ -238,6 +216,7 @@ public class AppBuilder {
      * @return this
      */
     public AppBuilder addMapOverlayView(){
+        MapOverlayStructureView mapOverlayStructure;
         
         mapOverlayStructure = new MapOverlayStructureView();
         mapOverlayStructure.addPropertyChangeListener(weatherOverlayView);
@@ -250,6 +229,7 @@ public class AppBuilder {
     }
 
     public AppBuilder addLegendView(){
+        LegendsView legendsView;
         legendViewModel = new LegendViewModel();
         legendsView = new LegendsView(legendViewModel);
         borderPanel.add(legendsView, BorderLayout.NORTH);
@@ -257,16 +237,15 @@ public class AppBuilder {
     }
 
     public AppBuilder addWeatherLayersUseCase(){
+        ChangeOpacityUseCase changeOpacityUseCase;
+        ChangeLayerOutputBoundary layerOutputBoundaryWrapper;
         ChangeLayerOutputBoundary baseLayerPresenter = new WeatherLayersPresenter(weatherLayersViewModel);
         // Wrap with a presenter that saves settings when layer changes
-        layerOutputBoundaryWrapper = new ChangeLayerOutputBoundary() {
-            @Override
-            public void updateOpacity(usecase.weatherLayers.layers.ChangeLayersOutputData data) {
-                baseLayerPresenter.updateOpacity(data);
-                // Save settings after layer change
-                if (saveMapSettingsController != null) {
-                    saveCurrentMapSettings();
-                }
+        layerOutputBoundaryWrapper = data -> {
+            baseLayerPresenter.updateOpacity(data);
+            // Save settings after layer change
+            if (saveMapSettingsController != null) {
+                saveCurrentMapSettings();
             }
         };
         UpdateLegendOutputBoundary legendOutputBoundary = new LegendPresenter(legendViewModel);
@@ -311,6 +290,9 @@ public class AppBuilder {
         return this;
     }
     public AppBuilder addPanZoomView() {
+        PanAndZoomController panAndZoomController;
+        PanAndZoomInputBoundary panAndZoomUseCase;
+        MapViewModel mapViewModel;
         mapViewModel = new MapViewModel();
         panAndZoomView = new PanAndZoomView(mapViewModel, mapViewer);
         panAndZoomPresenter = new PanAndZoomPresenter(
@@ -345,10 +327,11 @@ public class AppBuilder {
      * Sets up map settings persistence (save/load).
      */
     public AppBuilder addMapSettingsPersistence() {
+        LoadMapSettingsInputBoundary loadMapSettingsUseCase;
+        SaveMapSettingsInputBoundary saveMapSettingsUseCase;
         // Create presenter that applies settings directly to viewport and overlay manager
         AutoLoadMapSettingsPresenter autoLoadPresenter = new AutoLoadMapSettingsPresenter(
                 viewport,
-                overlayManager,
                 changeLayerUseCase
         );
         
@@ -367,7 +350,7 @@ public class AppBuilder {
      * Saves the current map settings (viewport and weather layer).
      */
     private void saveCurrentMapSettings() {
-        if (saveMapSettingsController == null || viewport == null) {
+        if (saveMapSettingsController == null) {
             return;
         }
         
@@ -388,7 +371,7 @@ public class AppBuilder {
      * Assumes the viewport can provide its centre as a Location.
      */
     private void syncLatLonFieldsToViewport() {
-        if (bookmarksView == null || viewport == null) {
+        if (bookmarksView == null) {
             return;
         }
 
