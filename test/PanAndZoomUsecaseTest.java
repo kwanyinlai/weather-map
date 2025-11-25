@@ -19,7 +19,7 @@ class PanAndZoomUsecaseTest {
     }
 
     @Test
-    void testUpdateViewport_UpdatesAllProperties() {
+    void testUpdateViewportUpdatesAllProperties() {
         Viewport realViewport = new Viewport(
                 300.0, 300.0,
                 800,
@@ -54,7 +54,7 @@ class PanAndZoomUsecaseTest {
 
 
     @Test
-    void testUpdateViewport_PassesCorrectOutputToPresenter() {
+    void testUpdateViewportPassesCorrectOutputToPresenter() {
 
         PanAndZoomOutputData capturedOutput = getPanAndZoomOutputData();
         assertNotNull(capturedOutput, "Presenter did not accept OutputData");
@@ -81,7 +81,7 @@ class PanAndZoomUsecaseTest {
     }
 
     @Test
-    void testUpdateViewport_HandlesBoundaryValues() {
+    void testUpdateViewportHandlesBoundaryValues() {
         Viewport realViewport = new Viewport(300.0, 300.0, 800, 5,
                 10, 0, 600);
         TestPresenter testPresenter = new TestPresenter();
@@ -100,7 +100,7 @@ class PanAndZoomUsecaseTest {
     }
 
     @Test
-    void testUpdateViewport_WithBoundedZoom() {
+    void testUpdateViewportWithBoundedZoom() {
 
         Viewport realViewport = new Viewport(300.0, 300.0, 800, 5,
                 10, 0, 600);
