@@ -19,9 +19,8 @@ public class OpenWeatherGeocodingAPI implements GeocodingAPI {
     public List<LocationWithName> geocode(String query) {
         List<LocationWithName> results = new ArrayList<>();
         String encodedQuery = query.replace(" ", "%20");
-        // 替换为你的API密钥
-        String API_KEY = "57d9bc7f8d93ed445ee01418ff15e854";
-        String url = String.format("%s?q=%s&limit=5&appid=%s", API_URL, encodedQuery, API_KEY);
+        String apiKey = "57d9bc7f8d93ed445ee01418ff15e854";
+        String url = String.format("%s?q=%s&limit=5&appid=%s", API_URL, encodedQuery, apiKey);
 
         try {
             Request request = new Request.Builder().url(url).build();
