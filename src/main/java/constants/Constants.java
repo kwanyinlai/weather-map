@@ -22,6 +22,5 @@ public class Constants {
     public static final Path BOOKMARK_DATA_PATH = Paths.get("data/bookmarks.json");
     public static final Path MAP_SETTINGS_DATA_PATH = Paths.get("data/map-settings.json");
     public static final int ZOOM_THRESHOLD = 1000;
-
-    public Constants(){}
+    public static final int TILE_FETCH_WORKERS = 8;
 }
