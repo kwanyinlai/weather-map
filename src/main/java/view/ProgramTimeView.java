@@ -8,7 +8,6 @@ import interfaceadapter.maptime.programtime.ProgramTimeState;
 import interfaceadapter.maptime.programtime.ProgramTimeViewModel;
 import interfaceadapter.maptime.timeanimation.TimeAnimationController;
 import uielements.CustomSliderUI;
-import constants.DefaultThemes;
 import java.awt.event.ActionEvent;
 
 import javax.swing.*;
@@ -80,8 +79,6 @@ public class ProgramTimeView extends JPanel implements PropertyChangeListener {
         currentTimeTitleLabel = new JLabel(ProgramTimeViewModel.CURRENT_TIME_LABEL);
         currentTimeTitleLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
         currentTime = new JLabel(ProgramTimeViewModel.getCurrentTimeFormatted());
-        currentTime.setFont(DefaultThemes.NORMAL_BODY_FONT);
-        currentTimeTitleLabel.setFont(DefaultThemes.BOLD_BODY_FONT);
         this.add(playPauseButton);
         this.add(timeSlider);
         this.add(currentTimeTitleLabel);
