@@ -1,24 +1,20 @@
 package app;
 
-import usecase.weatherlayers.layers.ChangeLayersOutputData;
+
 import javax.swing.*;
 import java.awt.*;
-import java.nio.file.Paths;
 import java.time.Instant;
-import java.util.List;
 import view.SearchBarView;
 import interfaceadapter.searchbar.SearchBarController;
 import interfaceadapter.searchbar.SearchBarPresenter;
 import interfaceadapter.searchbar.SearchBarViewModel;
 import usecase.searchbar.SearchBarUsecase;
-import usecase.searchbar.SearchBarOutputBoundary;
 import dataaccessobjects.OpenWeatherGeocodingAPI;
 import dataaccessinterface.GeocodingAPI;
 
 import constants.Constants;
 import dataaccessinterface.BookmarkedLocationStorage;
 import dataaccessobjects.InDiskBookmarkStorage;
-import dataaccessobjects.OkHttpsPointWeatherGatewayXml;
 import entity.ProgramTime;
 import entity.Viewport;
 import entity.Location;
@@ -34,9 +30,6 @@ import interfaceadapter.bookmark.listbookmark.ListBookmarksController;
 import interfaceadapter.bookmark.listbookmark.ListBookmarksPresenter;
 import interfaceadapter.bookmark.removebookmark.RemoveBookmarkController;
 import interfaceadapter.bookmark.removebookmark.RemoveBookmarkPresenter;
-import interfaceadapter.infopanel.InfoPanelController;
-import interfaceadapter.infopanel.InfoPanelPresenter;
-import interfaceadapter.infopanel.InfoPanelViewModel;
 import interfaceadapter.maptime.programtime.ProgramTimeController;
 import interfaceadapter.maptime.programtime.ProgramTimePresenter;
 import interfaceadapter.maptime.timeanimation.TimeAnimationController;
@@ -50,8 +43,6 @@ import usecase.bookmark.listbookmark.ListBookmarksUseCase;
 import usecase.bookmark.removebookmark.RemoveBookmarkInputBoundary;
 import usecase.bookmark.removebookmark.RemoveBookmarkOutputBoundary;
 import usecase.bookmark.removebookmark.RemoveBookmarkUseCase;
-import usecase.infopanel.InfoPanelInteractor;
-import usecase.infopanel.PointWeatherFetcher;
 import usecase.maptime.UpdateMapTimeInputBoundary;
 import usecase.weatherlayers.layers.*;
 import usecase.weatherlayers.update.UpdateOverlayOutputBoundary;
