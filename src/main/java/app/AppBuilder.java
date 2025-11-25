@@ -1,15 +1,11 @@
 package app;
 
-import javax.swing.*;
-import java.awt.*;
-import java.nio.file.Paths;
-import java.time.Instant;
-import java.util.List;
-
 import constants.Constants;
 import dataaccessinterface.BookmarkedLocationStorage;
-import dataaccessobjects.InDiskBookmarkStorage;
 import dataaccessinterface.OkHttpsPointWeatherGatewayXml;
+import dataaccessobjects.CachedTileRepository;
+import dataaccessobjects.InDiskBookmarkStorage;
+import entity.OverlayManager;
 import entity.ProgramTime;
 import entity.Viewport;
 import interfaceadapter.bookmark.BookmarksViewModel;
@@ -19,13 +15,15 @@ import interfaceadapter.bookmark.listbookmark.ListBookmarksController;
 import interfaceadapter.bookmark.listbookmark.ListBookmarksPresenter;
 import interfaceadapter.bookmark.removebookmark.RemoveBookmarkController;
 import interfaceadapter.bookmark.removebookmark.RemoveBookmarkPresenter;
-import interfaceadapter.infopanel.InfoPanelController;
-import interfaceadapter.infopanel.InfoPanelPresenter;
-import interfaceadapter.infopanel.InfoPanelViewModel;
+import interfaceadapter.mapinteraction.MapViewModel;
+import interfaceadapter.mapinteraction.PanAndZoomController;
+import interfaceadapter.mapinteraction.PanAndZoomPresenter;
 import interfaceadapter.maptime.programtime.ProgramTimeController;
 import interfaceadapter.maptime.programtime.ProgramTimePresenter;
+import interfaceadapter.maptime.programtime.ProgramTimeViewModel;
 import interfaceadapter.maptime.timeanimation.TimeAnimationController;
 import interfaceadapter.weatherLayers.*;
+import interfaceadapter.infopanel.*;
 import org.openstreetmap.gui.jmapviewer.JMapViewer;
 import usecase.bookmark.addbookmark.AddBookmarkInputBoundary;
 import usecase.bookmark.addbookmark.AddBookmarkOutputBoundary;
@@ -35,27 +33,24 @@ import usecase.bookmark.listbookmark.ListBookmarksUseCase;
 import usecase.bookmark.removebookmark.RemoveBookmarkInputBoundary;
 import usecase.bookmark.removebookmark.RemoveBookmarkOutputBoundary;
 import usecase.bookmark.removebookmark.RemoveBookmarkUseCase;
-import usecase.infopanel.InfoPanelInteractor;
-import usecase.infopanel.PointWeatherFetcher;
-import usecase.infopanel.InfoPanelInputBoundary;
-import usecase.infopanel.InfoPanelOutputBoundary;
-import usecase.infopanel.PointWeatherFetcher;
+import usecase.mapinteraction.PanAndZoomInputBoundary;
+import usecase.mapinteraction.PanAndZoomUseCase;
 import usecase.maptime.UpdateMapTimeInputBoundary;
-import usecase.weatherLayers.layers.*;
+import usecase.maptime.UpdateMapTimeOutputBoundary;
+import usecase.maptime.UpdateMapTimeUseCase;
+import usecase.weatherLayers.layers.ChangeLayerOutputBoundary;
+import usecase.weatherLayers.layers.ChangeLayerUseCase;
+import usecase.weatherLayers.layers.ChangeOpacityUseCase;
+import usecase.weatherLayers.layers.UpdateLegendOutputBoundary;
 import usecase.weatherLayers.update.UpdateOverlayOutputBoundary;
 import usecase.weatherLayers.update.UpdateOverlaySizeUseCase;
 import usecase.weatherLayers.update.UpdateOverlayUseCase;
-import usecase.maptime.UpdateMapTimeOutputBoundary;
-import usecase.maptime.UpdateMapTimeUseCase;
+import usecase.infopanel.*;
 import view.*;
-import interfaceadapter.maptime.programtime.ProgramTimeViewModel;
-import dataaccessobjects.CachedTileRepository;
-import entity.OverlayManager;
-import interfaceadapter.mapinteraction.MapViewModel;
-import interfaceadapter.mapinteraction.PanAndZoomController;
-import interfaceadapter.mapinteraction.PanAndZoomPresenter;
-import usecase.mapinteraction.PanAndZoomUseCase;
-import usecase.mapinteraction.PanAndZoomInputBoundary;
+
+import javax.swing.*;
+import java.awt.*;
+import java.time.Instant;
 
 public class AppBuilder {
     private final JPanel borderPanel = new JPanel();
@@ -90,8 +85,6 @@ public class AppBuilder {
     private final Viewport viewport = new Viewport(000,000,Constants.DEFAULT_MAP_WIDTH,
             0, 6, 0, 584);
     private final BookmarkedLocationStorage bookmarkStorage = new InDiskBookmarkStorage(Constants.BOOKMARK_DATA_PATH);
-    private int popUpZoomThreshold = 8;
-    private boolean belowZoomThreshold = false;
     private PanAndZoomView panAndZoomView;
     private MapViewModel mapViewModel;
     private PanAndZoomPresenter panAndZoomPresenter;
@@ -121,28 +114,20 @@ public class AppBuilder {
     }
 
     public AppBuilder addInfoPanelView() {
-        infoPanelViewModel = new interfaceadapter.infopanel.InfoPanelViewModel();
-        var presenter = new interfaceadapter.infopanel.InfoPanelPresenter(infoPanelViewModel);
+        infoPanelViewModel = new InfoPanelViewModel();
+        InfoPanelPresenter presenter = new InfoPanelPresenter(infoPanelViewModel);
 
-        usecase.infopanel.PointWeatherFetcher fetcher =
-                new dataaccessinterface.OkHttpsPointWeatherGatewayXml(System.getenv("WEATHER_API_KEY"));
-        var useCase = new usecase.infopanel.InfoPanelInteractor(fetcher, presenter);
+        PointWeatherFetcher fetcher = new OkHttpsPointWeatherGatewayXml();
+        InfoPanelInteractor useCase = new InfoPanelInteractor(fetcher, presenter);
 
-        int popUpZoomThreshold = 8;
-        infoPanelController = new interfaceadapter.infopanel.InfoPanelController(useCase, presenter,
-                popUpZoomThreshold);
+        infoPanelController = new InfoPanelController(useCase, presenter);
 
         infoPanelView = new view.InfoPanelView(infoPanelViewModel);
         infoPanelView.setController(infoPanelController);
-        infoPanelView.setVisible(false);
-
-        presenter.addChangeListener(ev ->
-                javax.swing.SwingUtilities.invokeLater(infoPanelView::repaint)
-        );
+        infoPanelView.bind(presenter);
 
         return this;
     }
-
 
     public AppBuilder addBookmarkView(){
 
@@ -190,8 +175,8 @@ public class AppBuilder {
      * initiazlized.
      * @return this
      */
-    public AppBuilder addMapOverlayView(){
-        
+    public AppBuilder addMapOverlayView() {
+
         mapOverlayStructure = new MapOverlayStructureView();
         mapOverlayStructure.addPropertyChangeListener(weatherOverlayView);
         mapOverlayStructure.addComponent(panAndZoomView, 1);
@@ -199,25 +184,8 @@ public class AppBuilder {
         //...
         if (infoPanelView != null) {
             mapOverlayStructure.addComponent(infoPanelView, 99);
-
-            int margin = 20;
-            int W = 340;
-            int H = 420;
-            int panelH = Constants.DEFAULT_MAP_HEIGHT;
-            infoPanelView.setBounds(margin, panelH - H - margin, W, H);
-
-            mapOverlayStructure.addComponentListener(new java.awt.event.ComponentAdapter() {
-                @Override public void componentResized(java.awt.event.ComponentEvent e) {
-                    int cw = mapOverlayStructure.getWidth();
-                    int ch = mapOverlayStructure.getHeight();
-                    infoPanelView.setBounds(margin, Math.max(margin, ch - H - margin), W, H);
-                    infoPanelView.revalidate();
-                    infoPanelView.repaint();
-                }
-            });
         }
         borderPanel.add(mapOverlayStructure, BorderLayout.CENTER);
-
         return this;
     }
 
@@ -284,28 +252,17 @@ public class AppBuilder {
         );
         panAndZoomView.setController(panAndZoomController);
         viewport.getSupport().addPropertyChangeListener(evt -> {
-            if (infoPanelController != null) {
+            if (updateOverlayUseCase != null) updateOverlayUseCase.update();
+
+            if (infoPanelView != null) {
                 var c = viewport.getCentre();
                 int z = Math.round(viewport.getZoomLevel());
-
-                if (z >= popUpZoomThreshold) {
-                    if (!belowZoomThreshold) {
-                        if (infoPanelView != null) infoPanelView.setVisible(true);
-                        infoPanelController.onViewportChanged(c.getLatitude(), c.getLongitude(), z);
-                        belowZoomThreshold = true;
-                    } else {
-                        infoPanelController.onViewportChanged(c.getLatitude(), c.getLongitude(), z);
-                    }
-                } else {
-                    belowZoomThreshold = false;
-                    if (infoPanelView != null) infoPanelView.setVisible(false);
-                    infoPanelController.onViewportChanged(c.getLatitude(), c.getLongitude(), z);
-                }
+                infoPanelView.onViewportChanged(c.getLatitude(), c.getLongitude(), z);
             }
         });
+
         return this;
     }
-
 
     public JFrame build() {
         final JFrame application = new JFrame("Weather Map");

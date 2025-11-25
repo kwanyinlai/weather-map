@@ -11,11 +11,11 @@ public class OkHttpsPointWeatherGatewayXml implements PointWeatherFetcher {
     private final String apiKey;
 
     public OkHttpsPointWeatherGatewayXml() {
-        String k = System.getProperty("WEATHERAPI_KEY");
-        if (k == null || k.isBlank()) k = System.getenv("WEATHERAPI_KEY");
-        if (k == null || k.isBlank())
-            throw new IllegalStateException("WEATHERAPI_KEY not set");
-        this.apiKey = k;
+        String apiKey = System.getenv("WEATHER_API_KEY");
+        if (apiKey == null || apiKey.isBlank()) {
+            throw new IllegalArgumentException("apiKey is blank");
+        }
+        this.apiKey = apiKey;
     }
 
     public OkHttpsPointWeatherGatewayXml(String apiKey) {

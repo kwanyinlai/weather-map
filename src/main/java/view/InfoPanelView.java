@@ -1,13 +1,12 @@
 package view;
 
 import interfaceadapter.infopanel.InfoPanelController;
+import interfaceadapter.infopanel.InfoPanelPresenter;
 import interfaceadapter.infopanel.InfoPanelViewModel;
-import usecase.infopanel.InfoPanelError;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
+import java.awt.event.*;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
@@ -16,13 +15,17 @@ import java.util.List;
 public final class InfoPanelView extends JPanel {
 
     private InfoPanelViewModel vm;
-
     private InfoPanelController controller;
+
+    private final int popUpZoomThreshold = constants.Constants.ZOOM_THRESHOLD;
+    private boolean belowZoomThreshold = false;
+
+    private static final int MARGIN = 15, WIDTH = 300, HEIGHT = 370;
 
     private Rectangle closeRect = new Rectangle();
     private boolean hoverClose = false;
 
-    private static final int PAD = 18, RADIUS = 20;
+    private static final int PAD = 14, RADIUS = 16;
     private static final Color BG = new Color(255,255,255,235);
     private static final Color STROKE = new Color(30,30,30);
     private static final Color SUBTLE = new Color(0,0,0,110);
@@ -35,10 +38,12 @@ public final class InfoPanelView extends JPanel {
     private static final DateTimeFormatter HOUR_FMT =
             DateTimeFormatter.ofPattern("HH:mm").withZone(ZoneId.systemDefault());
 
+    private ComponentListener parentResizeListener;
+
     public InfoPanelView(InfoPanelViewModel infoPanelViewModel) {
         this.vm = infoPanelViewModel;
         setOpaque(false);
-        setPreferredSize(new Dimension(440, 560));
+        setPreferredSize(new Dimension(WIDTH, HEIGHT));
 
         addMouseMotionListener(new MouseAdapter() {
             @Override public void mouseMoved(MouseEvent e) {
@@ -51,19 +56,73 @@ public final class InfoPanelView extends JPanel {
         addMouseListener(new MouseAdapter() {
             @Override public void mouseClicked(MouseEvent e) {
                 if (closeRect.contains(e.getPoint()) && controller != null) {
-                    controller.onCloseRequested();
-                    setVisible(false);
+                    controller.onCloseRequested(); // 交给 Presenter 关
+                    SwingUtilities.invokeLater(InfoPanelView.this::repaint);
                 }
             }
         });
     }
 
+    public void bind(InfoPanelPresenter presenter) {
+        presenter.addChangeListener(ev ->
+                SwingUtilities.invokeLater(InfoPanelView.this::repaint));
+    }
+
     public void setController(InfoPanelController controller) { this.controller = controller; }
-
     public void setViewModel(InfoPanelViewModel vm) { this.vm = vm; repaint(); }
-
     public void refresh() { repaint(); }
 
+    @Override public void addNotify() {
+        super.addNotify();
+        relayoutToBottomLeft();
+        Container p = getParent();
+        if (p != null && parentResizeListener == null) {
+            parentResizeListener = new ComponentAdapter() {
+                @Override public void componentResized(ComponentEvent e) {
+                    relayoutToBottomLeft();
+                }
+            };
+            p.addComponentListener(parentResizeListener);
+        }
+    }
+    @Override public void removeNotify() {
+        Container p = getParent();
+        if (p != null && parentResizeListener != null) {
+            p.removeComponentListener(parentResizeListener);
+        }
+        parentResizeListener = null;
+        super.removeNotify();
+    }
+    private void relayoutToBottomLeft() {
+        Container p = getParent();
+        if (p == null) return;
+        int ch = p.getHeight();
+        int y  = Math.max(MARGIN, ch - HEIGHT - MARGIN);
+        setBounds(MARGIN, y, WIDTH, HEIGHT);
+        revalidate();
+        repaint();
+    }
+
+    public void onViewportChanged(double centerLat, double centerLon, int zoom) {
+        if (controller == null) return;
+
+        if (zoom < popUpZoomThreshold) {
+            belowZoomThreshold = true;
+            vm.visible = false;
+            setVisible(false);
+            repaint();
+            return;
+        }
+        if (belowZoomThreshold) {
+            belowZoomThreshold = false;
+            vm.visible = true;
+            if (!isVisible()) setVisible(true);
+            controller.onViewportChanged(centerLat, centerLon, zoom);
+            repaint();
+        } else {
+            controller.onViewportChanged(centerLat, centerLon, zoom);
+        }
+    }
 
     @Override
     protected void paintComponent(Graphics g0) {
@@ -81,7 +140,7 @@ public final class InfoPanelView extends JPanel {
         g.drawRoundRect(0,0,w-1,h-1,RADIUS,RADIUS);
 
         int btnSize = 28;
-        closeRect.setBounds(w - PAD - btnSize, PAD - 4, btnSize, btnSize);
+        closeRect.setBounds(w - PAD - btnSize, PAD +55, btnSize, btnSize);
         g.setColor(hoverClose ? CLOSE_BG_HOVER : CLOSE_BG);
         g.fillRoundRect(closeRect.x, closeRect.y, closeRect.width, closeRect.height, 10, 10);
         g.setColor(STROKE);
@@ -95,13 +154,12 @@ public final class InfoPanelView extends JPanel {
 
         int x = PAD, y = PAD;
 
-        if (vm == null || vm.loading) {
+        if (vm.loading) {
             y += drawLeft(g, "Loading weather…", x, y, F_BIG, STROKE);
             g.dispose();
             return;
         }
 
-        // Header
         int headerTop = y;
         int rightColX = w - PAD;
 
@@ -120,12 +178,10 @@ public final class InfoPanelView extends JPanel {
         g.drawLine(PAD, y, w - PAD, y);
         y += 16;
 
-        // NOW
         y += drawLeft(g, "Now", x, y, F_HEADER, STROKE) + 6;
         String ts = (vm.fetchedAt == null) ? "(time unknown)" : HOUR_FMT.format(vm.fetchedAt) + " • local";
         y += drawLeft(g, ts, x, y, F_BODY, SUBTLE) + 12;
 
-        // Hourly Forecast
         y += drawLeft(g, "Hourly Forecast", x, y, F_HEADER, STROKE) + 8;
         int timeCol = x, valCol = x + 120;
         List<Double> temps = vm.hourlyTemps;
@@ -154,26 +210,20 @@ public final class InfoPanelView extends JPanel {
         g.dispose();
     }
 
-    // helpers
     private static String fallback(String fb, String s){ return (s == null || s.trim().isEmpty()) ? fb : s; }
-
     private static int drawLeft(Graphics2D g, String t, int x, int y, Font f, Color c){
-        g.setFont(f);
-        g.setColor(c);
+        g.setFont(f); g.setColor(c);
         FontMetrics fm = g.getFontMetrics();
         g.drawString(t, x, y + fm.getAscent());
         return fm.getHeight();
     }
-
     private static int drawRight(Graphics2D g, String t, int rx, int y, Font f, Color c){
-        g.setFont(f);
-        g.setColor(c);
+        g.setFont(f); g.setColor(c);
         FontMetrics fm = g.getFontMetrics();
         int tw = fm.stringWidth(t);
         g.drawString(t, rx - tw, y + fm.getAscent());
         return fm.getHeight();
     }
-
     private static Instant addHours(Instant base, int i){
         if (base == null) return null;
         return base.plusSeconds(3600L * i);

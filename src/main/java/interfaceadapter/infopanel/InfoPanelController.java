@@ -9,49 +9,43 @@ import javax.swing.Timer;
 public final class InfoPanelController {
     private final InfoPanelInputBoundary interactor;
     private final InfoPanelOutputBoundary presenter;
-    private final int popUpZoomThreshold;
 
-    private final Timer debounce = new Timer(200, e -> fireIfTargetChanged());
+    private final Timer debounce = new Timer(300, e -> fireIfTargetChanged());
     private double pendingLat, pendingLon;
     private int pendingZoom;
 
     private TileCoords lastRequestedTile;
+    private TileCoords lastDismissedTile;
 
     public InfoPanelController(InfoPanelInputBoundary interactor,
-                               InfoPanelOutputBoundary presenter,
-                               int popUpZoomThreshold) {
+                               InfoPanelOutputBoundary presenter) {
         this.interactor = interactor;
         this.presenter = presenter;
-        this.popUpZoomThreshold = popUpZoomThreshold;
         this.debounce.setRepeats(false);
     }
 
-    public void onViewportChanged(double centerLat, double centerLon, int zoom) {
-        if (zoom < popUpZoomThreshold) {
-            presenter.presentError(InfoPanelError.HIDDEN_BY_ZOOM);
+    public void onViewportChanged(double lat, double lon, int zoom) {
+        var current = new Location(lat, lon).getTileCoords(zoom);
+        if (current != null && current.equals(lastDismissedTile)) {
+            presenter.presentError(InfoPanelError.USER_CLOSED);
             return;
         }
-        pendingLat  = centerLat;
-        pendingLon  = centerLon;
+        pendingLat = lat;
+        pendingLon = lon;
         pendingZoom = zoom;
-
         presenter.presentLoading();
         debounce.restart();
     }
 
     public void onCloseRequested() {
+        if (lastRequestedTile != null) lastDismissedTile = lastRequestedTile;
         presenter.presentError(InfoPanelError.USER_CLOSED);
     }
 
     private void fireIfTargetChanged() {
-        TileCoords current = new Location(pendingLat, pendingLon).getTileCoords(pendingZoom);
-
+        var current = new Location(pendingLat, pendingLon).getTileCoords(pendingZoom);
+        if (current != null && current.equals(lastRequestedTile)) return;
         lastRequestedTile = current;
         interactor.execute(new InfoPanelInputData(pendingLat, pendingLon, pendingZoom));
-    }
-
-    private static boolean sameTile(TileCoords a, TileCoords b) {
-        return a != null && b != null &&
-                a.x == b.x && a.y == b.y && a.zoom == b.zoom;
     }
 }
