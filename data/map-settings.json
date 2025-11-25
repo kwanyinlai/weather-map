@@ -1,6 +1,6 @@
 {
-  "zoomLevel": 3,
-  "weatherType": "Precip",
-  "centerLatitude": 46.31658418182218,
-  "centerLongitude": 24.609375
+  "zoomLevel": 6,
+  "weatherType": "Tmp2m",
+  "centerLatitude": 35.79999392988527,
+  "centerLongitude": 5.6689453125
 }

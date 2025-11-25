@@ -25,4 +25,5 @@ public class Constants {
     public static final int TILE_FETCH_WORKERS = 8;
 
     private Constants() { // intentionally empty }
+    }
 }

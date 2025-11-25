@@ -86,10 +86,12 @@ public class AppBuilder {
     private final ProgramTime programTime = new ProgramTime(Instant.now());
     private final OverlayManager overlayManager = new OverlayManager(Constants.DEFAULT_MAP_WIDTH,
             Constants.DEFAULT_MAP_HEIGHT);
-    private final Viewport viewport = new Viewport(000,000,Constants.DEFAULT_MAP_WIDTH,
+    private final Viewport viewport = new Viewport(
+            000,000,Constants.DEFAULT_MAP_WIDTH,
             0, 6, 0, 584);
     private final BookmarkedLocationStorage bookmarkStorage = new InDiskBookmarkStorage(Constants.BOOKMARK_DATA_PATH);
-    private final SavedMapOverlaySettings mapSettingsStorage = new InDiskMapOverlaySettingsStorage(Constants.MAP_SETTINGS_DATA_PATH);
+    private final SavedMapOverlaySettings mapSettingsStorage = new InDiskMapOverlaySettingsStorage(
+            Constants.MAP_SETTINGS_DATA_PATH);
     private PanAndZoomView panAndZoomView;
     private PanAndZoomPresenter panAndZoomPresenter;
     private BookmarksView bookmarksView;
@@ -206,7 +208,8 @@ public class AppBuilder {
     public AppBuilder createOverlayView(){
         UpdateOverlaySizeUseCase updateOverlaySizeUseCase;
         updateOverlaySizeUseCase = new UpdateOverlaySizeUseCase(overlayManager, viewport);
-        UpdateOverlaySizeController sizeController = new UpdateOverlaySizeController(updateOverlaySizeUseCase, updateOverlayUseCase);
+        UpdateOverlaySizeController sizeController = new UpdateOverlaySizeController(
+                updateOverlaySizeUseCase, updateOverlayUseCase);
         weatherOverlayView = new DisplayOverlayView(sizeController, overlayViewModel);
         return this;
     }
@@ -251,7 +254,8 @@ public class AppBuilder {
         UpdateLegendOutputBoundary legendOutputBoundary = new LegendPresenter(legendViewModel);
         changeLayerUseCase = new ChangeLayerUseCase(overlayManager, layerOutputBoundaryWrapper, legendOutputBoundary);
         changeOpacityUseCase = new ChangeOpacityUseCase(overlayManager);
-        WeatherLayersController layersController = new WeatherLayersController(changeLayerUseCase, changeOpacityUseCase);
+        WeatherLayersController layersController = new WeatherLayersController(
+                changeLayerUseCase, changeOpacityUseCase);
         changeWeatherView.addLayerController(layersController);
         UpdateOverlayController updateCont = new UpdateOverlayController(updateOverlayUseCase);
         changeWeatherView.addUpdateController(updateCont);
