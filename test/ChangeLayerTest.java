@@ -12,7 +12,7 @@ import usecase.weatherlayers.layers.ChangeLayerUseCase;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class ChangeLayerTest {
+class ChangeLayerTest {
     private OverlayManager om = new OverlayManager(1,1);
     private WeatherLayersViewModel vm = new WeatherLayersViewModel(0.5);
     private ChangeLayerOutputBoundary presenter = new WeatherLayersPresenter(vm);
@@ -23,8 +23,8 @@ public class ChangeLayerTest {
     @Test
     void changeType(){
         try {
-            useCase.change(new ChangeLayerInputData(WeatherType.Pressure));
-            assertSame(WeatherType.Pressure, om.getSelected());
+            useCase.change(new ChangeLayerInputData(WeatherType.PRESSURE));
+            assertSame(WeatherType.PRESSURE, om.getSelected());
         } catch (LayerNotFoundException e) {
             fail();
         }
@@ -32,11 +32,11 @@ public class ChangeLayerTest {
     @Test
     void changeTypeMulti(){
         try {
-            useCase.change(new ChangeLayerInputData(WeatherType.Pressure));
-            useCase.change(new ChangeLayerInputData(WeatherType.Wind));
-            useCase.change(new ChangeLayerInputData(WeatherType.Tmp2m));
-            useCase.change(new ChangeLayerInputData(WeatherType.Wind));
-            assertSame(WeatherType.Wind, om.getSelected());
+            useCase.change(new ChangeLayerInputData(WeatherType.PRESSURE));
+            useCase.change(new ChangeLayerInputData(WeatherType.WIND));
+            useCase.change(new ChangeLayerInputData(WeatherType.TMP2M));
+            useCase.change(new ChangeLayerInputData(WeatherType.WIND));
+            assertSame(WeatherType.WIND, om.getSelected());
         } catch (LayerNotFoundException e) {
             fail();
         }
