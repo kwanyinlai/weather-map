@@ -91,4 +91,12 @@ public class ChangeWeatherLayersView extends JPanel{
     public void addUpdateController (UpdateOverlayController cont){
         this.updateController = cont;
     }
+
+    /**
+     * set initial selection on startup
+     */
+    public void matchWeather(WeatherType type){
+        weatherDropdown.setSelectedItem(type);
+    }
+
 }

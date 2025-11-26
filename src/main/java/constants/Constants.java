@@ -24,5 +24,5 @@ public class Constants {
     public static final int ZOOM_THRESHOLD = 1000;
     public static final int TILE_FETCH_WORKERS = 8;
 
-    private Constants() { // intentionally empty }
+    private Constants() {} // intentionally empty
 }

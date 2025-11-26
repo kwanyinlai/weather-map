@@ -217,7 +217,7 @@ public class AppBuilder {
      */
     public AppBuilder addMapOverlayView(){
         MapOverlayStructureView mapOverlayStructure;
-        
+
         mapOverlayStructure = new MapOverlayStructureView();
         mapOverlayStructure.addPropertyChangeListener(weatherOverlayView);
         mapOverlayStructure.addPropertyChangeListener(panAndZoomView);
@@ -342,7 +342,7 @@ public class AppBuilder {
         
         loadMapSettingsController = new LoadMapSettingsController(loadMapSettingsUseCase);
         saveMapSettingsController = new SaveMapSettingsController(saveMapSettingsUseCase);
-        
+
         return this;
     }
     
@@ -395,8 +395,11 @@ public class AppBuilder {
         // Load saved map settings on startup
         if (loadMapSettingsController != null) {
             loadMapSettingsController.loadMapSettings();
+            changeWeatherView.matchWeather(overlayManager.getSelected());
+            panAndZoomView.setMapLocation(viewport.getZoomLevel(),
+                    (int)viewport.getPixelCenterX(), (int)viewport.getPixelCenterY());
         }
-        
+
         // Save map settings when window is closing
         application.addWindowListener(new java.awt.event.WindowAdapter() {
             @Override
@@ -406,7 +409,7 @@ public class AppBuilder {
                 }
             }
         });
-        
+
         updateOverlayUseCase.update();
 
         return application;
