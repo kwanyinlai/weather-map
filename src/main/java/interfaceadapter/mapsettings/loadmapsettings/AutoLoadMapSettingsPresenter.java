@@ -8,6 +8,7 @@ import org.openstreetmap.gui.jmapviewer.OsmMercator;
 import usecase.mapsettings.loadmapsettings.LoadMapSettingsOutputBoundary;
 import usecase.mapsettings.loadmapsettings.LoadMapSettingsOutputData;
 import usecase.weatherlayers.layers.ChangeLayerInputBoundary;
+import usecase.weatherlayers.layers.ChangeLayerInputData;
 
 /**
  * Presenter for automatically loading map settings on startup.
