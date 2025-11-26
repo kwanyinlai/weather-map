@@ -40,7 +40,7 @@ public class ChangeWeatherLayersView extends JPanel{
         );
 
         //drop down menu for basemap options
-        if (System.getenv("API_KEY") != null) {
+        if (System.getenv("THUNDERFOREST_KEY") != null) {
             JComboBox<TileSource> basemapDropdown = getTileSourceJComboBox(mapViewer);
             this.add(basemapDropdown);
         }
