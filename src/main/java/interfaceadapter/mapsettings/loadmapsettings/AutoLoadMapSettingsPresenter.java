@@ -16,9 +16,8 @@ import usecase.weatherlayers.layers.ChangeLayerInputBoundary;
 public final class AutoLoadMapSettingsPresenter implements LoadMapSettingsOutputBoundary {
 
     private final Viewport viewport;
-    private final OverlayManager overlayManager;
     private final ChangeLayerInputBoundary changeLayerUseCase;
-    private final OsmMercator MERCATOR = OsmMercator.MERCATOR_256;
+    private static final OsmMercator MERCATOR = OsmMercator.MERCATOR_256;
 
     /**
      * Creates a presenter that applies settings directly to the viewport and overlay manager.
@@ -28,10 +27,8 @@ public final class AutoLoadMapSettingsPresenter implements LoadMapSettingsOutput
      * @param changeLayerUseCase use case for changing the weather layer
      */
     public AutoLoadMapSettingsPresenter(Viewport viewport,
-                                        OverlayManager overlayManager,
                                         ChangeLayerInputBoundary changeLayerUseCase) {
         this.viewport = viewport;
-        this.overlayManager = overlayManager;
         this.changeLayerUseCase = changeLayerUseCase;
     }
 
@@ -54,7 +51,7 @@ public final class AutoLoadMapSettingsPresenter implements LoadMapSettingsOutput
         // Update weather layer if a saved type exists
         if (weatherType != null) {
             try {
-                changeLayerUseCase.change(new usecase.weatherlayers.layers.ChangeLayerInputData(weatherType));
+                changeLayerUseCase.change(new ChangeLayerInputData(weatherType));
             } catch (LayerNotFoundException e) {
                 // If the layer doesn't exist, just ignore it
             }

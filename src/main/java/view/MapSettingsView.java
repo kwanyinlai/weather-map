@@ -20,9 +20,8 @@ import java.beans.PropertyChangeListener;
  */
 public final class MapSettingsView extends JPanel implements PropertyChangeListener {
 
-    private final MapSettingsViewModel viewModel;
-    private final LoadMapSettingsController loadMapSettingsController;
-    private final SaveMapSettingsController saveMapSettingsController;
+    private final transient LoadMapSettingsController loadMapSettingsController;
+    private final transient SaveMapSettingsController saveMapSettingsController;
 
     // UI components
     private final JTextField latitudeField = new JTextField(10);
@@ -47,7 +46,6 @@ public final class MapSettingsView extends JPanel implements PropertyChangeListe
                            LoadMapSettingsController loadMapSettingsController,
                            SaveMapSettingsController saveMapSettingsController) {
 
-        this.viewModel = viewModel;
         this.loadMapSettingsController = loadMapSettingsController;
         this.saveMapSettingsController = saveMapSettingsController;
 
@@ -55,10 +53,10 @@ public final class MapSettingsView extends JPanel implements PropertyChangeListe
         buildUi();
 
         // Listen to state changes from the view model.
-        this.viewModel.addPropertyChangeListener(this);
+        viewModel.addPropertyChangeListener(this);
 
         // Initialise from current state, if any.
-        updateFromState(this.viewModel.getState());
+        updateFromState(viewModel.getState());
     }
 
     /**
@@ -130,29 +128,21 @@ public final class MapSettingsView extends JPanel implements PropertyChangeListe
      */
     private void hookUpActions() {
         // Load existing settings.
-        loadButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                loadMapSettingsController.loadMapSettings();
-            }
-        });
+        loadButton.addActionListener( e -> loadMapSettingsController.loadMapSettings());
 
         // Save current values from the fields.
-        saveButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                String latText = latitudeField.getText().trim();
-                String lonText = longitudeField.getText().trim();
+        saveButton.addActionListener(e -> {
+            String latText = latitudeField.getText().trim();
+            String lonText = longitudeField.getText().trim();
 
-                try {
-                    double latitude = Double.parseDouble(latText);
-                    double longitude = Double.parseDouble(lonText);
-                    int zoom = (Integer) zoomSpinner.getValue();
+            try {
+                double latitude = Double.parseDouble(latText);
+                double longitude = Double.parseDouble(lonText);
+                int zoom = (Integer) zoomSpinner.getValue();
 
-                    saveMapSettingsController.saveMapSettings(latitude, longitude, zoom, null);
-                } catch (NumberFormatException ex) {
-                    errorLabel.setText("Latitude and longitude must be valid numbers.");
-                }
+                saveMapSettingsController.saveMapSettings(latitude, longitude, zoom, null);
+            } catch (NumberFormatException ex) {
+                errorLabel.setText("Latitude and longitude must be valid numbers.");
             }
         });
     }

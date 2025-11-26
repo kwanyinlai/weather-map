@@ -1,9 +1,8 @@
-package java.maptime;
 import entity.ProgramTime;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import usecase.maptime.*;
-import usecase.weatherLayers.update.UpdateOverlayInputBoundary;
+import usecase.weatherlayers.update.UpdateOverlayInputBoundary;
 
 import java.time.Instant;
 import java.time.LocalDateTime;
@@ -13,10 +12,10 @@ import java.time.temporal.ChronoUnit;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
 
-public class UpdateMapTimeUseCaseTest {
+class UpdateMapTimeUseCaseTest {
 
     @Test
-    public void checkCorrectManualUpdateOfProgramTime() {
+    void checkCorrectManualUpdateOfProgramTime() {
         java.time.Instant mockTime = LocalDateTime.of(
                 2025,
                 11,
@@ -51,7 +50,7 @@ public class UpdateMapTimeUseCaseTest {
     }
 
     @Test
-    public void checkIncrementingProgramTime(){
+    void checkIncrementingProgramTime(){
         java.time.Instant currentTime = Instant.now();
         ProgramTime programTime = new ProgramTime(currentTime);
         UpdateOverlayInputBoundary updateOverlayUseCase = mock(UpdateOverlayInputBoundary.class);
@@ -84,7 +83,7 @@ public class UpdateMapTimeUseCaseTest {
     }
 
     @Test
-    public void checkOverflowOfTimeFromIncrement() {
+    void checkOverflowOfTimeFromIncrement() {
 
         java.time.Instant currentTime = Instant.now();
         ProgramTime programTime = new ProgramTime(currentTime.plus(ProgramTime.TIME_INCREMENT.multipliedBy(72)));

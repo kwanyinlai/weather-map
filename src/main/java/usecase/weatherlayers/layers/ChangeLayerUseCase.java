@@ -12,9 +12,9 @@ public class ChangeLayerUseCase implements ChangeLayerInputBoundary{
     private final UpdateLegendOutputBoundary legendPresenter;
     private final GradientLegendLoader legendStorage;
 
-    public ChangeLayerUseCase(OverlayManager OM, ChangeLayerOutputBoundary layerPresenter,
+    public ChangeLayerUseCase(OverlayManager om, ChangeLayerOutputBoundary layerPresenter,
                               UpdateLegendOutputBoundary legendPresenter){
-        this.overlayManager = OM;
+        this.overlayManager = om;
         this.layersPresenter = layerPresenter;
         this.legendPresenter = legendPresenter;
         this.legendStorage = new GradientLoader();
@@ -22,6 +22,7 @@ public class ChangeLayerUseCase implements ChangeLayerInputBoundary{
         try{
             this.change(new ChangeLayerInputData(WeatherType.values()[0]));
         } catch (LayerNotFoundException ignored) {
+            // intentionally empty
         }
 
     }

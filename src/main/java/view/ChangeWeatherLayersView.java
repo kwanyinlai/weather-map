@@ -13,12 +13,16 @@ import org.openstreetmap.gui.jmapviewer.tilesources.OsmTileSource;
 import javax.swing.*;
 import java.awt.*;
 
+/**
+ *   <a href="https://www.thunderforest.com/docs/apikeys/">https://www.thunderforest.com/docs/apikeys/</a>
+ *   Set env variable THUNDERFOREST_KEY={YOUR KEY}
+ */
 public class ChangeWeatherLayersView extends JPanel{
     private final JComboBox<WeatherType> weatherDropdown;
     private final JSlider slider;
 
-    private WeatherLayersController layersController;
-    private UpdateOverlayController updateController;
+    private transient WeatherLayersController layersController;
+    private transient UpdateOverlayController updateController;
 
     public ChangeWeatherLayersView(WeatherLayersViewModel vm, JMapViewer mapViewer){
         this.setPreferredSize(new Dimension(200,200));
@@ -41,8 +45,6 @@ public class ChangeWeatherLayersView extends JPanel{
             this.add(basemapDropdown);
         }
         else{
-            //https://www.thunderforest.com/docs/apikeys/
-            //Set env variable THUNDERFOREST_KEY={YOUR KEY}
             JLabel warning = new JLabel("<html>Missing Thunderforest API key.<br>Basemap cannot be switched.</html>");
             warning.setSize(200,200);
             this.add(warning);
