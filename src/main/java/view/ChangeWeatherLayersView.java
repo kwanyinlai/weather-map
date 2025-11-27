@@ -2,9 +2,9 @@ package view;
 
 import entity.LayerNotFoundException;
 import entity.WeatherType;
-import interfaceadapter.weatherlayers.UpdateOverlayController;
-import interfaceadapter.weatherlayers.WeatherLayersController;
-import interfaceadapter.weatherlayers.WeatherLayersViewModel;
+import interfaceadapter.weatherlayers.updateoverlay.UpdateOverlayController;
+import interfaceadapter.weatherlayers.layers.WeatherLayersController;
+import interfaceadapter.weatherlayers.layers.WeatherLayersViewModel;
 import org.jetbrains.annotations.NotNull;
 import org.openstreetmap.gui.jmapviewer.JMapViewer;
 import org.openstreetmap.gui.jmapviewer.interfaces.TileSource;
