@@ -153,7 +153,7 @@ public final class InDiskMapOverlaySettingsStorage implements SavedMapOverlaySet
         obj.put("centerLongitude", centerLocation.getLongitude());
         obj.put("zoomLevel", zoomLevel);
         if (weatherType != null) {
-            obj.put("weatherType", weatherType.name());
+            obj.put("weatherType", weatherType);
         }
 
         try {

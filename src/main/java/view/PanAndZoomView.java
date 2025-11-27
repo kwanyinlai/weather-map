@@ -1,6 +1,6 @@
 package view;
-import interfaceadapter.mapinteraction.MapViewModel;
-import interfaceadapter.mapinteraction.PanAndZoomController;
+import interfaceadapter.mapnavigation.MapViewModel;
+import interfaceadapter.mapnavigation.PanAndZoomController;
 import org.openstreetmap.gui.jmapviewer.JMapViewer;
 
 import javax.swing.*;
