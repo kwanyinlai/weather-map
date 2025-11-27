@@ -36,6 +36,7 @@ public class LocationWithName extends  Location {
         int result = name != null ? name.hashCode() : 0;
         result = 31 * result + Double.hashCode(getLatitude());
         result = 31 * result + Double.hashCode(getLongitude());
+        //the number 31 is an odd prime number , and it can reduce the hash confilct
         return result;
     }
 

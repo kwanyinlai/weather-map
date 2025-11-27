@@ -70,6 +70,9 @@ import usecase.mapsettings.savemapsettings.SaveMapSettingsInputBoundary;
 import usecase.mapsettings.savemapsettings.SaveMapSettingsUseCase;
 import entity.WeatherType;
 
+import static constants.Constants.SEARCH_BAR_PRFFERDSIZE_HEIGHT;
+import static constants.Constants.SEARCH_BAR_PRFFERDSIZE_WIDTH;
+
 public class AppBuilder {
     private final JPanel borderPanel = new JPanel();
     private DisplayOverlayView weatherOverlayView;
@@ -132,7 +135,7 @@ public AppBuilder addSearchBarView() {
     usecase.searchbar.SearchBarUsecase usecase = new SearchBarUsecase(api, presenter);
     SearchBarController controller = new SearchBarController(usecase);
     searchBarView= new SearchBarView(viewModel, controller, mapViewer);
-    searchBarView.setPreferredSize(new Dimension(10, 10));
+    searchBarView.setPreferredSize(new Dimension(SEARCH_BAR_PRFFERDSIZE_WIDTH, SEARCH_BAR_PRFFERDSIZE_HEIGHT));
 
     return this;
 }
