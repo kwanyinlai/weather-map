@@ -36,9 +36,9 @@ public class OpenWeatherGeocodingAPI implements GeocodingAPI {
                     results.add(new LocationWithName(name, lat, lon));
                 }
             }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        } catch (IOException ignored){//this exception can't be ignored
+
+    }
         return results;
     }
 }
