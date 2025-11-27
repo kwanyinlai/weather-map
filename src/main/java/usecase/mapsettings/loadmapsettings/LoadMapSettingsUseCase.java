@@ -35,18 +35,7 @@ public final class LoadMapSettingsUseCase implements LoadMapSettingsInputBoundar
                 return;
             }
 
-            // Retrieve the saved center location, zoom level, and weather type.
-            Location center = savedMapOverlaySettings.getSavedCenterLocation();
-            int zoomLevel = savedMapOverlaySettings.getSavedZoomLevel();
-            WeatherType weatherType = savedMapOverlaySettings.getSavedWeatherType();
-
-            // Convert the location for the output data.
-            double latitude = center.getLatitude();
-            double longitude = center.getLongitude();
-
-            // Wrap in an output data object.
-            LoadMapSettingsOutputData outputData =
-                    new LoadMapSettingsOutputData(latitude, longitude, zoomLevel, weatherType);
+            LoadMapSettingsOutputData outputData = buildOutputData();
 
             // Hand the data to the presenter.
             outputBoundary.presentLoadedSettings(outputData);
@@ -55,5 +44,13 @@ public final class LoadMapSettingsUseCase implements LoadMapSettingsInputBoundar
             // Any unexpected persistence error
             outputBoundary.presentLoadSettingsFailure("Failed to load saved map settings.");
         }
+    }
+    private LoadMapSettingsOutputData buildOutputData() {
+        Location center = savedMapOverlaySettings.getSavedCenterLocation();
+        int zoomLevel = savedMapOverlaySettings.getSavedZoomLevel();
+        WeatherType weatherType = savedMapOverlaySettings.getSavedWeatherType();
+        double latitude = center.getLatitude();
+        double longitude = center.getLongitude();
+        return new LoadMapSettingsOutputData(latitude, longitude, zoomLevel, weatherType);
     }
 }

@@ -1,7 +1,7 @@
 package view;
 
 import constants.Constants;
-import interfaceadapter.weatherlayers.LegendViewModel;
+import interfaceadapter.weatherlayers.legend.LegendViewModel;
 
 import javax.swing.*;
 import java.awt.*;
