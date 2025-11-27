@@ -1,4 +1,4 @@
-package usecase.weatherlayers.update;
+package usecase.weatherlayers.updateoverlay;
 
 import dataaccessinterface.ImageLoader;
 import dataaccessinterface.TileNotFoundException;
@@ -10,25 +10,28 @@ import entity.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 
+import java.awt.image.BufferedImage;
+import java.io.IOException;
+
 public final class UpdateOverlayUseCase implements UpdateOverlayInputBoundary, TileCompletedListener  {
     private final OverlayManager overlayManager;
     private final TileRepository tileCache;
     private final ProgramTime time;
+    private final ImageLoader imageLoader;
+    private final BufferedImage loadingImage;
     private final Viewport viewport;
     private final ProgramTime programTime;
     private final UpdateOverlayOutputBoundary output;
-    private final ImageLoader imageLoader;
-    private final BufferedImage loadingImage;
     public UpdateOverlayUseCase(OverlayManager om, TileRepository tCache, ProgramTime time, Viewport vp,
                                 UpdateOverlayOutputBoundary output){
         this.overlayManager = om;
         this.tileCache = tCache;
         this.time = time;
+        this.imageLoader = new SimpleImageLoader();
+        this.loadingImage = getLoadingImage();
         this.viewport = vp;
         this.output = output;
         this.programTime = time;
-        this.imageLoader = new SimpleImageLoader();
-        this.loadingImage = getLoadingImage();
         tileCache.addListener(this);
     }
 
@@ -39,6 +42,7 @@ public final class UpdateOverlayUseCase implements UpdateOverlayInputBoundary, T
             return new BufferedImage(255, 255, BufferedImage.TYPE_3BYTE_BGR);
         }
     }
+
     public void update(){
         int zoom = this.viewport.getZoomLevel();
         if (zoom > 10){
