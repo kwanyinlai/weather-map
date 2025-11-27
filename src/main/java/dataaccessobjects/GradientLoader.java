@@ -26,7 +26,7 @@ public class GradientLoader implements GradientLegendLoader {
         BufferedImage blank;
 
         try{
-            File imageFile = new File("img/legends/legend_Blank.png");
+            File imageFile = new File("img/legends/legendblank.png");
             blank = ImageIO.read(imageFile);
         } catch (IOException e) {
             blank = new BufferedImage(1,1,1);
@@ -34,7 +34,7 @@ public class GradientLoader implements GradientLegendLoader {
         for(WeatherType type: WeatherType.values()){
             try{
                 BufferedImage legendImg = null;
-                File imageFile = new File("img/legends/legend_" + type + ".png");
+                File imageFile = new File("img/legends/legend" + type.toString().replace(" ","").toLowerCase() + ".png");
                 legendImg = ImageIO.read(imageFile);
                 legends.put(type, legendImg);
             } catch (RuntimeException | IOException e) {
