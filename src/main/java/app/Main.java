@@ -17,6 +17,7 @@ public class Main {
                 .addProgramTimeView()
                 .addUpdateMapTimeUseCase()
                 .addBookmarkView()
+                .addSearchBarView()
                 .addSettingsAndBookmarkSidePanel()
 //                .addInfoPanelView()
                 .build();
