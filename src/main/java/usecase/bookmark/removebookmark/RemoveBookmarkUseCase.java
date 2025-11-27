@@ -63,11 +63,6 @@ public final class RemoveBookmarkUseCase implements RemoveBookmarkInputBoundary 
             return;
         }
 
-        if(!removed) {
-            outputBoundary.presentRemoveBookmarkFailure("Bookmarks not found.");
-            return;
-        }
-
         RemoveBookmarkOutputData outputData =
                 new RemoveBookmarkOutputData(name, latitude, longitude, removed);
 
