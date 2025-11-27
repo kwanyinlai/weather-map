@@ -15,8 +15,8 @@ public class SearchBarView extends JPanel {
     private final JMapViewer mapViewer;
     private final JTextField searchField = new JTextField(10);
     private final JList<LocationWithName> resultList = new JList<>();
-    private final SearchBarController controller;
-    private final SearchBarViewModel viewModel;
+    private final transient SearchBarController controller;
+    private final transient SearchBarViewModel viewModel;
 
     public SearchBarView(SearchBarViewModel viewModel, SearchBarController controller, JMapViewer mapViewer) {
         this.mapViewer = mapViewer;

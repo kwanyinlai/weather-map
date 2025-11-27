@@ -141,16 +141,7 @@ public AppBuilder addSearchBarView() {
 }
 
     public AppBuilder addBookmarkView(){
-        VisitBookmarkOutputBoundary visitBookmarkPresenter;
-        VisitBookmarkInputBoundary visitBookmarkUseCase;
-        ListBookmarksPresenter listBookmarksPresenter;
-        RemoveBookmarkOutputBoundary removeBookmarkPresenter;
-        AddBookmarkOutputBoundary addBookmarkPresenter;
-        ListBookmarksInputBoundary listBookmarksUseCase;
-        RemoveBookmarkInputBoundary removeBookmarkUseCase;
-        AddBookmarkInputBoundary addBookmarkUseCase;
         BookmarksViewModel bookmarksViewModel;
-        VisitBookmarkController visitBookmarkController;
 
         bookmarksViewModel = new BookmarksViewModel();
         removeBookmarkPresenter = new RemoveBookmarkPresenter(bookmarksViewModel);
@@ -359,8 +350,6 @@ public AppBuilder addSearchBarView() {
      * Sets up map settings persistence (save/load).
      */
     public AppBuilder addMapSettingsPersistence() {
-        LoadMapSettingsInputBoundary loadMapSettingsUseCase;
-        SaveMapSettingsInputBoundary saveMapSettingsUseCase;
         // Create presenter that applies settings directly to viewport and overlay manager
         AutoLoadMapSettingsPresenter autoLoadPresenter = new AutoLoadMapSettingsPresenter(
                 viewport,
