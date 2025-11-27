@@ -19,7 +19,7 @@ public class OpenWeatherGeocodingAPI implements GeocodingAPI {
     public List<LocationWithName> geocode(String query) {
         List<LocationWithName> results = new ArrayList<>();
         String encodedQuery = query.replace(" ", "%20");
-        String geocodingKey = "57d9bc7f8d93ed445ee01418ff15e854";
+        String geocodingKey = System.getenv("GEOCODING_KEY");
         String url = String.format("%s?q=%s&limit=5&appid=%s", API_URL, encodedQuery, geocodingKey);
 
         try {
