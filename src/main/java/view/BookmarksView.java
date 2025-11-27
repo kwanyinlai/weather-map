@@ -87,13 +87,10 @@ public final class BookmarksView extends JPanel implements PropertyChangeListene
         setLayout(new BorderLayout());
         buildUi();
 
-        // Listen for state changes.
         this.viewModel.addPropertyChangeListener(this);
 
-        // Initialise from current state, if any.
         updateFromState(this.viewModel.getState());
 
-        // Load bookmarks from storage on startup.
         listBookmarksController.listBookmarks();
     }
 
@@ -158,7 +155,12 @@ public final class BookmarksView extends JPanel implements PropertyChangeListene
      * Wires the button actions to the controllers.
      */
     private void hookUpActions() {
-        // Add bookmark.
+        configureAddBookmarkAction();
+        configureRemoveBookmarkAction();
+        configureVisitBookmarkAction();
+    }
+
+    private void configureAddBookmarkAction() {
         addButton.addActionListener(e -> {
             String name = nameField.getText().trim();
             String latText = latitudeField.getText().trim();
@@ -185,13 +187,13 @@ public final class BookmarksView extends JPanel implements PropertyChangeListene
 
                 addBookmarkController.addBookmark(name, latitude, longitude);
             } catch (NumberFormatException | NullPointerException ex) {
-                // Local validation error – show directly in the view.
+                // Local validation error.
                 errorLabel.setText("Latitude and longitude must be valid numbers.");
             }
         });
+    }
 
-        // Remove bookmark. If a list item is selected, remove that; otherwise
-        // fall back to the values typed in the text fields.
+    private void configureRemoveBookmarkAction() {
         removeButton.addActionListener(e -> {
             int selectedIndex = bookmarksList.getSelectedIndex();
 
@@ -210,11 +212,12 @@ public final class BookmarksView extends JPanel implements PropertyChangeListene
                 }
             }
 
-            // No selected item or state unavailable; use text fields.
+            // No selected item or state unavailable.
             handleRemoveUsingFields();
         });
+    }
 
-        // Visit selected bookmark: move viewport to its coordinates.
+    private void configureVisitBookmarkAction() {
         visitButton.addActionListener(e -> {
             int selectedIndex = bookmarksList.getSelectedIndex();
             if (selectedIndex < 0) {
@@ -237,8 +240,6 @@ public final class BookmarksView extends JPanel implements PropertyChangeListene
                     selected.getLongitude()
             );
         });
-
-
     }
 
     /**

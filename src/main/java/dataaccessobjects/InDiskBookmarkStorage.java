@@ -20,6 +20,8 @@ import java.util.List;
  */
 public final class InDiskBookmarkStorage implements BookmarkedLocationStorage {
 
+    private static final String KEY_LATITUDE = "latitude";
+    private static final String KEY_LONGITUDE = "longitude";
     private final Path filePath;
 
     /**
@@ -157,8 +159,8 @@ public final class InDiskBookmarkStorage implements BookmarkedLocationStorage {
         JSONObject obj = new JSONObject();
 
         obj.put("name", b.getName());
-        obj.put("latitude", b.getLatitude());
-        obj.put("longitude", b.getLongitude());
+        obj.put(KEY_LATITUDE, b.getLatitude());
+        obj.put(KEY_LONGITUDE, b.getLongitude());
 
         return obj;
     }
@@ -174,8 +176,8 @@ public final class InDiskBookmarkStorage implements BookmarkedLocationStorage {
      * @throws java.time.format.DateTimeParseException If {@code savedTime} cannot be parsed.
      */
     private BookmarkedLocation convertJsonEntryToBookmark(JSONObject obj) {
-        double lat = obj.getDouble("latitude");
-        double lon = obj.getDouble("longitude");
+        double lat = obj.getDouble(KEY_LATITUDE);
+        double lon = obj.getDouble(KEY_LONGITUDE);
         String name = obj.getString("name");
 
         return new BookmarkedLocation(name, lat, lon);
@@ -191,8 +193,8 @@ public final class InDiskBookmarkStorage implements BookmarkedLocationStorage {
      */
     private boolean jsonMatchesBookmark(JSONObject obj, BookmarkedLocation b) {
         String name = obj.optString("name", "");
-        double lat = obj.optDouble("latitude", Double.NaN);
-        double lon = obj.optDouble("longitude", Double.NaN);
+        double lat = obj.optDouble(KEY_LATITUDE, Double.NaN);
+        double lon = obj.optDouble(KEY_LONGITUDE, Double.NaN);
 
         return name.equals(b.getName())
                 && Double.compare(lat, b.getLatitude()) == 0
