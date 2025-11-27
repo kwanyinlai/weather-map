@@ -1,7 +1,7 @@
 package usecase.weatherlayers.layers;
 
 import dataaccessinterface.GradientLegendLoader;
-import dataaccessobjects.GradientLoader;
+import dataaccessobjects.InDiskGradientLoader;
 import entity.LayerNotFoundException;
 import entity.OverlayManager;
 import entity.WeatherType;
@@ -13,11 +13,11 @@ public class ChangeLayerUseCase implements ChangeLayerInputBoundary{
     private final GradientLegendLoader legendStorage;
 
     public ChangeLayerUseCase(OverlayManager om, ChangeLayerOutputBoundary layerPresenter,
-                              UpdateLegendOutputBoundary legendPresenter){
+                              UpdateLegendOutputBoundary legendPresenter, GradientLegendLoader legendStorage){
         this.overlayManager = om;
         this.layersPresenter = layerPresenter;
         this.legendPresenter = legendPresenter;
-        this.legendStorage = new GradientLoader();
+        this.legendStorage = legendStorage;
         //Initialize gradient legend
         try{
             this.change(new ChangeLayerInputData(WeatherType.values()[0]));

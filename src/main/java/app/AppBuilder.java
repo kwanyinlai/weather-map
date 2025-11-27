@@ -8,6 +8,7 @@ import constants.Constants;
 import dataaccessinterface.BookmarkedLocationStorage;
 import dataaccessobjects.InDiskBookmarkStorage;
 
+import dataaccessobjects.InDiskGradientLoader;
 import entity.ProgramTime;
 import entity.Viewport;
 import entity.Location;
@@ -251,7 +252,8 @@ public class AppBuilder {
             }
         };
         UpdateLegendOutputBoundary legendOutputBoundary = new LegendPresenter(legendViewModel);
-        changeLayerUseCase = new ChangeLayerUseCase(overlayManager, layerOutputBoundaryWrapper, legendOutputBoundary);
+        changeLayerUseCase = new ChangeLayerUseCase(overlayManager, layerOutputBoundaryWrapper, legendOutputBoundary,
+                new InDiskGradientLoader());
         changeOpacityUseCase = new ChangeOpacityUseCase(overlayManager);
         WeatherLayersController layersController = new WeatherLayersController(changeLayerUseCase, changeOpacityUseCase);
         changeWeatherView.addLayerController(layersController);
