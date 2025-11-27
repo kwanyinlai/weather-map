@@ -1,8 +1,8 @@
 package view;
 
 import constants.Constants;
-import interfaceadapter.weatherlayers.UpdateOverlaySizeController;
-import interfaceadapter.weatherlayers.UpdateOverlayViewModel;
+import interfaceadapter.weatherlayers.updateoverlay.UpdateOverlaySizeController;
+import interfaceadapter.weatherlayers.updateoverlay.UpdateOverlayViewModel;
 
 import javax.swing.*;
 import java.awt.*;

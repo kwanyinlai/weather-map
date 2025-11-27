@@ -149,7 +149,6 @@ public final class BookmarksView extends JPanel implements PropertyChangeListene
         bottomPanel.add(errorLabel, BorderLayout.SOUTH);
 
         add(bottomPanel, BorderLayout.SOUTH);
-
         // Wire button actions.
         hookUpActions();
     }
