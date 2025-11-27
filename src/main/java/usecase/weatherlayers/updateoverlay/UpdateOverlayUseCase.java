@@ -10,9 +10,6 @@ import entity.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 
-import java.awt.image.BufferedImage;
-import java.io.IOException;
-
 public final class UpdateOverlayUseCase implements UpdateOverlayInputBoundary, TileCompletedListener  {
     private final OverlayManager overlayManager;
     private final TileRepository tileCache;
