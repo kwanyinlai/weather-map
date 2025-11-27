@@ -1,13 +1,56 @@
-# Team Project
+# Weather Map Viewer:
 
-Please keep this up-to-date with information about your project throughout the term.
+ TODO ADD IMAGES/VIDEOS
 
-The readme should include information such as:
-- a summary of what your application is all about
-- a list of the user stories, along with who is responsible for each one
-- information about the API(s) that your project uses 
-- screenshots or animations demonstrating current functionality
+- Application Summary:
+    <br> This application displays a weather overlay over an interactive map, allowing the user to view the weather 
+    conditions of differnt parts of the world by navigating the map.
+    <br> 
+    - The map: 
+      - The interactive map allows the user to navigate the map by dragging the mouse or using the mousewheel to zoom 
+      in.
+      - The basemap can be changed using the top dropdown menu on the right. This menu is only avalible if a 
+      ThunderForest API key is set as an enviroment variable (THUNDERFOREST_KEY=[key here]), avalible for free. 
+      https://thunderforest.com/
+    <br> 
+    - Weather Overlay:
+      - The weather overlay displays the weather conditions of the visible areas as an overlay on top of the map.
+      The color gradient legend at the top of the application shows the values that the colors correspond to, 
+      provided by https://www.weatherapi.com/. 
+      There are 4 types of weather data avalible, which can be selected using the dropdown menu on the right:
+        - Temperature
+        - Precipitation
+        - Pressure
+        - Wind Speed
+      - The opacity slider below the drowdown menu allows the user to set the overlay opacity of each weather type.
+    <br> 
+    - Forecast:
+      - The time slider at the bottom of the window allows the user to set the forecast time of the overlay, up to 3 
+      days in the future, and the play button will automatically move the slider forward, showing the weather forecast 
+      as an animated map. Note that due to internet speed and caching the weather overlay on the first cycle may be 
+      laggy, but it will be much smoother once all tiles have been cached.
+    <br> 
+    - Info Panel:
+    Zooming into an area will cause an info panel to pop up, showing the conditions and horly forecast of the visible 
+    area.
+    <br>
+    - Bookmarks:
+        - TODO
+    <br>
+    - Searchbar:
+        - TODO
+    
 
-By keeping this README up-to-date,
-your team will find it easier to prepare for the final presentation
-at the end of the term.
+- User Stories:
+    TODO
+
+- API Information:
+    - https://thunderforest.com/: This api is used by the JMapViewer module to display the maps. The default map type
+      (Mapnik) does not require an API key, while the other options require one, avalible for free. 
+      Set enviroment variable THUNDERFOREST_KEY=[key here] to enable the basemap dropdown menu.
+    - https://www.weatherapi.com/docs/: We are using 2 services provided by this provider. 
+      - weathermaps: returns an image based on the specified time, zoom level, and tile coordinates. Used to construct
+      the weather overlay.
+      - forecast: TODO
+
+
