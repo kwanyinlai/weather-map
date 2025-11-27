@@ -1,7 +1,8 @@
-package interfaceadapter.weatherlayers;
+package interfaceadapter.weatherlayers.updateoverlay;
 
-import usecase.weatherlayers.update.UpdateOverlayOutputBoundary;
-import usecase.weatherlayers.update.UpdateOverlayOutputData;
+import interfaceadapter.weatherlayers.layers.OverlayState;
+import usecase.weatherlayers.updateoverlay.UpdateOverlayOutputBoundary;
+import usecase.weatherlayers.updateoverlay.UpdateOverlayOutputData;
 
 public class UpdateOverlayPresenter implements UpdateOverlayOutputBoundary {
     private final UpdateOverlayViewModel overlayViewModel;

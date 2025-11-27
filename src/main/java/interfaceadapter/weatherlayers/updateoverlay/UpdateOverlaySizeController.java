@@ -1,8 +1,8 @@
-package interfaceadapter.weatherlayers;
+package interfaceadapter.weatherlayers.updateoverlay;
 
-import usecase.weatherlayers.update.UpdateOverlayInputBoundary;
-import usecase.weatherlayers.update.UpdateOverlaySizeInputBoundary;
-import usecase.weatherlayers.update.UpdateOverlaySizeInputData;
+import usecase.weatherlayers.updateoverlay.UpdateOverlayInputBoundary;
+import usecase.weatherlayers.updateoverlay.UpdateOverlaySizeInputBoundary;
+import usecase.weatherlayers.updateoverlay.UpdateOverlaySizeInputData;
 
 import java.awt.*;
 

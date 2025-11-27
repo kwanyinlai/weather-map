@@ -1,9 +1,9 @@
-package interfaceadapter.mapinteraction;
+package interfaceadapter.mapnavigation;
 
 import org.openstreetmap.gui.jmapviewer.events.JMVCommandEvent;
 import org.openstreetmap.gui.jmapviewer.interfaces.JMapViewerEventListener;
-import usecase.mapinteraction.PanAndZoomInputBoundary;
-import usecase.mapinteraction.PanAndZoomInputData;
+import usecase.mapnavigation.PanAndZoomInputBoundary;
+import usecase.mapnavigation.PanAndZoomInputData;
 import org.openstreetmap.gui.jmapviewer.JMapViewer;
 
 import java.awt.*;

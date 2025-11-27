@@ -2,9 +2,9 @@ package usecase.bookmark.visitbookmark;
 
 import entity.Viewport;
 import org.openstreetmap.gui.jmapviewer.OsmMercator;
-import usecase.mapinteraction.PanAndZoomOutputBoundary;
-import usecase.mapinteraction.PanAndZoomOutputData;
-import usecase.weatherlayers.update.UpdateOverlayUseCase;
+import usecase.mapnavigation.PanAndZoomOutputBoundary;
+import usecase.mapnavigation.PanAndZoomOutputData;
+import usecase.weatherlayers.updateoverlay.UpdateOverlayUseCase;
 
 /**
  * Use case: move the map viewport to a bookmarked location.

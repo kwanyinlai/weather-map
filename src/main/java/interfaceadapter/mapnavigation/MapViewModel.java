@@ -1,4 +1,4 @@
-package interfaceadapter.mapinteraction;
+package interfaceadapter.mapnavigation;
 
 import entity.Location;
 import java.beans.PropertyChangeSupport;

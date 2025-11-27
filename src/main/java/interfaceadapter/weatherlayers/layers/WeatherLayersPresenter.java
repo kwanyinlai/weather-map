@@ -1,4 +1,4 @@
-package interfaceadapter.weatherlayers;
+package interfaceadapter.weatherlayers.layers;
 
 import usecase.weatherlayers.layers.ChangeLayerOutputBoundary;
 import usecase.weatherlayers.layers.ChangeLayersOutputData;

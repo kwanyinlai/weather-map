@@ -2,7 +2,7 @@ import entity.ProgramTime;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import usecase.maptime.*;
-import usecase.weatherlayers.update.UpdateOverlayInputBoundary;
+import usecase.weatherlayers.updateoverlay.UpdateOverlayInputBoundary;
 
 import java.time.Instant;
 import java.time.LocalDateTime;

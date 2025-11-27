@@ -1,4 +1,4 @@
-package interfaceadapter.weatherlayers;
+package interfaceadapter.weatherlayers.layers;
 
 import java.awt.image.BufferedImage;
 

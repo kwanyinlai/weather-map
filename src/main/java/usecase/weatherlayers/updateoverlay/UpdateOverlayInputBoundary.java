@@ -1,4 +1,4 @@
-package usecase.weatherlayers.update;
+package usecase.weatherlayers.updateoverlay;
 
 public interface UpdateOverlayInputBoundary {
     void update();

@@ -1,4 +1,4 @@
-package interfaceadapter.weatherlayers;
+package interfaceadapter.weatherlayers.legend;
 
 import usecase.weatherlayers.layers.ChangeLegendOutputData;
 import usecase.weatherlayers.layers.UpdateLegendOutputBoundary;

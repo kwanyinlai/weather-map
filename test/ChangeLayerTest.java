@@ -1,10 +1,10 @@
 import entity.LayerNotFoundException;
 import entity.OverlayManager;
 import entity.WeatherType;
-import interfaceadapter.weatherlayers.LegendPresenter;
-import interfaceadapter.weatherlayers.LegendViewModel;
-import interfaceadapter.weatherlayers.WeatherLayersPresenter;
-import interfaceadapter.weatherlayers.WeatherLayersViewModel;
+import interfaceadapter.weatherlayers.legend.LegendPresenter;
+import interfaceadapter.weatherlayers.legend.LegendViewModel;
+import interfaceadapter.weatherlayers.layers.WeatherLayersPresenter;
+import interfaceadapter.weatherlayers.layers.WeatherLayersViewModel;
 import org.junit.jupiter.api.Test;
 import usecase.weatherlayers.layers.ChangeLayerInputData;
 import usecase.weatherlayers.layers.ChangeLayerOutputBoundary;

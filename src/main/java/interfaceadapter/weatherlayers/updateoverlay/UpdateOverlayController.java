@@ -1,6 +1,6 @@
-package interfaceadapter.weatherlayers;
+package interfaceadapter.weatherlayers.updateoverlay;
 
-import usecase.weatherlayers.update.UpdateOverlayInputBoundary;
+import usecase.weatherlayers.updateoverlay.UpdateOverlayInputBoundary;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;

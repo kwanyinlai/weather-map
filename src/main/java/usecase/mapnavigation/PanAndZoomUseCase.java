@@ -1,4 +1,4 @@
-package usecase.mapinteraction;
+package usecase.mapnavigation;
 import entity.Viewport;
 
 import java.awt.*;

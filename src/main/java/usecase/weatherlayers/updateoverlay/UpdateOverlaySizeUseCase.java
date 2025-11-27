@@ -1,4 +1,4 @@
-package usecase.weatherlayers.update;
+package usecase.weatherlayers.updateoverlay;
 
 import entity.OverlayManager;
 import entity.Viewport;

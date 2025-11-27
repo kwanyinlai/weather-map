@@ -1,5 +1,5 @@
 import entity.Viewport;
-import usecase.mapinteraction.*;
+import usecase.mapnavigation.*;
 import org.junit.jupiter.api.Test;
 import java.awt.Dimension;
 import static org.junit.jupiter.api.Assertions.*;

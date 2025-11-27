@@ -1,4 +1,4 @@
-package interfaceadapter.weatherlayers;
+package interfaceadapter.weatherlayers.layers;
 
 import entity.LayerNotFoundException;
 import entity.WeatherType;

@@ -1,4 +1,4 @@
-package interfaceadapter.weatherlayers;
+package interfaceadapter.weatherlayers.layers;
 
 public class WeatherLayersViewModel {
     private double currentOpacity;

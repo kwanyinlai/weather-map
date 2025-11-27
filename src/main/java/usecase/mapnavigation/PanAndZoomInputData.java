@@ -1,4 +1,4 @@
-package usecase.mapinteraction;
+package usecase.mapnavigation;
 
 public class PanAndZoomInputData {
     private final int zoomLevel;
