@@ -61,26 +61,39 @@ public final class UpdateOverlayUseCase implements UpdateOverlayInputBoundary, T
                 int x = (int) topLeft.x() + i;
                 int y = (int) topLeft.y() + j;
                 if (x >= 0 && x < Math.pow(2, zoom) && y >= 0 && y < Math.pow(2, zoom)) {
-                    TileCoords tc = new TileCoords(x, y, zoom);
-                    WeatherTile tile = new WeatherTile(tc, this.time.getCurrentTime(), this.overlayManager.getSelected());
-                    if (tileCache.inCache(tile)){
-                        BufferedImage imgData;
-                        try{
-                            imgData = tileCache.getTileImageData(tile);
-                        }
-                        catch (TileNotFoundException e){
-                            imgData = new BufferedImage(256, 256, BufferedImage.TYPE_3BYTE_BGR);
-                        }
-                        overlayManager.drawTileToOverlay(topLeft, botRight, tile, imgData);
-                    }
-                    else {
-                        tileCache.requestTile(tile, topLeft, botRight, viewport.getCentre(), programTime.getCurrentTime());
-                    }
+                    processTile(x, y, zoom, topLeft, botRight);
                 }
             }
         }
         output.updateImage(new UpdateOverlayOutputData(overlayManager.getOverlay()));
 
+    }
+
+    /**
+     * Based on the given tile coordinate, request the tile image from the cache,
+     * and if avalible, draw it to the overlay.
+     * @param x The tile's x coordinate
+     * @param y The tile's y coordinate
+     * @param zoom The tile's zoom level
+     * @param topLeft A vector representing the topleft location of the viewport, as normallized lat lon (0-1)
+     * @param botRight A vector representing the bottom right location of the viewport, as normallized lat lon (0-1)
+     */
+    private void processTile(int x, int y, int zoom, Vector topLeft, Vector botRight) {
+        TileCoords tc = new TileCoords(x, y, zoom);
+        WeatherTile tile = new WeatherTile(tc, this.time.getCurrentTime(), this.overlayManager.getSelected());
+        if (tileCache.inCache(tile)){
+            BufferedImage imgData;
+            try{
+                imgData = tileCache.getTileImageData(tile);
+            }
+            catch (TileNotFoundException e){
+                imgData = new BufferedImage(256, 256, BufferedImage.TYPE_3BYTE_BGR);
+            }
+            overlayManager.drawTileToOverlay(topLeft, botRight, tile, imgData);
+        }
+        else {
+            tileCache.requestTile(tile, topLeft, botRight, viewport.getCentre(), programTime.getCurrentTime());
+        }
     }
 
     @Override
