@@ -6,7 +6,6 @@ import usecase.bookmark.visitbookmark.VisitBookmarkOutputData;
 
 /**
  * Presenter for the "visit bookmark" use case.
- *
  * For now used to surface errors.
  */
 public final class VisitBookmarkPresenter implements VisitBookmarkOutputBoundary {

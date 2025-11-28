@@ -16,6 +16,11 @@ import java.nio.file.*;
 
 public final class InDiskMapOverlaySettingsStorage implements SavedMapOverlaySettings {
 
+    private static final String KEY_CENTER_LATITUDE = "centerLatitude";
+    private static final String KEY_CENTER_LONGITUDE = "centerLongitude";
+    private static final String KEY_ZOOM_LEVEL = "zoomLevel";
+    private static final String KEY_WEATHER_TYPE = "weatherType";
+
     /**
      * Path to the JSON file used for persistence.
      */
@@ -44,9 +49,9 @@ public final class InDiskMapOverlaySettingsStorage implements SavedMapOverlaySet
     public synchronized boolean hasSavedSettings() {
         try {
             JSONObject obj = readSettings();
-            return obj.has("centerLatitude")
-                    && obj.has("centerLongitude")
-                    && obj.has("zoomLevel");
+            return obj.has(KEY_CENTER_LATITUDE)
+                    && obj.has(KEY_CENTER_LONGITUDE)
+                    && obj.has(KEY_ZOOM_LEVEL);
             // weatherType is optional for backward compatibility
         } catch (IOException e) {
             // On read failure, just behave as if there are no saved settings.
@@ -69,8 +74,8 @@ public final class InDiskMapOverlaySettingsStorage implements SavedMapOverlaySet
     public synchronized Location getSavedCenterLocation() {
         try {
             JSONObject obj = readSettings();
-            double lat = obj.getDouble("centerLatitude");
-            double lon = obj.getDouble("centerLongitude");
+            double lat = obj.getDouble(KEY_CENTER_LATITUDE);
+            double lon = obj.getDouble(KEY_CENTER_LONGITUDE);
 
             return new Location(lat, lon);
         } catch (IOException | RuntimeException e) {
@@ -94,7 +99,7 @@ public final class InDiskMapOverlaySettingsStorage implements SavedMapOverlaySet
     public synchronized int getSavedZoomLevel() {
         try {
             JSONObject obj = readSettings();
-            return obj.getInt("zoomLevel");
+            return obj.getInt(KEY_ZOOM_LEVEL);
         } catch (IOException | RuntimeException e) {
             throw new MapOverlaySettingsPersistenceException(
                     "Failed to read map overlay settings from " + filePath, e);
@@ -116,14 +121,8 @@ public final class InDiskMapOverlaySettingsStorage implements SavedMapOverlaySet
     public synchronized WeatherType getSavedWeatherType() {
         try {
             JSONObject obj = readSettings();
-            if (obj.has("weatherType")) {
-                String weatherTypeStr = obj.getString("weatherType");
-                try {
-                    return WeatherType.valueOf(weatherTypeStr);
-                } catch (IllegalArgumentException e) {
-                    // Invalid weather type, return null
-                    return null;
-                }
+            if (obj.has(KEY_WEATHER_TYPE)) {
+                return parseWeatherType(obj.getString(KEY_WEATHER_TYPE));
             }
             return null;
         } catch (IOException | RuntimeException e) {
@@ -149,9 +148,9 @@ public final class InDiskMapOverlaySettingsStorage implements SavedMapOverlaySet
     public synchronized void save(Location centerLocation, int zoomLevel, WeatherType weatherType) {
         JSONObject obj = new JSONObject();
 
-        obj.put("centerLatitude", centerLocation.getLatitude());
-        obj.put("centerLongitude", centerLocation.getLongitude());
-        obj.put("zoomLevel", zoomLevel);
+        obj.put(KEY_CENTER_LATITUDE, centerLocation.getLatitude());
+        obj.put(KEY_CENTER_LONGITUDE, centerLocation.getLongitude());
+        obj.put(KEY_ZOOM_LEVEL, zoomLevel);
         if (weatherType != null) {
             obj.put("weatherType", weatherType);
         }
@@ -223,5 +222,13 @@ public final class InDiskMapOverlaySettingsStorage implements SavedMapOverlaySet
         Files.move(tmp, filePath,
                 StandardCopyOption.REPLACE_EXISTING,
                 StandardCopyOption.ATOMIC_MOVE);
+    }
+
+    private WeatherType parseWeatherType(String weatherTypeStr) {
+        try {
+            return WeatherType.valueOf(weatherTypeStr);
+        } catch (IllegalArgumentException e) {
+            return null;
+        }
     }
 }

@@ -24,11 +24,6 @@ public final class MapSettingsViewModel
     }
 
     @Override
-    public MapSettingsState getState() {
-        return super.getState();
-    }
-
-    @Override
     public void setState(MapSettingsState state) {
         super.setState(state);
         firePropertyChange(STATE_PROPERTY);
