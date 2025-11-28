@@ -6,6 +6,7 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Collections.*;
 
 public class InfoPanelPresenter implements InfoPanelOutputBoundary {
     private final InfoPanelViewModel vm;
@@ -16,21 +17,27 @@ public class InfoPanelPresenter implements InfoPanelOutputBoundary {
     }
 
     public void addChangeListener(ChangeListener l) {
-        if (l != null) listeners.add(l);
+        if (l != null){
+            listeners.add(l);
+        }
     }
     private void notifyChanged() {
         ChangeEvent ev = new ChangeEvent(this);
-        for (ChangeListener l : listeners) l.stateChanged(ev);
+        for (ChangeListener l : listeners){
+            l.stateChanged(ev);
+        }
     }
 
-    @Override public void presentLoading() {
+    @Override
+    public void presentLoading() {
         vm.loading = true;
         vm.error = null;
         vm.visible = true;
         notifyChanged();
     }
 
-    @Override public void present(InfoPanelOutputData data) {
+    @Override
+    public void present(InfoPanelOutputData data) {
         vm.loading = false;
         vm.error = null;
         vm.visible = true;
