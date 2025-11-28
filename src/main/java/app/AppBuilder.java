@@ -122,7 +122,7 @@ public class AppBuilder {
 
         infoPanelController = new InfoPanelController(useCase, presenter);
 
-        infoPanelView = new view.InfoPanelView(infoPanelViewModel);
+        infoPanelView = new InfoPanelView(infoPanelViewModel);
         infoPanelView.setController(infoPanelController);
         infoPanelView.bind(presenter);
 
