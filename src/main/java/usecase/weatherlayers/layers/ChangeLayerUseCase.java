@@ -1,7 +1,6 @@
 package usecase.weatherlayers.layers;
 
 import dataaccessinterface.GradientLegendLoader;
-import dataaccessobjects.InDiskGradientLoader;
 import entity.LayerNotFoundException;
 import entity.OverlayManager;
 import entity.WeatherType;
