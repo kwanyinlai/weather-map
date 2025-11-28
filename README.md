@@ -34,15 +34,36 @@
     Zooming into an area will cause an info panel to pop up, showing the conditions and horly forecast of the visible 
     area.
     <br>
+
     - Bookmarks:
-        - TODO
+
+      - The bookmarks panel lets the user save specific locations on the map so they can quickly return to them later.
+      - Clicking **Add** creates a new bookmark for the current map view, storing the location (latitude/longitude) together with a user-provided name.
+      - All saved bookmarks are displayed in a list, where the user can:
+        - **Select** a bookmark by clicking on it. 
+        - Click **Visit** to move the map viewport to the bookmarked location.
+        - Click **Remove** to delete the selected bookmark from the list.
+      - Bookmarks are stored persistently: closing and reopening the application will keep all previously saved bookmarks, so the user can continue navigating using their saved locations.
     <br>
+    
     - Searchbar:
         - TODO
+    <br>
     
+    - Map Settings:
+    
+      - While the application is running, any changes to the map settings (e.g., the basemap type, zoom level, and weather overlay options such as opacity) are saved.
+  
+      - When the app is launched, the previously saved map settings are automatically loaded, restoring the map layout, selected basemap, and overlay configuration.
+  
+      - This allows the user to continue from where they left off, without needing to reconfigure their preferred map view each time they open the application.
+    <br>
+      
 
 - User Stories:
-    TODO
+    - TODO (rest of the user stories)
+    - As a user, I want to add and remove location bookmarks that persist across app sessions, and jump to a bookmarked location by pressing a “Visit” button.
+    - As a user, I want the map layout and settings to be saved and automatically restored when I reopen the app. 
 
 - API Information:
     - https://thunderforest.com/: This api is used by the JMapViewer module to display the maps. The default map type
