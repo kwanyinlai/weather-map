@@ -1,7 +1,6 @@
 package interfaceadapter.mapsettings.loadmapsettings;
 
 import entity.LayerNotFoundException;
-import entity.OverlayManager;
 import entity.Viewport;
 import entity.WeatherType;
 import org.openstreetmap.gui.jmapviewer.OsmMercator;
@@ -24,7 +23,6 @@ public final class AutoLoadMapSettingsPresenter implements LoadMapSettingsOutput
      * Creates a presenter that applies settings directly to the viewport and overlay manager.
      *
      * @param viewport the viewport to update
-     * @param overlayManager the overlay manager to update
      * @param changeLayerUseCase use case for changing the weather layer
      */
     public AutoLoadMapSettingsPresenter(Viewport viewport,
@@ -54,7 +52,7 @@ public final class AutoLoadMapSettingsPresenter implements LoadMapSettingsOutput
             try {
                 changeLayerUseCase.change(new ChangeLayerInputData(weatherType));
             } catch (LayerNotFoundException e) {
-                // If the layer doesn't exist, just ignore it
+                // If the layer doesn't exist ignore it
             }
         }
 

@@ -39,7 +39,7 @@ public final class RemoveBookmarkPresenter implements RemoveBookmarkOutputBounda
 
         BookmarksState currentState = viewModel.getState();
         List<BookmarkedLocation> current =
-                (currentState == null || currentState.getBookmarks() == null)
+                currentState == null
                         ? Collections.emptyList()
                         : currentState.getBookmarks();
 
