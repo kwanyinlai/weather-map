@@ -8,35 +8,23 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.time.Instant;
-import java.time.ZoneId;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
+
+import static constants.Constants.*;
+import static interfaceadapter.infopanel.InfoPanelViewModel.*;
 
 public final class InfoPanelView extends JPanel {
 
-    private InfoPanelViewModel vm;
+    private final InfoPanelViewModel vm;
     private InfoPanelController controller;
 
-    private final int popUpZoomThreshold = constants.Constants.ZOOM_THRESHOLD;
     private boolean belowZoomThreshold = false;
 
-    private static final int MARGIN = 15, WIDTH = 300, HEIGHT = 370;
+    private static final int WIDTH = INFO_PANEL_WIDTH;
+    private static final int HEIGHT = INFO_PANEL_HEIGHT;
 
-    private Rectangle closeRect = new Rectangle();
+    private final Rectangle closeRect = new Rectangle();
     private boolean hoverClose = false;
-
-    private static final int PAD = 14, RADIUS = 16;
-    private static final Color BG = new Color(255,255,255,235);
-    private static final Color STROKE = new Color(30,30,30);
-    private static final Color SUBTLE = new Color(0,0,0,110);
-    private static final Color CLOSE_BG = new Color(0,0,0,30);
-    private static final Color CLOSE_BG_HOVER = new Color(0,0,0,60);
-    private static final Font F_HEADER = new Font("SansSerif", Font.BOLD, 20);
-    private static final Font F_CITY   = new Font("SansSerif", Font.BOLD, 26);
-    private static final Font F_BIG    = new Font("SansSerif", Font.PLAIN, 18);
-    private static final Font F_BODY   = new Font("SansSerif", Font.PLAIN, 14);
-    private static final DateTimeFormatter HOUR_FMT =
-            DateTimeFormatter.ofPattern("HH:mm").withZone(ZoneId.systemDefault());
 
     private ComponentListener parentResizeListener;
 
@@ -46,7 +34,8 @@ public final class InfoPanelView extends JPanel {
         setPreferredSize(new Dimension(WIDTH, HEIGHT));
 
         addMouseMotionListener(new MouseAdapter() {
-            @Override public void mouseMoved(MouseEvent e) {
+            @Override
+            public void mouseMoved(MouseEvent e) {
                 boolean h = closeRect.contains(e.getPoint());
                 if (h != hoverClose) { hoverClose = h; repaint(closeRect); }
                 setCursor(h ? Cursor.getPredefinedCursor(Cursor.HAND_CURSOR)
@@ -54,9 +43,10 @@ public final class InfoPanelView extends JPanel {
             }
         });
         addMouseListener(new MouseAdapter() {
-            @Override public void mouseClicked(MouseEvent e) {
+            @Override
+            public void mouseClicked(MouseEvent e) {
                 if (closeRect.contains(e.getPoint()) && controller != null) {
-                    controller.onCloseRequested(); // 交给 Presenter 关
+                    controller.onCloseRequested();
                     SwingUtilities.invokeLater(InfoPanelView.this::repaint);
                 }
             }
@@ -68,24 +58,27 @@ public final class InfoPanelView extends JPanel {
                 SwingUtilities.invokeLater(InfoPanelView.this::repaint));
     }
 
-    public void setController(InfoPanelController controller) { this.controller = controller; }
-    public void setViewModel(InfoPanelViewModel vm) { this.vm = vm; repaint(); }
-    public void refresh() { repaint(); }
+    public void setController(InfoPanelController controller) {
+        this.controller = controller;
+    }
 
-    @Override public void addNotify() {
+    @Override
+    public void addNotify() {
         super.addNotify();
         relayoutToBottomLeft();
         Container p = getParent();
         if (p != null && parentResizeListener == null) {
             parentResizeListener = new ComponentAdapter() {
-                @Override public void componentResized(ComponentEvent e) {
+                @Override
+                public void componentResized(ComponentEvent e) {
                     relayoutToBottomLeft();
                 }
             };
             p.addComponentListener(parentResizeListener);
         }
     }
-    @Override public void removeNotify() {
+    @Override
+    public void removeNotify() {
         Container p = getParent();
         if (p != null && parentResizeListener != null) {
             p.removeComponentListener(parentResizeListener);
@@ -97,7 +90,7 @@ public final class InfoPanelView extends JPanel {
         Container p = getParent();
         if (p == null) return;
         int ch = p.getHeight();
-        int y  = Math.max(MARGIN, ch - HEIGHT - MARGIN);
+        int y = Math.max(MARGIN, ch - HEIGHT - MARGIN);
         setBounds(MARGIN, y, WIDTH, HEIGHT);
         revalidate();
         repaint();
@@ -106,7 +99,7 @@ public final class InfoPanelView extends JPanel {
     public void onViewportChanged(double centerLat, double centerLon, int zoom) {
         if (controller == null) return;
 
-        if (zoom < popUpZoomThreshold) {
+        if (zoom < ZOOM_THRESHOLD) {
             belowZoomThreshold = true;
             vm.visible = false;
             setVisible(false);
@@ -119,7 +112,8 @@ public final class InfoPanelView extends JPanel {
             if (!isVisible()) setVisible(true);
             controller.onViewportChanged(centerLat, centerLon, zoom);
             repaint();
-        } else {
+        }
+        else {
             controller.onViewportChanged(centerLat, centerLon, zoom);
         }
     }
@@ -147,15 +141,15 @@ public final class InfoPanelView extends JPanel {
         g.drawRoundRect(closeRect.x, closeRect.y, closeRect.width, closeRect.height, 10, 10);
         g.setFont(F_BIG);
         FontMetrics fmClose = g.getFontMetrics();
-        String closeChar = "\u2715";
+        String closeChar = "✕";
         int cx = closeRect.x + (closeRect.width - fmClose.stringWidth(closeChar)) / 2;
         int cy = closeRect.y + (closeRect.height + fmClose.getAscent() - fmClose.getDescent()) / 2;
         g.drawString(closeChar, cx, cy);
 
-        int x = PAD, y = PAD;
+        int timeCol = PAD;
+        int y = PAD;
 
         if (vm.loading) {
-            y += drawLeft(g, "Loading weather…", x, y, F_BIG, STROKE);
             g.dispose();
             return;
         }
@@ -163,7 +157,7 @@ public final class InfoPanelView extends JPanel {
         int headerTop = y;
         int rightColX = w - PAD;
 
-        int lh = drawLeft(g, fallback("(City Name)", vm.placeName), x, y, F_CITY, STROKE);
+        int lh = drawLeft(g, fallback("(City Name)", vm.placeName), timeCol, y, F_CITY, STROKE);
 
         String tempStr = (vm.tempC == null) ? "(Temperature)" : String.format("%.1f °C", vm.tempC);
         String condStr = fallback("(Weather)", vm.condition);
@@ -178,12 +172,12 @@ public final class InfoPanelView extends JPanel {
         g.drawLine(PAD, y, w - PAD, y);
         y += 16;
 
-        y += drawLeft(g, "Now", x, y, F_HEADER, STROKE) + 6;
+        y += drawLeft(g, "Now", timeCol, y, F_HEADER, STROKE) + 6;
         String ts = (vm.fetchedAt == null) ? "(time unknown)" : HOUR_FMT.format(vm.fetchedAt) + " • local";
-        y += drawLeft(g, ts, x, y, F_BODY, SUBTLE) + 12;
+        y += drawLeft(g, ts, timeCol, y, F_BODY, SUBTLE) + 12;
 
-        y += drawLeft(g, "Hourly Forecast", x, y, F_HEADER, STROKE) + 8;
-        int timeCol = x, valCol = x + 120;
+        y += drawLeft(g, "Hourly Forecast", timeCol, y, F_HEADER, STROKE) + 8;
+        int valCol = timeCol + 120;
         List<Double> temps = vm.hourlyTemps;
         int rowH = g.getFontMetrics(F_BODY).getHeight() + 4;
 
@@ -210,15 +204,19 @@ public final class InfoPanelView extends JPanel {
         g.dispose();
     }
 
-    private static String fallback(String fb, String s){ return (s == null || s.trim().isEmpty()) ? fb : s; }
+    private static String fallback(String fb, String s){
+        return (s == null || s.trim().isEmpty()) ? fb : s;
+    }
     private static int drawLeft(Graphics2D g, String t, int x, int y, Font f, Color c){
-        g.setFont(f); g.setColor(c);
+        g.setFont(f);
+        g.setColor(c);
         FontMetrics fm = g.getFontMetrics();
         g.drawString(t, x, y + fm.getAscent());
         return fm.getHeight();
     }
     private static int drawRight(Graphics2D g, String t, int rx, int y, Font f, Color c){
-        g.setFont(f); g.setColor(c);
+        g.setFont(f);
+        g.setColor(c);
         FontMetrics fm = g.getFontMetrics();
         int tw = fm.stringWidth(t);
         g.drawString(t, rx - tw, y + fm.getAscent());
@@ -226,6 +224,6 @@ public final class InfoPanelView extends JPanel {
     }
     private static Instant addHours(Instant base, int i){
         if (base == null) return null;
-        return base.plusSeconds(3600L * i);
+        return base.plusSeconds(INFO_PANEL_SECONDS_TO_ADD * i);
     }
 }
