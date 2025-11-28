@@ -1,5 +1,3 @@
-package usecase.mapsettings;
-
 import dataaccessinterface.SavedMapOverlaySettings;
 import dataaccessobjects.InDiskMapOverlaySettingsStorage;
 import dataaccessobjects.MapOverlaySettingsPersistenceException;
@@ -8,12 +6,23 @@ import entity.WeatherType;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import usecase.mapsettings.loadmapsettings.*;
 import usecase.mapsettings.savemapsettings.*;
+import interfaceadapter.mapsettings.loadmapsettings.LoadMapSettingsController;
+import interfaceadapter.mapsettings.loadmapsettings.LoadMapSettingsPresenter;
+import interfaceadapter.mapsettings.loadmapsettings.AutoLoadMapSettingsPresenter;
+import interfaceadapter.mapsettings.savemapsettings.SaveMapSettingsController;
+import interfaceadapter.mapsettings.savemapsettings.SaveMapSettingsPresenter;
+import interfaceadapter.mapsettings.MapSettingsViewModel;
+import entity.Viewport;
+import usecase.weatherlayers.layers.ChangeLayerInputBoundary;
+import usecase.weatherlayers.layers.ChangeLayerInputData;
+import org.mockito.Mockito;
 
+import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -267,7 +276,7 @@ class MapSettingsUseCaseTest {
             InDiskMapOverlaySettingsStorage storage = new InDiskMapOverlaySettingsStorage(filePath);
 
             assertThrows(MapOverlaySettingsPersistenceException.class,
-                    () -> storage.getSavedCenterLocation());
+                    storage::getSavedCenterLocation);
         }
 
         @Test
@@ -276,7 +285,65 @@ class MapSettingsUseCaseTest {
             InDiskMapOverlaySettingsStorage storage = new InDiskMapOverlaySettingsStorage(filePath);
 
             assertThrows(MapOverlaySettingsPersistenceException.class,
-                    () -> storage.getSavedZoomLevel());
+                    storage::getSavedZoomLevel);
+        }
+
+        @Test
+        void testHasSavedSettingsWithCorruptJSON(@TempDir Path tempDir) throws Exception {
+            Path filePath = tempDir.resolve("map-settings.json");
+            Files.writeString(filePath, "invalid json {");
+            InDiskMapOverlaySettingsStorage storage = new InDiskMapOverlaySettingsStorage(filePath);
+
+            assertFalse(storage.hasSavedSettings());
+        }
+
+        @Test
+        void testHasSavedSettingsWithIOException(@TempDir Path tempDir) throws Exception {
+            Path filePath = tempDir.resolve("map-settings.json");
+
+            Files.createDirectory(filePath);
+            InDiskMapOverlaySettingsStorage storage = new InDiskMapOverlaySettingsStorage(filePath);
+
+            assertFalse(storage.hasSavedSettings());
+        }
+
+        @Test
+        void testGetSavedWeatherTypeWithInvalidEnumValue(@TempDir Path tempDir) throws Exception {
+            Path filePath = tempDir.resolve("map-settings.json");
+            Files.writeString(filePath, "{\"centerLatitude\": 45.0, \"centerLongitude\": -120.0, " +
+                    "\"zoomLevel\": 5, \"weatherType\": \"InvalidType\"}");
+            InDiskMapOverlaySettingsStorage storage = new InDiskMapOverlaySettingsStorage(filePath);
+
+            assertNull(storage.getSavedWeatherType());
+        }
+
+        @Test
+        void testGetSavedCenterLocationWithCorruptJSON(@TempDir Path tempDir) throws Exception {
+            Path filePath = tempDir.resolve("map-settings.json");
+            Files.writeString(filePath, "invalid json {");
+            InDiskMapOverlaySettingsStorage storage = new InDiskMapOverlaySettingsStorage(filePath);
+
+            assertThrows(MapOverlaySettingsPersistenceException.class,
+                    storage::getSavedCenterLocation);
+        }
+
+        @Test
+        void testGetSavedZoomLevelWithCorruptJSON(@TempDir Path tempDir) throws Exception {
+            Path filePath = tempDir.resolve("map-settings.json");
+            Files.writeString(filePath, "invalid json {");
+            InDiskMapOverlaySettingsStorage storage = new InDiskMapOverlaySettingsStorage(filePath);
+
+            assertThrows(MapOverlaySettingsPersistenceException.class,
+                    storage::getSavedZoomLevel);
+        }
+
+        @Test
+        void testHasSavedSettingsWithPartialFields(@TempDir Path tempDir) throws Exception {
+            Path filePath = tempDir.resolve("map-settings.json");
+            Files.writeString(filePath, "{\"centerLatitude\": 45.0}"); 
+            InDiskMapOverlaySettingsStorage storage = new InDiskMapOverlaySettingsStorage(filePath);
+
+            assertFalse(storage.hasSavedSettings());
         }
     }
 
@@ -392,7 +459,6 @@ class MapSettingsUseCaseTest {
             TestSaveMapSettingsPresenter presenter = new TestSaveMapSettingsPresenter();
             SaveMapSettingsUseCase useCase = new SaveMapSettingsUseCase(storage, presenter);
 
-            // Test with valid extreme coordinates
             SaveMapSettingsInputData input = new SaveMapSettingsInputData(90.0, 180.0, 10, WeatherType.Wind);
             useCase.saveMapSettings(input);
 
@@ -447,7 +513,6 @@ class MapSettingsUseCaseTest {
         @Test
         void testLoadMapSettingsWhenNoSettingsExist() {
             InMemoryMapSettingsStorage storage = new InMemoryMapSettingsStorage();
-            // Don't save anything
 
             TestLoadMapSettingsPresenter presenter = new TestLoadMapSettingsPresenter();
             LoadMapSettingsUseCase useCase = new LoadMapSettingsUseCase(storage, presenter);
@@ -539,6 +604,305 @@ class MapSettingsUseCaseTest {
                 assertEquals(coord[0], presenter.getSuccessData().getCenterLatitude());
                 assertEquals(coord[1], presenter.getSuccessData().getCenterLongitude());
             }
+        }
+    }
+
+    // ========== Controller Tests ==========
+
+    @Nested
+    class ControllerTests {
+        @Test
+        void testLoadMapSettingsController() {
+            LoadMapSettingsInputBoundary mockUseCase = Mockito.mock(LoadMapSettingsInputBoundary.class);
+            LoadMapSettingsController controller = new LoadMapSettingsController(mockUseCase);
+
+            controller.loadMapSettings();
+
+            Mockito.verify(mockUseCase).loadMapSettings(Mockito.any(LoadMapSettingsInputData.class));
+        }
+
+        @Test
+        void testSaveMapSettingsController() {
+            SaveMapSettingsInputBoundary mockUseCase = Mockito.mock(SaveMapSettingsInputBoundary.class);
+            SaveMapSettingsController controller = new SaveMapSettingsController(mockUseCase);
+
+            controller.saveMapSettings(45.5, -73.5, 5, WeatherType.Tmp2m);
+
+            Mockito.verify(mockUseCase).saveMapSettings(Mockito.argThat(input ->
+                    input.getCenterLatitude() == 45.5 &&
+                    input.getCenterLongitude() == -73.5 &&
+                    input.getZoomLevel() == 5 &&
+                    input.getWeatherType() == WeatherType.Tmp2m
+            ));
+        }
+
+        @Test
+        void testSaveMapSettingsControllerWithNullWeatherType() {
+            SaveMapSettingsInputBoundary mockUseCase = Mockito.mock(SaveMapSettingsInputBoundary.class);
+            SaveMapSettingsController controller = new SaveMapSettingsController(mockUseCase);
+
+            controller.saveMapSettings(45.5, -73.5, 5, null);
+
+            Mockito.verify(mockUseCase).saveMapSettings(Mockito.argThat(input ->
+                    input.getWeatherType() == null
+            ));
+        }
+    }
+
+    // ========== Presenter Tests ==========
+
+    @Nested
+    class PresenterTests {
+        @Test
+        void testLoadMapSettingsPresenterSuccess() {
+            MapSettingsViewModel viewModel = new MapSettingsViewModel();
+            LoadMapSettingsPresenter presenter = new LoadMapSettingsPresenter(viewModel);
+
+            LoadMapSettingsOutputData outputData = new LoadMapSettingsOutputData(45.5, -73.5, 5, WeatherType.Tmp2m);
+            presenter.presentLoadedSettings(outputData);
+
+            MapSettingsViewModel.MapSettingsState state = viewModel.getState();
+            assertTrue(state.hasSavedSettings());
+            assertEquals(45.5, state.getCenterLatitude());
+            assertEquals(-73.5, state.getCenterLongitude());
+            assertEquals(5, state.getZoomLevel());
+            assertNull(state.getErrorMessage());
+        }
+
+        @Test
+        void testLoadMapSettingsPresenterNoSettings() {
+            MapSettingsViewModel viewModel = new MapSettingsViewModel();
+            LoadMapSettingsPresenter presenter = new LoadMapSettingsPresenter(viewModel);
+
+            presenter.presentNoSavedSettings();
+
+            MapSettingsViewModel.MapSettingsState state = viewModel.getState();
+            assertFalse(state.hasSavedSettings());
+            assertEquals(0.0, state.getCenterLatitude());
+            assertEquals(0.0, state.getCenterLongitude());
+            assertEquals(1, state.getZoomLevel());
+            assertNull(state.getErrorMessage());
+        }
+
+        @Test
+        void testLoadMapSettingsPresenterFailure() {
+            MapSettingsViewModel viewModel = new MapSettingsViewModel();
+            LoadMapSettingsPresenter presenter = new LoadMapSettingsPresenter(viewModel);
+
+            presenter.presentLoadSettingsFailure("Error message");
+
+            MapSettingsViewModel.MapSettingsState state = viewModel.getState();
+            assertEquals("Error message", state.getErrorMessage());
+        }
+
+        @Test
+        void testSaveMapSettingsPresenterSuccess() {
+            MapSettingsViewModel viewModel = new MapSettingsViewModel();
+            viewModel.setSettings(45.5, -73.5, 5);
+            SaveMapSettingsPresenter presenter = new SaveMapSettingsPresenter(viewModel);
+
+            SaveMapSettingsOutputData outputData = new SaveMapSettingsOutputData(true);
+            presenter.presentSavedSettings(outputData);
+
+            MapSettingsViewModel.MapSettingsState state = viewModel.getState();
+            assertTrue(state.hasSavedSettings());
+            assertNull(state.getErrorMessage());
+        }
+
+        @Test
+        void testSaveMapSettingsPresenterNotSuccess() {
+            MapSettingsViewModel viewModel = new MapSettingsViewModel();
+            SaveMapSettingsPresenter presenter = new SaveMapSettingsPresenter(viewModel);
+
+            SaveMapSettingsOutputData outputData = new SaveMapSettingsOutputData(false);
+            presenter.presentSavedSettings(outputData);
+
+            MapSettingsViewModel.MapSettingsState state = viewModel.getState();
+            assertEquals("Saving map settings did not complete successfully.", state.getErrorMessage());
+        }
+
+        @Test
+        void testSaveMapSettingsPresenterFailure() {
+            MapSettingsViewModel viewModel = new MapSettingsViewModel();
+            SaveMapSettingsPresenter presenter = new SaveMapSettingsPresenter(viewModel);
+
+            presenter.presentSaveSettingsFailure("Error message");
+
+            MapSettingsViewModel.MapSettingsState state = viewModel.getState();
+            assertEquals("Error message", state.getErrorMessage());
+        }
+
+        @Test
+        void testAutoLoadMapSettingsPresenterSuccess() throws entity.LayerNotFoundException {
+            Viewport viewport = new Viewport(0.0, 0.0, 800, 1, 15, 0, 600);
+            ChangeLayerInputBoundary mockChangeLayer = Mockito.mock(ChangeLayerInputBoundary.class);
+            AutoLoadMapSettingsPresenter presenter = new AutoLoadMapSettingsPresenter(viewport, mockChangeLayer);
+
+            LoadMapSettingsOutputData outputData = new LoadMapSettingsOutputData(
+                    45.5, -73.5, 5, entity.WeatherType.Tmp2m);
+            presenter.presentLoadedSettings(outputData);
+
+            assertEquals(5, viewport.getZoomLevel());
+            Mockito.verify(mockChangeLayer).change(Mockito.any(ChangeLayerInputData.class));
+        }
+
+        @Test
+        void testAutoLoadMapSettingsPresenterWithNullWeatherType() throws entity.LayerNotFoundException {
+            Viewport viewport = new Viewport(0.0, 0.0, 800, 1, 15, 0, 600);
+            ChangeLayerInputBoundary mockChangeLayer = Mockito.mock(ChangeLayerInputBoundary.class);
+            AutoLoadMapSettingsPresenter presenter = new AutoLoadMapSettingsPresenter(viewport, mockChangeLayer);
+
+            LoadMapSettingsOutputData outputData = new LoadMapSettingsOutputData(45.5, -73.5, 5, null);
+            presenter.presentLoadedSettings(outputData);
+
+            assertEquals(5, viewport.getZoomLevel());
+            Mockito.verify(mockChangeLayer, Mockito.never()).change(Mockito.any());
+        }
+
+        @Test
+        void testAutoLoadMapSettingsPresenterWithLayerNotFoundException() throws entity.LayerNotFoundException {
+            Viewport viewport = new Viewport(0.0, 0.0, 800, 1, 15, 0, 600);
+            ChangeLayerInputBoundary mockChangeLayer = Mockito.mock(ChangeLayerInputBoundary.class);
+            Mockito.doThrow(new entity.LayerNotFoundException("Layer not found"))
+                    .when(mockChangeLayer).change(Mockito.any(ChangeLayerInputData.class));
+            AutoLoadMapSettingsPresenter presenter = new AutoLoadMapSettingsPresenter(viewport, mockChangeLayer);
+
+            LoadMapSettingsOutputData outputData = new LoadMapSettingsOutputData(
+                    45.5, -73.5, 5, entity.WeatherType.Tmp2m);
+
+            presenter.presentLoadedSettings(outputData);
+
+            assertEquals(5, viewport.getZoomLevel());
+        }
+
+        @Test
+        void testAutoLoadMapSettingsPresenterNoSettings() throws entity.LayerNotFoundException {
+            Viewport viewport = new Viewport(0.0, 0.0, 800, 1, 15, 0, 600);
+            ChangeLayerInputBoundary mockChangeLayer = Mockito.mock(ChangeLayerInputBoundary.class);
+            AutoLoadMapSettingsPresenter presenter = new AutoLoadMapSettingsPresenter(viewport, mockChangeLayer);
+
+            presenter.presentNoSavedSettings();
+
+            assertEquals(1, viewport.getZoomLevel());
+            Mockito.verify(mockChangeLayer, Mockito.never()).change(Mockito.any());
+        }
+
+        @Test
+        void testAutoLoadMapSettingsPresenterFailure() throws entity.LayerNotFoundException {
+            Viewport viewport = new Viewport(0.0, 0.0, 800, 1, 15, 0, 600);
+            ChangeLayerInputBoundary mockChangeLayer = Mockito.mock(ChangeLayerInputBoundary.class);
+            AutoLoadMapSettingsPresenter presenter = new AutoLoadMapSettingsPresenter(viewport, mockChangeLayer);
+
+            presenter.presentLoadSettingsFailure("Error");
+
+            assertEquals(1, viewport.getZoomLevel());
+            Mockito.verify(mockChangeLayer, Mockito.never()).change(Mockito.any());
+        }
+    }
+
+    // ========== ViewModel Tests ==========
+
+    @Nested
+    class ViewModelTests {
+        @Test
+        void testMapSettingsViewModelInitialization() {
+            MapSettingsViewModel viewModel = new MapSettingsViewModel();
+            MapSettingsViewModel.MapSettingsState state = viewModel.getState();
+            assertNotNull(state);
+            assertFalse(state.hasSavedSettings());
+            assertEquals(0.0, state.getCenterLatitude());
+            assertEquals(0.0, state.getCenterLongitude());
+            assertEquals(0, state.getZoomLevel());
+            assertNull(state.getErrorMessage());
+        }
+
+        @Test
+        void testMapSettingsViewModelSetSettings() {
+            MapSettingsViewModel viewModel = new MapSettingsViewModel();
+            viewModel.setSettings(45.5, -73.5, 5);
+
+            MapSettingsViewModel.MapSettingsState state = viewModel.getState();
+            assertTrue(state.hasSavedSettings());
+            assertEquals(45.5, state.getCenterLatitude());
+            assertEquals(-73.5, state.getCenterLongitude());
+            assertEquals(5, state.getZoomLevel());
+            assertNull(state.getErrorMessage());
+        }
+
+        @Test
+        void testMapSettingsViewModelSetError() {
+            MapSettingsViewModel viewModel = new MapSettingsViewModel();
+            viewModel.setError("Error message");
+
+            MapSettingsViewModel.MapSettingsState state = viewModel.getState();
+            assertEquals("Error message", state.getErrorMessage());
+        }
+
+        @Test
+        void testMapSettingsViewModelSetErrorPreservesSettings() {
+            MapSettingsViewModel viewModel = new MapSettingsViewModel();
+            viewModel.setSettings(45.5, -73.5, 5);
+            viewModel.setError("Error message");
+
+            MapSettingsViewModel.MapSettingsState state = viewModel.getState();
+            assertTrue(state.hasSavedSettings());
+            assertEquals(45.5, state.getCenterLatitude());
+            assertEquals("Error message", state.getErrorMessage());
+        }
+
+        @Test
+        void testMapSettingsViewModelSetState() {
+            MapSettingsViewModel viewModel = new MapSettingsViewModel();
+            MapSettingsViewModel.MapSettingsState newState = new MapSettingsViewModel.MapSettingsState(
+                    true, 45.5, -73.5, 5, null
+            );
+            viewModel.setState(newState);
+
+            MapSettingsViewModel.MapSettingsState state = viewModel.getState();
+            assertTrue(state.hasSavedSettings());
+            assertEquals(45.5, state.getCenterLatitude());
+        }
+
+        @Test
+        void testMapSettingsStateGetters() {
+            MapSettingsViewModel.MapSettingsState state = new MapSettingsViewModel.MapSettingsState(
+                    true, 45.5, -73.5, 5, "Error"
+            );
+
+            assertTrue(state.hasSavedSettings());
+            assertEquals(45.5, state.getCenterLatitude());
+            assertEquals(-73.5, state.getCenterLongitude());
+            assertEquals(5, state.getZoomLevel());
+            assertEquals("Error", state.getErrorMessage());
+        }
+    }
+
+    // ========== Additional Storage Edge Cases ==========
+
+    @Nested
+    class AdditionalStorageTests {
+        @ParameterizedTest
+        @CsvSource({
+                "'{\"centerLongitude\": -120.0, \"zoomLevel\": 5}', 'Missing centerLatitude'",
+                "'{\"centerLatitude\": 45.0, \"zoomLevel\": 5}', 'Missing centerLongitude'",
+                "'{\"centerLatitude\": 45.0, \"centerLongitude\": -120.0}', 'Missing zoomLevel'"
+        })
+        void testHasSavedSettingsWithMissingFields(
+                String jsonContent, String description, @TempDir Path tempDir) throws Exception {
+            Path filePath = tempDir.resolve("map-settings.json");
+            Files.writeString(filePath, jsonContent);
+            InDiskMapOverlaySettingsStorage storage = new InDiskMapOverlaySettingsStorage(filePath);
+
+            assertFalse(storage.hasSavedSettings(), description);
+        }
+
+        @Test
+        void testGetSavedWeatherTypeWhenNotPresent(@TempDir Path tempDir) throws Exception {
+            Path filePath = tempDir.resolve("map-settings.json");
+            Files.writeString(filePath, "{\"centerLatitude\": 45.0, \"centerLongitude\": -120.0, \"zoomLevel\": 5}");
+            InDiskMapOverlaySettingsStorage storage = new InDiskMapOverlaySettingsStorage(filePath);
+
+            assertNull(storage.getSavedWeatherType());
         }
     }
 }
