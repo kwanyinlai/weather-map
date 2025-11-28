@@ -21,8 +21,6 @@ public class InfoPanelViewModel {
     public Instant fetchedAt;
 
     public static final int MARGIN = INFO_PANEL_MARGIN;
-    public static final int WIDTH = INFO_PANEL_WIDTH;
-    public static final int HEIGHT = INFO_PANEL_HEIGHT;
 
     public static final int PAD = INFO_PANEL_PAD;
     public static final int RADIUS = INFO_PANEL_RADIUS;
