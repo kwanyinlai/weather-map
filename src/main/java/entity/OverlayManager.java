@@ -27,6 +27,10 @@ public class OverlayManager {
         }
     }
 
+    public void changeSize(Dimension size){
+        this.overlay = new BufferedImage(size.width, size.height, BufferedImage.TYPE_INT_ARGB);
+    }
+
     /**
      * Clear the overlay area that is outside the map area
      * @param tl the viewport's top left tile coordinate
