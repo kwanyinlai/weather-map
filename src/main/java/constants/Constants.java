@@ -25,6 +25,14 @@ public class Constants {
     public static final int TILE_FETCH_WORKERS = 8;
     public static final float DEFAULT_OPACITY = (float)0.5;
     public static final int MAX_WEATHERTILE_ZOOM = 6;
+    public static final int SEARCH_BAR_PRFFERDSIZE_WIDTH = 10;
+    public static final int SEARCH_BAR_PRFFERDSIZE_HEIGHT = 10;
+    public static final int RESULTSCROLL_SIZE_WIDTH = 250;
+    public static final int RESULTSCROLL_SIZE_HEIGHT = 100;
+    public static final int NUM_VISIBLE_SEARCH_RESULTS = 3;
+    public static final int AFTER_SEARCHING_ZOOM_LEVEL = 10;
+    public static final int SEARCH_PANEL_HEIGHT = 60;
+    public static final int SEARCH_PANEL_WIDTH = 250;
 
     private Constants() { // intentionally empty
         }
