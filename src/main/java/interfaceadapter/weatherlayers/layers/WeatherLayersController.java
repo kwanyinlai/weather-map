@@ -22,7 +22,7 @@ public class WeatherLayersController {
     }
 
     public void executeChangeOpacity(int value){
-        float alpha = (float) (value / Constants.PERCENT_MULTIPLIER);
+        float alpha = ((float) value / Constants.PERCENT_MULTIPLIER);
         opacityInput.change(new ChangeOpacityInputData(alpha));
     }
 }
