@@ -72,7 +72,7 @@
    - As a user, I want to check the weather conditions around me by being able to zoom in/out on the map, or pan around
      the map to look at a specific location.(Junxi Huang)
    - As a user, I want to search the location I want to check the weather condition of that location by using a search 
-     bar, And the map will automatically switch to the location after I clicked the result location.
+     bar, And the map will automatically switch to the location after I clicked the result location.(Junxi Huang)
 - API Information:
     - https://thunderforest.com/: This api is used by the JMapViewer module to display the maps. The default map type
       (Mapnik) does not require an API key, while the other options require one, avalible for free. 
