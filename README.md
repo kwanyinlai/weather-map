@@ -61,17 +61,20 @@
       
 
 - User Stories:
-    - TODO (rest of the user stories)
     - As a user, I want to add and remove location bookmarks that persist across app sessions, and jump to a bookmarked location by pressing a “Visit” button.
-    - As a user, I want the map layout and settings to be saved and automatically restored when I reopen the app. 
-
+    - As a user, I want the map layout and settings to be saved and automatically restored when I reopen the app.
+    - As a user, I want to check the weather conditions around me by being able to zoom in/out on the map, or pan around the map to look at a specific location.
+    - As a user, I want an information panel to pop up when I zoom in close enough to a specific city (or landmark), displaying the temperature and-or other forecasted weather at the location.
+    - As a user, I want to freely switch between multiple weather overlays (such as temperature, cloud cover, and air pressure) on the map and change the base map.
+    - As a user, I want to be able to navigate backwards and forwards in time using a slider, accompanied by a play button which will automatically move the time slider across this time scale.
+      
 - API Information:
     - https://thunderforest.com/: This api is used by the JMapViewer module to display the maps. The default map type
       (Mapnik) does not require an API key, while the other options require one, avalible for free. 
       Set enviroment variable THUNDERFOREST_KEY=[key here] to enable the basemap dropdown menu.
     - https://www.weatherapi.com/docs/: We are using 2 services provided by this provider. 
       - weathermaps: returns an image based on the specified time, zoom level, and tile coordinates. Used to construct
-      the weather overlay.
-      - forecast: TODO
+      the weather overlay. Does not require a key.
+      - forecast: TODO Key setup:
 
 
