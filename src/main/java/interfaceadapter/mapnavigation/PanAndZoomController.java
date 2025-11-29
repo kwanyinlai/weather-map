@@ -40,8 +40,8 @@ public class PanAndZoomController implements JMapViewerEventListener {
 
     @Override
     public void processCommand(JMVCommandEvent command) {
-        if (command.getCommand() == JMVCommandEvent.COMMAND.MOVE ||
-                command.getCommand() == JMVCommandEvent.COMMAND.ZOOM) {
+        if (command.getCommand() == JMVCommandEvent.COMMAND.MOVE
+                || command.getCommand() == JMVCommandEvent.COMMAND.ZOOM) {
             syncViewport();
         }
     }

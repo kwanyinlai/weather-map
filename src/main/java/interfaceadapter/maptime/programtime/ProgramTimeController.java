@@ -1,9 +1,10 @@
 package interfaceadapter.maptime.programtime;
 
+import constants.Constants;
 import usecase.maptime.UpdateMapTimeInputBoundary;
 import usecase.maptime.UpdateMapTimeInputData;
 
-/** Class that centrally modifies the current program time state
+/** Class that centrally modifies the current program time state.
  *
  */
 public class ProgramTimeController {
@@ -15,7 +16,7 @@ public class ProgramTimeController {
         this.maxForecast = maxForecast;
     }
 
-    /** Update the program time with the newly set slider value
+    /** Update the program time with the newly set slider value.
      *
      * @param sliderVal     the value on the slider, representing an integer between 0 and 100
      */
@@ -24,17 +25,17 @@ public class ProgramTimeController {
         updateMapTimeUseCase.execute(new UpdateMapTimeInputData(maxTime));
     }
 
-    /** Converts the slider value to a java.time.Instant
+    /** Converts the slider value to a java.time.Instant.
      *
      * @param scale the slider value from JSlider
      * @return the time represented on the slider
      */
     private java.time.Instant convertSliderToTime(double scale){
         java.time.Instant currentTime = java.time.Instant.now();
-        return currentTime.plus(multiplyDuration(maxForecast, scale/100));
+        return currentTime.plus(multiplyDuration(maxForecast, scale/ Constants.PERCENT_MULTIPLIER));
     }
 
-    /** Multiply a duration by a scale factor
+    /** Multiply a duration by a scale factor.
      *
      * @param duration duration to be multiplied
      * @param scale scale factor to multiply duration

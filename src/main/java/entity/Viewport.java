@@ -11,7 +11,7 @@ public class Viewport {
     private int viewWidth;
     private int viewHeight;
     private int zoomLevel;
-    private static final OsmMercator mercator = OsmMercator.MERCATOR_256;
+    private static final OsmMercator MERCATOR = OsmMercator.MERCATOR_256;
     private final int maxZoom;
     private final int minZoom;
     private final PropertyChangeSupport support;
@@ -41,9 +41,9 @@ public class Viewport {
         int bottomRightPixelX = (pixelCenterX + (viewWidth / 2));
         int bottomRightPixelY = (pixelCenterY + (viewHeight / 2));
 
-        double topLeftLon = mercator.xToLon( topLeftPixelX, currentZoom);
+        double topLeftLon = MERCATOR.xToLon(topLeftPixelX, currentZoom);
         double topLeftLat = yConversion(topLeftPixelY,currentZoom,256);
-        double bottomRightLon = mercator.xToLon( bottomRightPixelX, currentZoom);
+        double bottomRightLon = MERCATOR.xToLon(bottomRightPixelX, currentZoom);
         double bottomRightLat = yConversion(bottomRightPixelY,currentZoom,256);
 
         Location topLeft = new Location(topLeftLat, topLeftLon);
@@ -65,8 +65,8 @@ public class Viewport {
     }
 
     public Location getCentre() {
-        double lon = mercator.xToLon(pixelCenterX, zoomLevel);
-        double lat = mercator.yToLat(pixelCenterY, zoomLevel);
+        double lon = MERCATOR.xToLon(pixelCenterX, zoomLevel);
+        double lat = MERCATOR.yToLat(pixelCenterY, zoomLevel);
         return new Location(lat, lon);
     }
     public boolean isZoomValid(int newZoom) {

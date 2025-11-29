@@ -4,7 +4,7 @@ import usecase.searchbar.SearchBarInputData;
 public class SearchBarController {
     private final SearchBarInputBoundary useCase;
 
-    public SearchBarController( SearchBarInputBoundary useCase) {
+    public SearchBarController(SearchBarInputBoundary useCase) {
         this.useCase = useCase;
     }
 

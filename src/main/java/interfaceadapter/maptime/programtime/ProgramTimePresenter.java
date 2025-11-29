@@ -7,7 +7,7 @@ import usecase.maptime.UpdateMapTimeOutputBoundary;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 
-/** Presenter class for UpdateMapTime interactor
+/** Presenter class for UpdateMapTime interactor.
  *
  */
 public class ProgramTimePresenter implements UpdateMapTimeOutputBoundary {
@@ -35,7 +35,7 @@ public class ProgramTimePresenter implements UpdateMapTimeOutputBoundary {
 
     @Override
     public void incrementTime() {
-        return;
+        // intentionally empty
     }
 
     private String formatTimeInstant(java.time.Instant instant) {
@@ -47,6 +47,7 @@ public class ProgramTimePresenter implements UpdateMapTimeOutputBoundary {
     private int converTimeToSlider(java.time.Instant instant) {
         java.time.Instant min = java.time.Instant.now();
         int maxTime = Constants.API_MAX_DAY_LIMIT * Constants.HOURS_PER_DAY;
-        return (int)(java.time.Duration.between(min, instant).toHours()*100)/maxTime;
+        return (int)(java.time.Duration.between(min, instant).toHours()
+                * Constants.PERCENT_MULTIPLIER) / maxTime;
     }
 }
