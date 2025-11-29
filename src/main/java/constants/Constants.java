@@ -24,6 +24,7 @@ public class Constants {
     public static final Color INFO_PANEL_SUBTLE_COLOR = new Color(0, 0, 0, 110);
     public static final Color INFO_PANEL_CLOSE_BG_COLOR = new Color(0, 0, 0, 30);
     public static final Color INFO_PANEL_CLOSE_BG_HOVER = new Color(0, 0, 0, 60);
+    public static final String FONT_NAME = "SansSerif";
 
     public static final int INFO_PANEL_HEADER_SIZE = 20;
     public static final int INFO_PANEL_CITY_SIZE = 26;
@@ -37,6 +38,8 @@ public class Constants {
     public static final int HOURLY_VALUE_COL_OFFSET = 120;
     public static final int HOURLY_ROW_EXTRA_PADDING = 4;
     public static final int HOURLY_MAX_ROWS = 10;
+    public static final int HOURLY_TIME_X = 14;
+    public static final int HOURLY_VALUE_X = 134;
 
     public static final int CLOSE_BUTTON_SIZE = 28;
     public static final int CLOSE_BUTTON_TOP_OFFSET = 55;

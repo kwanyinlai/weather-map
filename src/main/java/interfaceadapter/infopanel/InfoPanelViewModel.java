@@ -22,10 +22,10 @@ public class InfoPanelViewModel {
     public static final Color CLOSE_BG = INFO_PANEL_CLOSE_BG_COLOR;
     public static final Color CLOSE_BG_HOVER = INFO_PANEL_CLOSE_BG_HOVER;
 
-    public static final Font F_HEADER = new Font("SansSerif", Font.BOLD, INFO_PANEL_HEADER_SIZE);
-    public static final Font F_CITY = new Font("SansSerif", Font.BOLD, INFO_PANEL_CITY_SIZE);
-    public static final Font F_BIG = new Font("SansSerif", Font.PLAIN, INFO_PANEL_BIG_SIZE);
-    public static final Font F_BODY = new Font("SansSerif", Font.PLAIN, INFO_PANEL_BODY_SIZE);
+    public static final Font F_HEADER = new Font(FONT_NAME, Font.BOLD, INFO_PANEL_HEADER_SIZE);
+    public static final Font F_CITY = new Font(FONT_NAME, Font.BOLD, INFO_PANEL_CITY_SIZE);
+    public static final Font F_BIG = new Font(FONT_NAME, Font.PLAIN, INFO_PANEL_BIG_SIZE);
+    public static final Font F_BODY = new Font(FONT_NAME, Font.PLAIN, INFO_PANEL_BODY_SIZE);
 
     public static final DateTimeFormatter HOUR_FMT =
             DateTimeFormatter.ofPattern("HH:mm").withZone(ZoneId.systemDefault());

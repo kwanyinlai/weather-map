@@ -28,20 +28,18 @@ public class OkHttpsPointWeatherGatewayXml implements PointWeatherFetcher {
     }
 
     @Override
-    public String fetch(double lat, double lon) {
+    public String fetch(double lat, double lon) throws IOException {
         final String url = String.format(
                 "https://api.weatherapi.com/v1/forecast.xml?key=%s&q=%f,%f&days=1&aqi=no&alerts=no",
                 apiKey, lat, lon
         );
         final Request req = new Request.Builder().url(url).build();
+
         try (Response resp = http.newCall(req).execute()) {
             if (!resp.isSuccessful() || resp.body() == null) {
-                throw new RuntimeException("WeatherAPI HTTP failed: " + resp.code());
+                throw new IOException("WeatherAPI HTTP failed: " + resp.code());
             }
             return resp.body().string();
-        }
-        catch (IOException exc) {
-            throw new RuntimeException(exc);
         }
     }
 }

@@ -19,15 +19,15 @@ public final class InfoPanelView extends JPanel {
     private static final int WIDTH = INFO_PANEL_WIDTH;
     private static final int HEIGHT = INFO_PANEL_HEIGHT;
 
-    private final InfoPanelViewModel vm;
-    private InfoPanelController controller;
+    private final transient InfoPanelViewModel vm;
+    private transient InfoPanelController controller;
 
     private boolean belowZoomThreshold;
 
     private final Rectangle closeRect = new Rectangle();
     private boolean hoverClose;
 
-    private ComponentListener parentResizeListener;
+    private transient ComponentListener parentResizeListener;
 
     public InfoPanelView(InfoPanelViewModel infoPanelViewModel) {
         this.vm = infoPanelViewModel;
@@ -127,34 +127,14 @@ public final class InfoPanelView extends JPanel {
      * @param zoom      current zoom level of the map
      */
     public void onViewportChanged(double centerLat, double centerLon, int zoom) {
-        final boolean zoomBelowThreshold = zoom < ZOOM_THRESHOLD;
         final boolean hasController = controller != null;
+        final boolean zoomBelowThreshold = zoom < ZOOM_THRESHOLD;
 
         if (zoomBelowThreshold) {
-            if (!belowZoomThreshold) {
-                belowZoomThreshold = true;
-                vm.setVisible(false);
-                setVisible(false);
-                repaint();
-            }
+            handleZoomBelowThreshold();
         }
         else {
-            if (belowZoomThreshold) {
-                belowZoomThreshold = false;
-                vm.setVisible(true);
-                if (!isVisible()) {
-                    setVisible(true);
-                }
-                if (hasController) {
-                    controller.onViewportChanged(centerLat, centerLon, zoom);
-                }
-                repaint();
-            }
-            else {
-                if (hasController) {
-                    controller.onViewportChanged(centerLat, centerLon, zoom);
-                }
-            }
+            handleZoomAtOrAboveThreshold(centerLat, centerLon, zoom, hasController);
         }
     }
 
@@ -219,6 +199,35 @@ public final class InfoPanelView extends JPanel {
 
     private static Instant addHours(Instant base, int integ) {
         return base.plusSeconds(INFO_PANEL_SECONDS_TO_ADD * integ);
+    }
+
+    private void handleZoomBelowThreshold() {
+        if (!belowZoomThreshold) {
+            belowZoomThreshold = true;
+            vm.setVisible(false);
+            setVisible(false);
+            repaint();
+        }
+    }
+
+    private void handleZoomAtOrAboveThreshold(double centerLat,
+                                              double centerLon,
+                                              int zoom,
+                                              boolean hasController) {
+        if (belowZoomThreshold) {
+            belowZoomThreshold = false;
+            vm.setVisible(true);
+            if (!isVisible()) {
+                setVisible(true);
+            }
+            if (hasController) {
+                controller.onViewportChanged(centerLat, centerLon, zoom);
+            }
+            repaint();
+        }
+        else if (hasController) {
+            controller.onViewportChanged(centerLat, centerLon, zoom);
+        }
     }
 
     // Helpers for painting.
@@ -313,47 +322,64 @@ public final class InfoPanelView extends JPanel {
     }
 
     private void paintHourlySection(Graphics2D graph, int panelHeight, int startY) {
-        final int timeCol = PAD;
-        final int valueCol = timeCol + HOURLY_VALUE_COL_OFFSET;
-
         final List<Double> temps = vm.getHourlyTemps();
-        final int rowHeight = graph.getFontMetrics(F_BODY).getHeight() + HOURLY_ROW_EXTRA_PADDING;
-        int y = startY;
+        final int rowHeight = graph.getFontMetrics(F_BODY).getHeight()
+                + HOURLY_ROW_EXTRA_PADDING;
 
-        if (temps != null && !temps.isEmpty()) {
-            final int shown = Math.min(HOURLY_MAX_ROWS, temps.size());
-
-            for (int i = 0; i < shown && y + rowHeight < panelHeight - PAD; i++) {
-                final Instant time = addHours(vm.getFetchedAt(), i);
-                final String left;
-                if (time == null) {
-                    left = "(time)";
-                }
-                else {
-                    left = HOUR_FMT.format(time);
-                }
-
-                final Double t = temps.get(i);
-                final String right;
-                if (t == null) {
-                    right = "(temperature)";
-                }
-                else {
-                    right = String.format("%.0f°C", t);
-                }
-
-                drawLeft(graph, left, timeCol, y, F_BODY, STROKE);
-                drawLeft(graph, right, valueCol, y, F_BODY, STROKE);
-                y += rowHeight;
-            }
+        if (temps == null || temps.isEmpty()) {
+            paintPlaceholderRows(graph, panelHeight, rowHeight, startY);
         }
         else {
-            for (int i = 0; i < HOURLY_MAX_ROWS && y + rowHeight < panelHeight - PAD; i++) {
-                drawLeft(graph, "(time)", timeCol, y, F_BODY, SUBTLE);
-                drawLeft(graph, "(temperature)", valueCol, y, F_BODY, SUBTLE);
-                y += rowHeight;
-            }
+            paintHourlyDataRows(graph, panelHeight, rowHeight, startY, temps);
         }
+    }
+
+    private void paintHourlyDataRows(Graphics2D graph,
+                                     int panelHeight,
+                                     int rowHeight,
+                                     int startY,
+                                     List<Double> temps) {
+        int y = startY;
+        final int maxRows = Math.min(HOURLY_MAX_ROWS, temps.size());
+        final Instant baseTime = vm.getFetchedAt();
+
+        for (int i = 0; i < maxRows && y + rowHeight < panelHeight - PAD; i++) {
+            final String left = formatTime(baseTime, i);
+            final String right = formatTemp(temps.get(i));
+
+            drawLeft(graph, left, HOURLY_TIME_X, y, F_BODY, STROKE);
+            drawLeft(graph, right, HOURLY_VALUE_X, y, F_BODY, STROKE);
+            y += rowHeight;
+        }
+    }
+
+    private void paintPlaceholderRows(Graphics2D graph,
+                                      int panelHeight,
+                                      int rowHeight,
+                                      int startY) {
+        int y = startY;
+        for (int i = 0; i < HOURLY_MAX_ROWS && y + rowHeight < panelHeight - PAD; i++) {
+            drawLeft(graph, "(time)", HOURLY_TIME_X, y, F_BODY, SUBTLE);
+            drawLeft(graph, "(temperature)", HOURLY_VALUE_X, y, F_BODY, SUBTLE);
+            y += rowHeight;
+        }
+    }
+
+    private String formatTime(Instant base, int offsetHours) {
+        String result = "(time)";
+        if (base != null) {
+            final Instant time = addHours(base, offsetHours);
+            result = HOUR_FMT.format(time);
+        }
+        return result;
+    }
+
+    private String formatTemp(Double temp) {
+        String result = "(temperature)";
+        if (temp != null) {
+            result = String.format("%.0f°C", temp);
+        }
+        return result;
     }
 }
 

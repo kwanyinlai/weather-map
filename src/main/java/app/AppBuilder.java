@@ -252,15 +252,15 @@ public class AppBuilder {
         );
         panAndZoomView.setController(panAndZoomController);
         viewport.getSupport().addPropertyChangeListener(evt -> {
-            if (updateOverlayUseCase != null) updateOverlayUseCase.update();
-
+            if (updateOverlayUseCase != null) {
+                updateOverlayUseCase.update();
+            }
             if (infoPanelView != null) {
-                var c = viewport.getCentre();
-                int z = Math.round(viewport.getZoomLevel());
+                final var c = viewport.getCentre();
+                final int z = viewport.getZoomLevel();
                 infoPanelView.onViewportChanged(c.getLatitude(), c.getLongitude(), z);
             }
         });
-
         return this;
     }
 
