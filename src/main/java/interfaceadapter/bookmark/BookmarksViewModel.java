@@ -30,14 +30,6 @@ public final class BookmarksViewModel
     }
 
     /**
-     * Returns the current bookmarks state (may be null before initialization).
-     */
-    @Override
-    public BookmarksState getState() {
-        return super.getState();
-    }
-
-    /**
      * Sets the entire bookmarks state and notifies listeners.
      */
     @Override
@@ -98,7 +90,7 @@ public final class BookmarksViewModel
             // Defensive copy, then wrap as unmodifiable to keep the state immutable.
             this.bookmarks = (bookmarks == null)
                     ? Collections.emptyList()
-                    : Collections.unmodifiableList(new ArrayList<>(bookmarks));
+                    : List.copyOf(bookmarks);
             this.errorMessage = errorMessage;
         }
 

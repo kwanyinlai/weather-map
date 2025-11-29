@@ -1,13 +1,11 @@
 package entity;
 
-import dataaccessinterface.TileNotFoundException;
-import dataaccessinterface.TileRepository;
-import dataaccessobjects.tilejobs.TileCompletedListener;
+import constants.Constants;
 
 import java.awt.*;
 import java.awt.image.*;
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.List;
 
 public class OverlayManager {
     private final ArrayList<WeatherType> types;
@@ -16,15 +14,17 @@ public class OverlayManager {
     private BufferedImage overlay;
 
     public OverlayManager(int x, int y){
-        this.types = new ArrayList<>();
-        this.types.add(WeatherType.Tmp2m);
-        this.types.add(WeatherType.Precip);
-        this.types.add(WeatherType.Pressure);
-        this.types.add(WeatherType.Wind);
-        this.opacity = new ArrayList<>(Arrays.asList((float)0.5, (float)0.5, (float)0.5, (float)0.5));
-        this.selected = WeatherType.Tmp2m;
+        this.types = new ArrayList<>(List.of(WeatherType.values()));
+        this.opacity = new ArrayList<>();
+        initOpacityList();
+        this.selected = WeatherType.values()[0];
         this.overlay = new BufferedImage(x, y, BufferedImage.TYPE_INT_ARGB);
+    }
 
+    private void initOpacityList(){
+        for (int i = 0 ; i < types.size(); i++){
+            this.opacity.add(Constants.DEFAULT_OPACITY);
+        }
     }
 
     public void changeSize(Dimension size){
@@ -38,19 +38,19 @@ public class OverlayManager {
      * @param zoom
      */
     public void clear(Vector tl, Vector br, int zoom){
-        if (tl.x < 0 || tl.y < 0){
-            double xFactor = Math.abs(tl.x) / (br.x - tl.x);
-            double yFactor = Math.abs(tl.y) / (br.y - tl.y);
+        if (tl.x() < 0 || tl.y() < 0){
+            double xFactor = Math.abs(tl.x()) / (br.x() - tl.x());
+            double yFactor = Math.abs(tl.y()) / (br.y() - tl.y());
             clearArea(0,0, (int)(overlay.getWidth() * xFactor), overlay.getHeight());
             clearArea(0,0, overlay.getWidth(), (int)(overlay.getHeight()* yFactor));
         }
-        if (br.x > Math.pow(2, zoom) || br.y > Math.pow(2, zoom)){
-            double xFactor = Math.abs(br.x) / (br.x - tl.x);
-            double yFactor = Math.abs(br.y) / (br.y - tl.y);
-            clearArea((int)(overlay.getWidth() * (1 - xFactor)), 0,
-                    (int)(overlay.getWidth() * xFactor), overlay.getHeight());
-            clearArea(0, (int)(overlay.getHeight()* (1 - yFactor)),
-                    overlay.getWidth(), (int)(overlay.getHeight() * (yFactor)));
+        if (br.x() > Math.pow(2, zoom) || br.y() > Math.pow(2, zoom)){
+            double xFactor = Math.abs(1 - tl.x()) / (br.x() - tl.x());
+            double yFactor = Math.abs(1 - tl.y()) / (br.y() - tl.y());
+            clearArea((int)(overlay.getWidth() * (xFactor)), 0,
+                    overlay.getWidth(), overlay.getHeight());
+            clearArea(0, (int)(overlay.getHeight() * (yFactor)),
+                    overlay.getWidth(), overlay.getHeight());
         }
 
 
@@ -113,8 +113,8 @@ public class OverlayManager {
         botRight.sub(topLeft);
 
         //2. find a value s s.t. viewport * s = overlay. Assume same porportion,
-        // so br.x * s should = overlay.getWidth() and y*s = height.
-        double scaleToOvl = (double)this.overlay.getWidth() / botRight.x ;
+        // so br.x() * s should = overlay.getWidth() and y*s = height.
+        double scaleToOvl = this.overlay.getWidth() / botRight.x() ;
 
         //3. tc * c, top left of tile image is now aligned with the overlay image.
         tileCoord.scale(scaleToOvl);
@@ -131,7 +131,7 @@ public class OverlayManager {
         Graphics2D g = this.overlay.createGraphics();
         AlphaComposite alphaComposite = AlphaComposite.getInstance(AlphaComposite.SRC, getSelectedOpacity());
         g.setComposite(alphaComposite);
-        g.drawImage(scaledTileImg, (int)tileCoord.x, (int)tileCoord.y, null);
+        g.drawImage(scaledTileImg, (int)tileCoord.x(), (int)tileCoord.y(), null);
         g.dispose();
     }
 }

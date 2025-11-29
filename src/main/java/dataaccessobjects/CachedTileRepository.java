@@ -1,5 +1,6 @@
 package dataaccessobjects;
 
+import constants.Constants;
 import dataaccessinterface.TileNotFoundException;
 import dataaccessinterface.TileRepository;
 import dataaccessinterface.WeatherTileApiFetcher;
@@ -38,7 +39,7 @@ public class CachedTileRepository implements TileRepository {
                     }
                 }
         );
-        tileJobSystem = new TileJobSystem(20);
+        tileJobSystem = new TileJobSystem(Constants.TILE_FETCH_WORKERS);
     }
 
     /**
@@ -48,7 +49,7 @@ public class CachedTileRepository implements TileRepository {
      */
     public static CachedTileRepository getInstance(){
         if (instance == null){
-            instance = new CachedTileRepository(200);
+            instance = new CachedTileRepository(Constants.CACHE_SIZE);
         }
         return instance;
     }

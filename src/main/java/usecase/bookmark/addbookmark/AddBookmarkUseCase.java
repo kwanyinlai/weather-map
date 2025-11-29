@@ -46,7 +46,29 @@ public final class AddBookmarkUseCase implements AddBookmarkInputBoundary {
             return;
         }
 
-        BookmarkedLocation bookmarkedLocation = new BookmarkedLocation(name, latitude, longitude);
+        // Prevent saving duplicate bookmarks (same name and coordinates).
+        try {
+            java.util.List<BookmarkedLocation> existing =
+                    bookmarkedLocationStorage.getBookmarkedLocations();
+
+            for (BookmarkedLocation existingBookmark : existing) {
+                if (existingBookmark.getName().equals(name)
+                        && Double.compare(existingBookmark.getLatitude(), latitude) == 0
+                        && Double.compare(existingBookmark.getLongitude(), longitude) == 0) {
+                    // Duplicate occurence.
+                    outputBoundary.presentAddBookmarkFailure(
+                            "A bookmark with the same name and location already exists.");
+                    return;
+                }
+            }
+        } catch (RuntimeException e) {
+            // If we cannot read existing bookmarks fail
+            outputBoundary.presentAddBookmarkFailure("Failed to read existing bookmarks.");
+            return;
+        }
+
+        BookmarkedLocation bookmarkedLocation =
+                new BookmarkedLocation(name, latitude, longitude);
 
         try {
             bookmarkedLocationStorage.addBookmarkedLocation(bookmarkedLocation);
@@ -56,7 +78,8 @@ public final class AddBookmarkUseCase implements AddBookmarkInputBoundary {
             return;
         }
 
-        AddBookmarkOutputData outputData = new AddBookmarkOutputData(name, latitude, longitude);
+        AddBookmarkOutputData outputData =
+                new AddBookmarkOutputData(name, latitude, longitude);
         outputBoundary.presentAddedBookmark(outputData);
     }
 }

@@ -31,7 +31,6 @@ public class Viewport {
     public void addListener(PropertyChangeListener listener){
         support.addPropertyChangeListener(listener);
 
-        //TODO: add support.firePropertyChange("updated", 0,1); to a function s.t. it notifies the overlay controller
     }
 
     public BoundingBox calculateBBox(){

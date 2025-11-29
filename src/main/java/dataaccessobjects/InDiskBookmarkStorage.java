@@ -11,7 +11,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-
 /**
  * Disk-backed implementation of {@link BookmarkedLocationStorage} that persists
  * bookmarks as a JSON array in a single file. Public methods are synchronized,
@@ -19,6 +18,10 @@ import java.util.List;
  * (temp file + move).
  */
 public final class InDiskBookmarkStorage implements BookmarkedLocationStorage {
+
+    private static final String JSON_FIELD_NAME = "name";
+    private static final String JSON_FIELD_LATITUDE = "latitude";
+    private static final String JSON_FIELD_LONGITUDE = "longitude";
 
     private final Path filePath;
 
@@ -63,29 +66,35 @@ public final class InDiskBookmarkStorage implements BookmarkedLocationStorage {
     }
 
     /**
-     * Removes the first persisted bookmark that matches the given entity by name and
+     * Removes all persisted bookmarks that match the given entity by name and
      * latitude/longitude, then persists the updated collection.
      *
      * @param b The bookmark to remove.
-     * @return {@code true} if a matching bookmark was found and removed; {@code false} otherwise.
+     * @return {@code true} if at least one matching bookmark was found and removed; {@code false} otherwise.
      * @throws dataaccessobjects.BookmarkPersistenceException If writing to disk fails.
      */
     @Override
     public synchronized boolean removeBookmarkedLocation(BookmarkedLocation b) {
         JSONArray arr = readArray();
+        boolean removed = false;
 
-        for (int i = 0; i < arr.length(); i++) {
+        // Iterate backwards to avoid index issues when removing elements
+        for (int i = arr.length() - 1; i >= 0; i--) {
             JSONObject obj = arr.getJSONObject(i);
 
             if (jsonMatchesBookmark(obj, b)) {
                 arr.remove(i);
-                writeArray(arr);
-                return true;
+                removed = true;
             }
         }
-        return false;
-    }
 
+        // Only write if something was removed
+        if (removed) {
+            writeArray(arr);
+        }
+
+        return removed;
+    }
 
     // ---------- Helper Methods ----------
 
@@ -124,7 +133,6 @@ public final class InDiskBookmarkStorage implements BookmarkedLocationStorage {
      * @throws dataaccessobjects.BookmarkPersistenceException if saving fails.
      */
     private void writeArray(JSONArray arr) {
-
         try {
             Files.createDirectories(filePath.getParent());
             // atomic write: write to temp and move over the target
@@ -149,9 +157,9 @@ public final class InDiskBookmarkStorage implements BookmarkedLocationStorage {
     private JSONObject convertBookmarkToJsonEntry(BookmarkedLocation b) {
         JSONObject obj = new JSONObject();
 
-        obj.put("name", b.getName());
-        obj.put("latitude", b.getLatitude());
-        obj.put("longitude", b.getLongitude());
+        obj.put(JSON_FIELD_NAME, b.getName());
+        obj.put(JSON_FIELD_LATITUDE, b.getLatitude());
+        obj.put(JSON_FIELD_LONGITUDE, b.getLongitude());
 
         return obj;
     }
@@ -167,9 +175,9 @@ public final class InDiskBookmarkStorage implements BookmarkedLocationStorage {
      * @throws java.time.format.DateTimeParseException If {@code savedTime} cannot be parsed.
      */
     private BookmarkedLocation convertJsonEntryToBookmark(JSONObject obj) {
-        double lat = obj.getDouble("latitude");
-        double lon = obj.getDouble("longitude");
-        String name = obj.getString("name");
+        double lat = obj.getDouble(JSON_FIELD_LATITUDE);
+        double lon = obj.getDouble(JSON_FIELD_LONGITUDE);
+        String name = obj.getString(JSON_FIELD_NAME);
 
         return new BookmarkedLocation(name, lat, lon);
     }
@@ -183,13 +191,12 @@ public final class InDiskBookmarkStorage implements BookmarkedLocationStorage {
      * @return {@code true} if both name and coordinates match; {@code false} otherwise.
      */
     private boolean jsonMatchesBookmark(JSONObject obj, BookmarkedLocation b) {
-        String name = obj.optString("name", "");
-        double lat = obj.optDouble("latitude", Double.NaN);
-        double lon = obj.optDouble("longitude", Double.NaN);
+        String name = obj.optString(JSON_FIELD_NAME, "");
+        double lat = obj.optDouble(JSON_FIELD_LATITUDE, Double.NaN);
+        double lon = obj.optDouble(JSON_FIELD_LONGITUDE, Double.NaN);
 
         return name.equals(b.getName())
                 && Double.compare(lat, b.getLatitude()) == 0
                 && Double.compare(lon, b.getLongitude()) == 0;
-
     }
 }

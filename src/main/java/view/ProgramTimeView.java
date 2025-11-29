@@ -1,14 +1,13 @@
 package view;
 
-import app.uielements.CircleButton;
 import app.uielements.PauseIcon;
 import app.uielements.PlayIcon;
+import constants.Constants;
 import interfaceadapter.maptime.programtime.ProgramTimeController;
 import interfaceadapter.maptime.programtime.ProgramTimeState;
 import interfaceadapter.maptime.programtime.ProgramTimeViewModel;
 import interfaceadapter.maptime.timeanimation.TimeAnimationController;
 import uielements.CustomSliderUI;
-import uielements.DefaultThemes;
 import java.awt.event.ActionEvent;
 
 import javax.swing.*;
@@ -21,26 +20,18 @@ import java.beans.PropertyChangeListener;
  */
 public class ProgramTimeView extends JPanel implements PropertyChangeListener {
 
-    private final String viewName = "program time";
-    private final ProgramTimeViewModel programTimeViewModel;
-    private ProgramTimeController programTimeController;
-    private TimeAnimationController timeAnimationController;
+    private transient ProgramTimeController programTimeController;
+    private transient TimeAnimationController timeAnimationController;
     private final JSlider timeSlider;
     private final JButton playPauseButton;
-    private final JLabel currentTimeTitleLabel;
     private final JLabel currentTime;
 
     public ProgramTimeView(ProgramTimeViewModel programTimeViewModel) {
-        this.programTimeViewModel = programTimeViewModel;
         programTimeViewModel.addPropertyChangeListener(this);
         this.setLayout(new BoxLayout(this, BoxLayout.LINE_AXIS));
 
-        /** Adding JSlider
-         *
-         */
         timeSlider = new JSlider(SwingConstants.HORIZONTAL, 0, 100, 0);
         timeSlider.setUI(new CustomSliderUI(timeSlider));
-        timeSlider.setPreferredSize(new Dimension(100, 10));
         timeSlider.setPaintTicks(false);
         timeSlider.addChangeListener(
                 evt -> {
@@ -52,37 +43,28 @@ public class ProgramTimeView extends JPanel implements PropertyChangeListener {
         );
         timeSlider.setOpaque(false);
         timeSlider.setPaintTicks(false);
-        timeSlider.setPreferredSize(new Dimension(400, 50));
+        timeSlider.setPreferredSize(new Dimension(Constants.SLIDER_WIDTH, Constants.SLIDER_HEIGHT));
 
-
-        /** Pause play button
-         *
-         */
-        playPauseButton = new JButton(new PlayIcon(20,17, Color.ORANGE));
+        playPauseButton = new JButton(new PlayIcon(Constants.PLAY_PAUSE_BUTTON_HEIGHT,
+                Constants.PLAY_PAUSE_BUTTON_WIDTH, Color.ORANGE));
 
         playPauseButton.addActionListener((ActionEvent e1) -> {
             Icon current = playPauseButton.getIcon();
             if (current instanceof PlayIcon ) {
-                playPauseButton.setIcon(new PauseIcon(17,17, Color.ORANGE));
+                playPauseButton.setIcon(new PauseIcon(Constants.PLAY_PAUSE_BUTTON_WIDTH,
+                        Constants.PLAY_PAUSE_BUTTON_HEIGHT, Color.ORANGE));
                 timeAnimationController.play();
             }
             else{
-                playPauseButton.setIcon(new PlayIcon(20,17, Color.ORANGE));
+                playPauseButton.setIcon(new PlayIcon(Constants.PLAY_PAUSE_BUTTON_HEIGHT,
+                        Constants.PLAY_PAUSE_BUTTON_WIDTH, Color.ORANGE));
                 timeAnimationController.pause();
             }
         });
 
-
-
-
-        /** Adding current time label
-         *
-         */
-        currentTimeTitleLabel = new JLabel(ProgramTimeViewModel.CURRENT_TIME_LABEL);
+        JLabel currentTimeTitleLabel = new JLabel(ProgramTimeViewModel.CURRENT_TIME_LABEL);
         currentTimeTitleLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
         currentTime = new JLabel(ProgramTimeViewModel.getCurrentTimeFormatted());
-        currentTime.setFont(DefaultThemes.NORMAL_BODY_FONT);
-        currentTimeTitleLabel.setFont(DefaultThemes.BOLD_BODY_FONT);
         this.add(playPauseButton);
         this.add(timeSlider);
         this.add(currentTimeTitleLabel);
@@ -90,7 +72,7 @@ public class ProgramTimeView extends JPanel implements PropertyChangeListener {
     }
 
     public String getViewName() {
-        return viewName;
+        return "program time";
     }
     public void setProgramTimeController(ProgramTimeController controller) {
         this.programTimeController = controller;
@@ -110,9 +92,6 @@ public class ProgramTimeView extends JPanel implements PropertyChangeListener {
             final ProgramTimeState state = (ProgramTimeState) evt.getNewValue();
             timeSlider.setValue(state.getSliderValue());
             currentTime.setText(state.getTime());
-        }
-        else{
-            System.out.println(evt.getPropertyName());
         }
     }
 }

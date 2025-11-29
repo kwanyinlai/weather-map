@@ -2,8 +2,8 @@ package entity;
 
 //Simple vector class with basic vector operations.
 public class Vector{
-    public double x;
-    public double y;
+    private double x;
+    private double y;
 
     public Vector(double x, double y){
         this.x = x;
@@ -28,5 +28,13 @@ public class Vector{
     public void scale(double s){
         this.x *= s;
         this.y *= s;
+    }
+
+    public double x(){
+        return x;
+    }
+
+    public double y(){
+        return y;
     }
 }
