@@ -4,6 +4,9 @@ package app;
 import javax.swing.*;
 import java.awt.*;
 import java.time.Instant;
+
+import usecase.infopanel.InfoPanelInteractor;
+import usecase.infopanel.PointWeatherFetcher;
 import view.SearchBarView;
 import interfaceadapter.searchbar.SearchBarController;
 import interfaceadapter.searchbar.SearchBarPresenter;
@@ -46,7 +49,6 @@ import interfaceadapter.bookmark.removebookmark.RemoveBookmarkPresenter;
 import interfaceadapter.maptime.programtime.ProgramTimeController;
 import interfaceadapter.maptime.programtime.ProgramTimePresenter;
 import interfaceadapter.maptime.timeanimation.TimeAnimationController;
-import interfaceadapter.weatherLayers.*;
 import interfaceadapter.infopanel.*;
 import org.openstreetmap.gui.jmapviewer.JMapViewer;
 import usecase.bookmark.addbookmark.AddBookmarkInputBoundary;
