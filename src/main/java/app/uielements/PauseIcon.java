@@ -1,37 +1,43 @@
 package app.uielements;
 
+import dataaccessobjects.SimpleImageLoader;
+
 import javax.swing.*;
 import java.awt.*;
+import java.awt.image.BufferedImage;
 
 public class PauseIcon implements Icon {
-    private final int height;
-    private final int width;
-    private final Color color;
 
-    public PauseIcon(int width, int height, Color color) {
-        this.height = height;
-        this.width = width;
-        this.color = color;
+    private final Image image;
+
+    public PauseIcon(int width, int height) {
+        ImageIcon icon;
+
+        try {
+            icon = new ImageIcon(
+                    new SimpleImageLoader().getImage("img/pause.png")
+            );
+        } catch (Exception e) {
+            icon = new ImageIcon(new BufferedImage(
+                    width, height, BufferedImage.TYPE_INT_ARGB)
+            );
+        }
+        this.image = icon.getImage().getScaledInstance(
+                width, height, Image.SCALE_SMOOTH
+        );
     }
 
-    @Override
     public void paintIcon(Component c, Graphics g, int x, int y) {
-        Graphics2D g2d = (Graphics2D) g;
-        g2d.setColor(color);
-        g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-        int pauseRectWidth = width/3;
-        g2d.fillRect(x, y, pauseRectWidth, height);
-        g2d.fillRect(x+pauseRectWidth * 2, y, pauseRectWidth, height);
-        g2d.dispose();
+        g.drawImage(image, x, y, null);
     }
 
     @Override
     public int getIconWidth() {
-        return width;
+        return image.getWidth(null);
     }
 
     @Override
     public int getIconHeight() {
-        return height;
+        return image.getHeight(null);
     }
 }
