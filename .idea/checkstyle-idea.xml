@@ -12,7 +12,7 @@
       <list>
         <ConfigurationLocation id="bundled-sun-checks" type="BUNDLED" scope="All" description="Sun Checks">(bundled)</ConfigurationLocation>
         <ConfigurationLocation id="bundled-google-checks" type="BUNDLED" scope="All" description="Google Checks">(bundled)</ConfigurationLocation>
-        <ConfigurationLocation id="115c0cab-5980-42b9-b545-bd7e11d790db" type="LOCAL_FILE" scope="All" description="csc207checkstyle">$PROJECT_DIR$/../refactoring/mystyle.xml</ConfigurationLocation>
+        <ConfigurationLocation id="5e66a1d0-4786-4d03-a2af-1d6797c2181e" type="LOCAL_FILE" scope="All" description="custom check style for MapSettings.">$PROJECT_DIR$/my-style.xml</ConfigurationLocation>
       </list>
     </option>
   </component>

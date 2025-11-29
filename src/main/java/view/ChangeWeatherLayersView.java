@@ -15,7 +15,7 @@ import java.awt.*;
 
 /**
  *   <a href="https://www.thunderforest.com/docs/apikeys/">https://www.thunderforest.com/docs/apikeys/</a>
- *   Set env variable THUNDERFOREST_KEY={YOUR KEY}
+ *   Set env variable THUNDERFOREST_KEY={YOUR KEY}.
  */
 public class ChangeWeatherLayersView extends JPanel{
     private final JComboBox<WeatherType> weatherDropdown;
@@ -84,16 +84,16 @@ public class ChangeWeatherLayersView extends JPanel{
         return basemapDropdown;
     }
 
-    public void addLayerController (WeatherLayersController cont){
+    public void addLayerController(WeatherLayersController cont){
         this.layersController = cont;
     }
 
-    public void addUpdateController (UpdateOverlayController cont){
+    public void addUpdateController(UpdateOverlayController cont){
         this.updateController = cont;
     }
 
     /**
-     * set initial selection on startup
+     * set initial selection on startup.
      */
     public void matchWeather(WeatherType type){
         weatherDropdown.setSelectedItem(type);
