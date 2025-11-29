@@ -94,7 +94,6 @@ public class AppBuilder {
     private WeatherLayersViewModel weatherLayersViewModel;
     private ChangeWeatherLayersView changeWeatherView;
     private ChangeLayerUseCase changeLayerUseCase;
-    private MapOverlayStructureView mapOverlayStructure;
 
     private final JMapViewer mapViewer = new JMapViewer();
 
@@ -203,7 +202,7 @@ public AppBuilder addSearchBarView() {
     }
 
     public AppBuilder addChangeOpacityView(){
-        weatherLayersViewModel = new WeatherLayersViewModel(0.5);
+        weatherLayersViewModel = new WeatherLayersViewModel(Constants.DEFAULT_OPACITY);
         changeWeatherView = new ChangeWeatherLayersView(weatherLayersViewModel, mapViewer);
         return this;
     }
@@ -252,6 +251,7 @@ public AppBuilder addSearchBarView() {
      * @return this
      */
     public AppBuilder addMapOverlayView(){
+        MapOverlayStructureView mapOverlayStructure;
         mapOverlayStructure = new MapOverlayStructureView();
         mapOverlayStructure.addPropertyChangeListener(weatherOverlayView);
         mapOverlayStructure.addPropertyChangeListener(panAndZoomView);
