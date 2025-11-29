@@ -33,7 +33,14 @@ public class Constants {
     public static final int AFTER_SEARCHING_ZOOM_LEVEL = 10;
     public static final int SEARCH_PANEL_HEIGHT = 60;
     public static final int SEARCH_PANEL_WIDTH = 250;
-
+    public static final int WEATHERTILE_SIZE = 256;
+    public static final int ZOOM_BAILOUT_OFFSET = 4;
+    public static final double ZOOM_MAP_TO_WEATHER_FACTOR = 1.5;
+    public static final int CHANGE_WEATHER_VIEW_SIZE = 200;
+    public static final int OPACITY_SLIDER_DEFAULT_VAL = 50;
+    public static final int OPACITY_SLIDER_MAX_VAL = 100;
+    public static final int OVERLAY_ALIGNMENT_OFFSET = 5;
+    public static final int CHANGESIZE_CALL_DELAY = 15;
     private Constants() { // intentionally empty
     }
 }

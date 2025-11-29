@@ -19,7 +19,7 @@ public class MapOverlayStructureView extends JLayeredPane{
         size = this.getSize();
 
         //Use a timer to prevent overlay from trying to update every frame to reduce update lag
-        resizeTimer = new Timer(15, e -> {
+        resizeTimer = new Timer(Constants.CHANGESIZE_CALL_DELAY, e -> {
             resizeTimer.stop();
             this.fireSizeChange();
         });
