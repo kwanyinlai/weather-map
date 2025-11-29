@@ -3,9 +3,9 @@ package usecase.weatherlayers.layers;
 import java.awt.image.BufferedImage;
 
 public class ChangeLegendOutputData {
-    private final BufferedImage legend_img;
+    private final BufferedImage legendImg;
 
-    public ChangeLegendOutputData(BufferedImage img){legend_img = img;}
+    public ChangeLegendOutputData(BufferedImage img){legendImg = img;}
 
-    public BufferedImage getLegendImg(){return legend_img;}
+    public BufferedImage getLegendImg(){return legendImg;}
 }

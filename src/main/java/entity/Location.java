@@ -2,6 +2,8 @@ package entity;
 
 import org.openstreetmap.gui.jmapviewer.OsmMercator;
 
+import java.util.Objects;
+
 public class Location {
     private final double latitude;
     private final double longitude;
@@ -48,5 +50,10 @@ public class Location {
             return latitude == loc.getLatitude() && longitude == loc.getLongitude();
         }
         return false;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(latitude, longitude);
     }
 }

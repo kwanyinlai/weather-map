@@ -1,6 +1,6 @@
 package view;
-import interfaceadapter.mapinteraction.MapViewModel;
-import interfaceadapter.mapinteraction.PanAndZoomController;
+import interfaceadapter.mapnavigation.MapViewModel;
+import interfaceadapter.mapnavigation.PanAndZoomController;
 import org.openstreetmap.gui.jmapviewer.JMapViewer;
 
 import javax.swing.*;
@@ -12,12 +12,12 @@ import java.util.Objects;
 // PanAndZoomView.java
 public class PanAndZoomView extends JPanel implements PropertyChangeListener {
     private final JMapViewer mapViewer;
-    private final MapViewModel  viewModel;
-    private final JLabel errorLabel;
+    private final transient MapViewModel viewModel;
+
     public PanAndZoomView(MapViewModel mapViewModel, JMapViewer mapViewer) {
         this.viewModel = mapViewModel;
         this.mapViewer = mapViewer;
-        this.errorLabel = new JLabel(" ");
+        JLabel errorLabel = new JLabel(" ");
         mapViewer.setZoomContolsVisible(true);
         mapViewer.setPreferredSize(new Dimension(600, 600));
         setLayout(new BorderLayout());
@@ -51,6 +51,14 @@ public class PanAndZoomView extends JPanel implements PropertyChangeListener {
             mapViewer.setBounds(new Rectangle((Dimension)evt.getNewValue()));
             mapViewer.setSize((Dimension) evt.getNewValue());
         }
+    }
+
+    /**
+     * set the initial location of the map on startup
+     */
+    public void setMapLocation(int zoom, int x, int y){
+        mapViewer.setZoom(zoom);
+        mapViewer.setCenter(new Point(x, y));
     }
 
 }
