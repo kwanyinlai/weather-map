@@ -62,7 +62,7 @@
   
       - This allows the user to continue from where they left off, without needing to reconfigure their preferred map view each time they open the application.
     <br>
-      
+  *Notes: While changing window size is supported, using the fullscreen button or using window's snapping feature will not update the overlay correctly.
 
 - User Stories:
     - As a user, I want to add and remove location bookmarks that persist across app sessions, and jump to a bookmarked location by pressing a “Visit” button.
