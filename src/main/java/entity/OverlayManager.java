@@ -25,7 +25,7 @@ public class OverlayManager {
      * initiate the opacity list such that every weather type has an opacity value.
      */
     private void initOpacityList(){
-        for (int i = 0 ; i < types.size(); i++){
+        for (int i = 0; i < types.size(); i++){
             this.opacity.add(Constants.DEFAULT_OPACITY);
         }
     }
@@ -39,7 +39,7 @@ public class OverlayManager {
     }
 
     /**
-     * Clear the overlay area that is outside the map area
+     * Clear the overlay area that is outside the map area.
      * @param tl the viewport's top left tile coordinate
      * @param br the viewport's bottom right tile coordinate
      * @param zoom the current zoom level
@@ -149,7 +149,7 @@ public class OverlayManager {
 
         //2. find a value s s.t. viewport * s = overlay. Assume same porportion,
         // so br.x() * s should = overlay.getWidth() and y*s = height.
-        double scaleToOvl = this.overlay.getWidth() / botRight.x() ;
+        double scaleToOvl = this.overlay.getWidth() / botRight.x();
 
         //3. tc * c, top left of tile image is now aligned with the overlay image.
         tileCoord.scale(scaleToOvl);

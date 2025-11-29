@@ -2,12 +2,13 @@ package app;
 
 import javax.swing.*;
 
-public class Main {
+public final class Main {
     public static void main(String[] args) {
         AppBuilder appBuilder = new AppBuilder();
         JFrame application = appBuilder
                 .addUpdateOverlayUseCase()
                 .createOverlayView()
+                .addInfoPanelView()
                 .addPanZoomView()
                 .addMapOverlayView()
                 .addLegendView()
@@ -19,10 +20,13 @@ public class Main {
                 .addBookmarkView()
                 .addSearchBarView()
                 .addSettingsAndBookmarkSidePanel()
-//                .addInfoPanelView()
                 .build();
         application.pack();
         application.setLocationRelativeTo(null);
         application.setVisible(true);
+    }
+
+    private Main() {
+        // hiding constructor
     }
 }

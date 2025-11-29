@@ -5,7 +5,7 @@ import interfaceadapter.ViewModel;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 
-public class ProgramTimeViewModel extends ViewModel<ProgramTimeState>{
+public class ProgramTimeViewModel extends ViewModel<ProgramTimeState> {
     public static final String CURRENT_TIME_LABEL = "Current Time:";
 
     public ProgramTimeViewModel() {
