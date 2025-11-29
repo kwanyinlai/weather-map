@@ -1,30 +1,44 @@
 package usecase.weatherlayers.updateoverlay;
 
+import dataaccessinterface.ImageLoader;
 import constants.Constants;
 import dataaccessinterface.TileNotFoundException;
 import dataaccessinterface.TileRepository;
+import dataaccessobjects.SimpleImageLoader;
 import dataaccessobjects.tilejobs.TileCompletedListener;
 import entity.*;
 
 import java.awt.image.BufferedImage;
+import java.io.IOException;
 
 public final class UpdateOverlayUseCase implements UpdateOverlayInputBoundary, TileCompletedListener  {
     private final OverlayManager overlayManager;
     private final TileRepository tileCache;
     private final ProgramTime time;
+    private final ImageLoader imageLoader;
+    private final BufferedImage loadingImage;
     private final Viewport viewport;
     private final ProgramTime programTime;
     private final UpdateOverlayOutputBoundary output;
-
     public UpdateOverlayUseCase(OverlayManager om, TileRepository tCache, ProgramTime time, Viewport vp,
                                 UpdateOverlayOutputBoundary output){
         this.overlayManager = om;
         this.tileCache = tCache;
         this.time = time;
+        this.imageLoader = new SimpleImageLoader();
+        this.loadingImage = getLoadingImage();
         this.viewport = vp;
         this.output = output;
         this.programTime = time;
         tileCache.addListener(this);
+    }
+
+    private BufferedImage getLoadingImage(){
+        try {
+            return imageLoader.getImage("img/hourglass.png");
+        } catch (IOException e) {
+            return new BufferedImage(255, 255, BufferedImage.TYPE_3BYTE_BGR);
+        }
     }
 
     public void update(){
@@ -102,7 +116,7 @@ public final class UpdateOverlayUseCase implements UpdateOverlayInputBoundary, T
             overlayManager.drawTileToOverlay(tile.getTopLeft(), tile.getBotRight(), tile.getWeatherTile(), tileImage);
             output.updateImage(new UpdateOverlayOutputData(overlayManager.getOverlay()));
         } else{
-            BufferedImage tileImg = new BufferedImage(256, 256, BufferedImage.TYPE_3BYTE_BGR);
+            BufferedImage tileImg = loadingImage;
             overlayManager.drawTileToOverlay(tile.getTopLeft(), tile.getBotRight(), tile.getWeatherTile(), tileImg);
             output.updateImage(new UpdateOverlayOutputData(overlayManager.getOverlay()));
         }
@@ -110,7 +124,7 @@ public final class UpdateOverlayUseCase implements UpdateOverlayInputBoundary, T
 
     @Override
     public void onTileFailed(IncompleteTile tile, TileNotFoundException e) {
-        BufferedImage tileImg = new BufferedImage(256, 256, BufferedImage.TYPE_3BYTE_BGR);
+        BufferedImage tileImg = loadingImage;
         overlayManager.drawTileToOverlay(tile.getTopLeft(), tile.getBotRight(), tile.getWeatherTile(), tileImg);
         output.updateImage(new UpdateOverlayOutputData(overlayManager.getOverlay()));
 

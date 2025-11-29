@@ -35,5 +35,5 @@ public class Constants {
     public static final int SEARCH_PANEL_WIDTH = 250;
 
     private Constants() { // intentionally empty
-        }
+    }
 }

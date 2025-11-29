@@ -45,12 +45,12 @@ public class OverlayManager {
             clearArea(0,0, overlay.getWidth(), (int)(overlay.getHeight()* yFactor));
         }
         if (br.x() > Math.pow(2, zoom) || br.y() > Math.pow(2, zoom)){
-            double xFactor = Math.abs(br.x()) / (br.x() - tl.x());
-            double yFactor = Math.abs(br.y()) / (br.y() - tl.y());
-            clearArea((int)(overlay.getWidth() * (1 - xFactor)), 0,
-                    (int)(overlay.getWidth() * xFactor), overlay.getHeight());
-            clearArea(0, (int)(overlay.getHeight()* (1 - yFactor)),
-                    overlay.getWidth(), (int)(overlay.getHeight() * (yFactor)));
+            double xFactor = Math.abs(1 - tl.x()) / (br.x() - tl.x());
+            double yFactor = Math.abs(1 - tl.y()) / (br.y() - tl.y());
+            clearArea((int)(overlay.getWidth() * (xFactor)), 0,
+                    overlay.getWidth(), overlay.getHeight());
+            clearArea(0, (int)(overlay.getHeight() * (yFactor)),
+                    overlay.getWidth(), overlay.getHeight());
         }
 
 
