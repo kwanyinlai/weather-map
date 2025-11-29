@@ -3,16 +3,16 @@ import java.time.*;
 import java.time.format.DateTimeFormatter;
 import java.util.Objects;
 
-/** Class which represents a tile on the weather map overlay
+/** Class which represents a tile on the weather map overlay.
  *
  */
 public class WeatherTile {
     private final TileCoords coordinates;
 
-    /** the time which is represented by the tile */
+    /** the time which is represented by the tile. */
     private final java.time.Instant timestamp;
 
-    /** corresponds to {@link WeatherType} */
+    /** corresponds to {@link WeatherType}. */
     private final WeatherType weatherType;
 
     public WeatherTile(TileCoords coordinates, java.time.Instant timestamp, WeatherType weatherType) {
@@ -23,7 +23,7 @@ public class WeatherTile {
 
     public java.time.Instant getTimestamp() { return timestamp; }
 
-    /** Return the UTC date of the tile
+    /** Return the UTC date of the tile.
      *
      * @return String of the UTC date in yyyyMMdd format e.g: 1st Nov 2025 will be 20251101.
      */
@@ -31,7 +31,7 @@ public class WeatherTile {
         return timestamp.atZone(ZoneOffset.UTC).format(DateTimeFormatter.ofPattern("yyyyMMdd"));
     }
 
-    /** Return the UTC hour of the tile
+    /** Return the UTC hour of the tile.
      *
      * @return String of the UTC hour in 24 format. E.g: 1 am will be 01. 6 pm will be 18.
      */

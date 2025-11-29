@@ -1,45 +1,36 @@
 package app;
 
-import javax.swing.JFrame;
-import javax.swing.JPanel;
-import javax.swing.BoxLayout;
-import javax.swing.WindowConstants;
-import java.awt.Dimension;
+import static constants.Constants.SEARCH_BAR_PRFFERDSIZE_HEIGHT;
+import static constants.Constants.SEARCH_BAR_PRFFERDSIZE_WIDTH;
+
 import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.time.Instant;
-import interfaceadapter.mapsettings.MapSettingsViewModel;
-import interfaceadapter.mapsettings.savemapsettings.SaveMapSettingsPresenter;
+
+import javax.swing.BoxLayout;
+import javax.swing.JFrame;
+import javax.swing.JPanel;
+import javax.swing.WindowConstants;
+
 import org.jetbrains.annotations.NotNull;
-import view.SearchBarView;
-import interfaceadapter.searchbar.SearchBarController;
-import interfaceadapter.searchbar.SearchBarPresenter;
-import interfaceadapter.searchbar.SearchBarViewModel;
-import usecase.searchbar.SearchBarUsecase;
-import dataaccessobjects.OpenWeatherGeocodingAPI;
-import dataaccessinterface.GeocodingAPI;
+import org.openstreetmap.gui.jmapviewer.JMapViewer;
+
 import constants.Constants;
 import dataaccessinterface.BookmarkedLocationStorage;
+import dataaccessinterface.GeocodingAPI;
+import dataaccessinterface.SavedMapOverlaySettings;
+import dataaccessobjects.CachedTileRepository;
 import dataaccessobjects.InDiskBookmarkStorage;
 import dataaccessobjects.InDiskGradientLoader;
+import dataaccessobjects.InDiskMapOverlaySettingsStorage;
+import dataaccessobjects.OpenWeatherGeocodingAPI;
+import entity.Location;
+import entity.OverlayManager;
 import entity.ProgramTime;
 import entity.Viewport;
-import entity.Location;
-import interfaceadapter.bookmark.visitbookmark.VisitBookmarkController;
-import interfaceadapter.bookmark.visitbookmark.VisitBookmarkPresenter;
-import interfaceadapter.weatherlayers.legend.LegendPresenter;
-import interfaceadapter.weatherlayers.legend.LegendViewModel;
-import interfaceadapter.weatherlayers.updateoverlay.UpdateOverlayController;
-import interfaceadapter.weatherlayers.updateoverlay.UpdateOverlayPresenter;
-import interfaceadapter.weatherlayers.updateoverlay.UpdateOverlaySizeController;
-import interfaceadapter.weatherlayers.updateoverlay.UpdateOverlayViewModel;
-import interfaceadapter.weatherlayers.layers.WeatherLayersController;
-import interfaceadapter.weatherlayers.layers.WeatherLayersPresenter;
-import interfaceadapter.weatherlayers.layers.WeatherLayersViewModel;
-import usecase.bookmark.visitbookmark.VisitBookmarkInputBoundary;
-import usecase.bookmark.visitbookmark.VisitBookmarkOutputBoundary;
-import usecase.bookmark.visitbookmark.VisitBookmarkUseCase;
+import entity.WeatherType;
 import interfaceadapter.bookmark.BookmarksViewModel;
 import interfaceadapter.bookmark.addbookmark.AddBookmarkController;
 import interfaceadapter.bookmark.addbookmark.AddBookmarkPresenter;
@@ -47,56 +38,70 @@ import interfaceadapter.bookmark.listbookmark.ListBookmarksController;
 import interfaceadapter.bookmark.listbookmark.ListBookmarksPresenter;
 import interfaceadapter.bookmark.removebookmark.RemoveBookmarkController;
 import interfaceadapter.bookmark.removebookmark.RemoveBookmarkPresenter;
+import interfaceadapter.bookmark.visitbookmark.VisitBookmarkController;
+import interfaceadapter.bookmark.visitbookmark.VisitBookmarkPresenter;
+import interfaceadapter.mapnavigation.MapViewModel;
+import interfaceadapter.mapnavigation.PanAndZoomController;
+import interfaceadapter.mapnavigation.PanAndZoomPresenter;
+import interfaceadapter.mapsettings.MapSettingsViewModel;
+import interfaceadapter.mapsettings.loadmapsettings.AutoLoadMapSettingsPresenter;
+import interfaceadapter.mapsettings.loadmapsettings.LoadMapSettingsController;
+import interfaceadapter.mapsettings.savemapsettings.SaveMapSettingsController;
+import interfaceadapter.mapsettings.savemapsettings.SaveMapSettingsPresenter;
+import interfaceadapter.searchbar.SearchBarController;
+import interfaceadapter.searchbar.SearchBarPresenter;
+import interfaceadapter.searchbar.SearchBarViewModel;
+import interfaceadapter.weatherlayers.layers.WeatherLayersController;
+import interfaceadapter.weatherlayers.layers.WeatherLayersPresenter;
+import interfaceadapter.weatherlayers.layers.WeatherLayersViewModel;
+import interfaceadapter.weatherlayers.legend.LegendPresenter;
+import interfaceadapter.weatherlayers.legend.LegendViewModel;
+import interfaceadapter.weatherlayers.updateoverlay.UpdateOverlayController;
+import interfaceadapter.weatherlayers.updateoverlay.UpdateOverlayPresenter;
+import interfaceadapter.weatherlayers.updateoverlay.UpdateOverlaySizeController;
+import interfaceadapter.weatherlayers.updateoverlay.UpdateOverlayViewModel;
 import interfaceadapter.maptime.programtime.ProgramTimeController;
 import interfaceadapter.maptime.programtime.ProgramTimePresenter;
+import interfaceadapter.maptime.programtime.ProgramTimeViewModel;
 import interfaceadapter.maptime.timeanimation.TimeAnimationController;
-import org.openstreetmap.gui.jmapviewer.JMapViewer;
-import usecase.weatherlayers.layers.ChangeLayerUseCase;
-import usecase.weatherlayers.layers.ChangeOpacityUseCase;
-import usecase.weatherlayers.layers.ChangeLayerOutputBoundary;
-import usecase.weatherlayers.layers.UpdateLegendOutputBoundary;
 import usecase.bookmark.addbookmark.AddBookmarkInputBoundary;
 import usecase.bookmark.addbookmark.AddBookmarkOutputBoundary;
 import usecase.bookmark.addbookmark.AddBookmarkUseCase;
 import usecase.bookmark.listbookmark.ListBookmarksInputBoundary;
+import usecase.bookmark.listbookmark.ListBookmarksOutputBoundary;
 import usecase.bookmark.listbookmark.ListBookmarksUseCase;
 import usecase.bookmark.removebookmark.RemoveBookmarkInputBoundary;
 import usecase.bookmark.removebookmark.RemoveBookmarkOutputBoundary;
 import usecase.bookmark.removebookmark.RemoveBookmarkUseCase;
-import usecase.maptime.UpdateMapTimeInputBoundary;
-import usecase.weatherlayers.updateoverlay.UpdateOverlayOutputBoundary;
-import usecase.weatherlayers.updateoverlay.UpdateOverlaySizeUseCase;
-import usecase.weatherlayers.updateoverlay.UpdateOverlayUseCase;
-import usecase.maptime.UpdateMapTimeOutputBoundary;
-import usecase.maptime.UpdateMapTimeUseCase;
-import view.DisplayOverlayView;
-import view.ProgramTimeView;
-import view.ChangeWeatherLayersView;
-import view.PanAndZoomView;
-import view.BookmarksView;
-import view.BookmarkAndMapSettingsStructureView;
-import view.MapOverlayStructureView;
-import view.LegendsView;
-import interfaceadapter.maptime.programtime.ProgramTimeViewModel;
-import dataaccessobjects.CachedTileRepository;
-import entity.OverlayManager;
-import interfaceadapter.mapnavigation.MapViewModel;
-import interfaceadapter.mapnavigation.PanAndZoomController;
-import interfaceadapter.mapnavigation.PanAndZoomPresenter;
-import usecase.mapnavigation.PanAndZoomUseCase;
+import usecase.bookmark.visitbookmark.VisitBookmarkInputBoundary;
+import usecase.bookmark.visitbookmark.VisitBookmarkOutputBoundary;
+import usecase.bookmark.visitbookmark.VisitBookmarkUseCase;
 import usecase.mapnavigation.PanAndZoomInputBoundary;
-import dataaccessinterface.SavedMapOverlaySettings;
-import dataaccessobjects.InDiskMapOverlaySettingsStorage;
-import interfaceadapter.mapsettings.loadmapsettings.AutoLoadMapSettingsPresenter;
-import interfaceadapter.mapsettings.loadmapsettings.LoadMapSettingsController;
-import interfaceadapter.mapsettings.savemapsettings.SaveMapSettingsController;
+import usecase.mapnavigation.PanAndZoomUseCase;
 import usecase.mapsettings.loadmapsettings.LoadMapSettingsInputBoundary;
 import usecase.mapsettings.loadmapsettings.LoadMapSettingsUseCase;
 import usecase.mapsettings.savemapsettings.SaveMapSettingsInputBoundary;
 import usecase.mapsettings.savemapsettings.SaveMapSettingsUseCase;
-import entity.WeatherType;
-import static constants.Constants.SEARCH_BAR_PRFFERDSIZE_HEIGHT;
-import static constants.Constants.SEARCH_BAR_PRFFERDSIZE_WIDTH;
+import usecase.maptime.UpdateMapTimeInputBoundary;
+import usecase.maptime.UpdateMapTimeOutputBoundary;
+import usecase.maptime.UpdateMapTimeUseCase;
+import usecase.searchbar.SearchBarUsecase;
+import usecase.weatherlayers.layers.ChangeLayerOutputBoundary;
+import usecase.weatherlayers.layers.ChangeLayerUseCase;
+import usecase.weatherlayers.layers.ChangeOpacityUseCase;
+import usecase.weatherlayers.layers.UpdateLegendOutputBoundary;
+import usecase.weatherlayers.updateoverlay.UpdateOverlayOutputBoundary;
+import usecase.weatherlayers.updateoverlay.UpdateOverlaySizeUseCase;
+import usecase.weatherlayers.updateoverlay.UpdateOverlayUseCase;
+import view.BookmarkAndMapSettingsStructureView;
+import view.BookmarksView;
+import view.ChangeWeatherLayersView;
+import view.DisplayOverlayView;
+import view.LegendsView;
+import view.MapOverlayStructureView;
+import view.PanAndZoomView;
+import view.ProgramTimeView;
+import view.SearchBarView;
 
 public class AppBuilder {
     private final JPanel borderPanel = new JPanel();
@@ -131,13 +136,11 @@ public class AppBuilder {
     private PanAndZoomPresenter panAndZoomPresenter;
     private BookmarksView bookmarksView;
     private SearchBarView searchBarView;
-    private ListBookmarksInputBoundary listBookmarksUseCase;
     private LoadMapSettingsController loadMapSettingsController;
     private SaveMapSettingsController saveMapSettingsController;
 
-
     public AppBuilder() {
-        BorderLayout borderLayout = new BorderLayout();
+        final BorderLayout borderLayout = new BorderLayout();
         borderPanel.setLayout(borderLayout);
         }
 
@@ -149,67 +152,63 @@ public class AppBuilder {
 //        borderPanel.add(bookmarksView, BorderLayout.WEST);
 //        return this;
 //    }
-public AppBuilder addSearchBarView() {
-    SearchBarViewModel viewModel = new SearchBarViewModel();
-    GeocodingAPI api = new OpenWeatherGeocodingAPI();
-    SearchBarPresenter presenter = new SearchBarPresenter(viewModel);
-    usecase.searchbar.SearchBarUsecase usecase =
-            new SearchBarUsecase(api, presenter);
-    SearchBarController controller = new SearchBarController(usecase);
-    searchBarView = new SearchBarView(viewModel, controller, mapViewer);
-    searchBarView.setPreferredSize(new Dimension(SEARCH_BAR_PRFFERDSIZE_WIDTH,
-            SEARCH_BAR_PRFFERDSIZE_HEIGHT));
+    public AppBuilder addSearchBarView() {
+        final SearchBarViewModel viewModel = new SearchBarViewModel();
+        final GeocodingAPI api = new OpenWeatherGeocodingAPI();
+        final SearchBarPresenter presenter = new SearchBarPresenter(viewModel);
+        final usecase.searchbar.SearchBarUsecase usecase =
+                new SearchBarUsecase(api, presenter);
+        SearchBarController controller = new SearchBarController(usecase);
+        searchBarView = new SearchBarView(viewModel, controller, mapViewer);
+        searchBarView.setPreferredSize(
+                new Dimension(
+                        SEARCH_BAR_PRFFERDSIZE_WIDTH,
+                        SEARCH_BAR_PRFFERDSIZE_HEIGHT
+                )
+        );
 
-    return this;
-}
+        return this;
+    }
 
     public AppBuilder addBookmarkView() {
-        VisitBookmarkController visitBookmarkController;
-        VisitBookmarkOutputBoundary visitBookmarkPresenter;
-        VisitBookmarkInputBoundary visitBookmarkUseCase;
-        ListBookmarksPresenter listBookmarksPresenter;
-        RemoveBookmarkOutputBoundary removeBookmarkPresenter;
-        AddBookmarkOutputBoundary addBookmarkPresenter;
-        AddBookmarkInputBoundary addBookmarkUseCase;
-        RemoveBookmarkInputBoundary removeBookmarkUseCase;
-        BookmarksViewModel bookmarksViewModel;
-
-        bookmarksViewModel = new BookmarksViewModel();
-        removeBookmarkPresenter =
+        final BookmarksViewModel bookmarksViewModel = new BookmarksViewModel();
+        final RemoveBookmarkOutputBoundary removeBookmarkPresenter =
                 new RemoveBookmarkPresenter(bookmarksViewModel);
-        listBookmarksPresenter =
+        final ListBookmarksOutputBoundary listBookmarksPresenter =
                 new ListBookmarksPresenter(bookmarksViewModel);
-        addBookmarkPresenter =
+        final AddBookmarkOutputBoundary addBookmarkPresenter =
                 new AddBookmarkPresenter(bookmarksViewModel);
 
-        addBookmarkUseCase =
+        final AddBookmarkInputBoundary addBookmarkUseCase =
                 new AddBookmarkUseCase(bookmarkStorage, addBookmarkPresenter);
-        removeBookmarkUseCase =
+        final RemoveBookmarkInputBoundary removeBookmarkUseCase =
                 new RemoveBookmarkUseCase(
                         bookmarkStorage,
                         removeBookmarkPresenter
                 );
-        listBookmarksUseCase =
+        final ListBookmarksInputBoundary listBookmarksUseCase =
                 new ListBookmarksUseCase(
                         bookmarkStorage,
                         listBookmarksPresenter
                 );
 
-        AddBookmarkController addBookmarkController =
+        final AddBookmarkController addBookmarkController =
                 new AddBookmarkController(addBookmarkUseCase);
-        RemoveBookmarkController removeBookmarkController =
+        final RemoveBookmarkController removeBookmarkController =
                 new RemoveBookmarkController(removeBookmarkUseCase);
-        ListBookmarksController listBookmarksController =
+        final ListBookmarksController listBookmarksController =
                 new ListBookmarksController(listBookmarksUseCase);
 
-        visitBookmarkPresenter = new VisitBookmarkPresenter(bookmarksViewModel);
-        visitBookmarkUseCase = new VisitBookmarkUseCase(
+        final VisitBookmarkOutputBoundary visitBookmarkPresenter =
+                new VisitBookmarkPresenter(bookmarksViewModel);
+        final VisitBookmarkInputBoundary visitBookmarkUseCase =
+                new VisitBookmarkUseCase(
                 viewport,
                 updateOverlayUseCase,
                 panAndZoomPresenter,
                 visitBookmarkPresenter
         );
-        visitBookmarkController =
+        final VisitBookmarkController visitBookmarkController =
                 new VisitBookmarkController(visitBookmarkUseCase);
 
         bookmarksView = new BookmarksView(

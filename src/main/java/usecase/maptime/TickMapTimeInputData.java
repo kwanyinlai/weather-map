@@ -9,7 +9,7 @@ public class TickMapTimeInputData {
      */
     private final int ticks;
     /**
-     * Creates an input data object for ticks
+     * Creates an input data object for ticks.
      * @param ticks number of ticks
      */
     public TickMapTimeInputData(int ticks) {

@@ -1,5 +1,6 @@
 package interfaceadapter.weatherlayers.layers;
 
+import constants.Constants;
 import entity.LayerNotFoundException;
 import entity.WeatherType;
 import usecase.weatherlayers.layers.ChangeLayerInputBoundary;
@@ -21,7 +22,7 @@ public class WeatherLayersController {
     }
 
     public void executeChangeOpacity(int value){
-        float alpha = (float) (value / 100.0);
+        float alpha = (float) (value / Constants.PERCENT_MULTIPLIER);
         opacityInput.change(new ChangeOpacityInputData(alpha));
     }
 }

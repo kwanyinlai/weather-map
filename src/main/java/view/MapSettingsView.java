@@ -126,7 +126,7 @@ public final class MapSettingsView extends JPanel implements PropertyChangeListe
      */
     private void hookUpActions() {
         // Load existing settings.
-        loadButton.addActionListener( e -> loadMapSettingsController.loadMapSettings());
+        loadButton.addActionListener(e -> loadMapSettingsController.loadMapSettings());
 
         // Save current values from the fields.
         saveButton.addActionListener(e -> {

@@ -24,7 +24,8 @@ public interface BookmarkedLocationStorage {
      *
      * @param bookmarkedLocation The bookmark to remove; matching is performed
      *                           on name and latitude/longitude.
-     * @return {@code true} if a persisted bookmark was found and removed; {@code false} otherwise.
+     * @return {@code true} if a persisted bookmark was found and removed;
+     * {@code false} otherwise.
      */
     boolean removeBookmarkedLocation(BookmarkedLocation bookmarkedLocation);
 }

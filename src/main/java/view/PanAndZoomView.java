@@ -42,7 +42,7 @@ public class PanAndZoomView extends JPanel implements PropertyChangeListener {
     }
 
     /**
-     * set the initial location of the map on startup
+     * set the initial location of the map on startup.
      */
     public void setMapLocation(int zoom, int x, int y){
         mapViewer.setZoom(zoom);
