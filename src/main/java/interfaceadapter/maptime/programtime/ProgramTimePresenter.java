@@ -35,7 +35,7 @@ public class ProgramTimePresenter implements UpdateMapTimeOutputBoundary {
 
     @Override
     public void incrementTime() {
-        return;
+        // intentionally empty
     }
 
     private String formatTimeInstant(java.time.Instant instant) {

@@ -156,12 +156,8 @@ public class CachedTileRepository implements TileRepository {
     }
 
     private void addTileImagePairToCache(WeatherTile tile, BufferedImage image) {
-        if (tileCache.containsKey(tile)){
-            return;
-        }
-        else{
-            tileCache.put(tile, image);
-        }
+        tileCache.put(tile, image);
+
     }
 
     public void addTileToCache(WeatherTile tile) throws TileNotFoundException {
