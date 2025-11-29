@@ -14,6 +14,10 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.WindowConstants;
 
+import dataaccessinterface.OkHttpsPointWeatherGatewayXml;
+import interfaceadapter.infopanel.InfoPanelController;
+import interfaceadapter.infopanel.InfoPanelPresenter;
+import interfaceadapter.infopanel.InfoPanelViewModel;
 import org.jetbrains.annotations.NotNull;
 import org.openstreetmap.gui.jmapviewer.JMapViewer;
 
@@ -76,6 +80,8 @@ import usecase.bookmark.removebookmark.RemoveBookmarkUseCase;
 import usecase.bookmark.visitbookmark.VisitBookmarkInputBoundary;
 import usecase.bookmark.visitbookmark.VisitBookmarkOutputBoundary;
 import usecase.bookmark.visitbookmark.VisitBookmarkUseCase;
+import usecase.infopanel.InfoPanelInteractor;
+import usecase.infopanel.PointWeatherFetcher;
 import usecase.mapnavigation.PanAndZoomInputBoundary;
 import usecase.mapnavigation.PanAndZoomUseCase;
 import usecase.mapsettings.loadmapsettings.LoadMapSettingsInputBoundary;
@@ -93,15 +99,7 @@ import usecase.weatherlayers.layers.UpdateLegendOutputBoundary;
 import usecase.weatherlayers.updateoverlay.UpdateOverlayOutputBoundary;
 import usecase.weatherlayers.updateoverlay.UpdateOverlaySizeUseCase;
 import usecase.weatherlayers.updateoverlay.UpdateOverlayUseCase;
-import view.BookmarkAndMapSettingsStructureView;
-import view.BookmarksView;
-import view.ChangeWeatherLayersView;
-import view.DisplayOverlayView;
-import view.LegendsView;
-import view.MapOverlayStructureView;
-import view.PanAndZoomView;
-import view.ProgramTimeView;
-import view.SearchBarView;
+import view.*;
 
 public class AppBuilder {
     private final JPanel borderPanel = new JPanel();
@@ -136,22 +134,8 @@ public class AppBuilder {
     private PanAndZoomPresenter panAndZoomPresenter;
     private BookmarksView bookmarksView;
     private SearchBarView searchBarView;
-    private AddBookmarkInputBoundary addBookmarkUseCase;
-    private RemoveBookmarkInputBoundary removeBookmarkUseCase;
-    private ListBookmarksInputBoundary listBookmarksUseCase;
-    private AddBookmarkOutputBoundary addBookmarkPresenter;
-    private RemoveBookmarkOutputBoundary removeBookmarkPresenter;
-    private ListBookmarksPresenter listBookmarksPresenter;
-    private VisitBookmarkInputBoundary visitBookmarkUseCase;
-    private VisitBookmarkOutputBoundary visitBookmarkPresenter;
-    private VisitBookmarkController visitBookmarkController;
-    private interfaceadapter.infopanel.InfoPanelViewModel infoPanelViewModel;
-    private interfaceadapter.infopanel.InfoPanelController infoPanelController;
-    private usecase.infopanel.InfoPanelInteractor infoPanelUseCase;
     private view.InfoPanelView infoPanelView;
 
-    private LoadMapSettingsInputBoundary loadMapSettingsUseCase;
-    private SaveMapSettingsInputBoundary saveMapSettingsUseCase;
     private LoadMapSettingsController loadMapSettingsController;
     private SaveMapSettingsController saveMapSettingsController;
 
@@ -161,6 +145,8 @@ public class AppBuilder {
         }
 
     public AppBuilder addInfoPanelView() {
+        interfaceadapter.infopanel.InfoPanelController infoPanelController;
+        interfaceadapter.infopanel.InfoPanelViewModel infoPanelViewModel;
         infoPanelViewModel = new InfoPanelViewModel();
         InfoPanelPresenter presenter = new InfoPanelPresenter(infoPanelViewModel);
 

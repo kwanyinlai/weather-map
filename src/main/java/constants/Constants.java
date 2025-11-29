@@ -58,10 +58,6 @@ public final class Constants {
 
     public static final long INFO_PANEL_SECONDS_TO_ADD = 3600L;
     public static final Path MAP_SETTINGS_DATA_PATH = Paths.get("data/map-settings.json");
-    public static final Path BOOKMARK_DATA_PATH =
-            Paths.get("data/bookmarks.json");
-    public static final Path MAP_SETTINGS_DATA_PATH =
-            Paths.get("data/map-settings.json");
     public static final int TILE_FETCH_WORKERS = 8;
     public static final float DEFAULT_OPACITY = (float) 0.5;
     public static final int MAX_WEATHERTILE_ZOOM = 6;
