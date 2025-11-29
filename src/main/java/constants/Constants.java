@@ -37,6 +37,8 @@ public final class Constants {
     public static final int SEARCH_PANEL_HEIGHT = 60;
     public static final int SEARCH_PANEL_WIDTH = 250;
     public static final int PERCENT_MULTIPLIER = 100;
+    public static final String PLAY_BUTTON_FILE_PATH = "img/play.png";
+    public static final String PAUSE_BUTTON_FILE_PATH = "img/pause.png";
 
     private Constants() { // intentionally empty
     }

@@ -6,16 +6,16 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 
-public class PauseIcon implements Icon {
+public class PlayPausePauseIcon implements Icon {
 
     private final Image image;
 
-    public PauseIcon(int width, int height) {
+    public PlayPausePauseIcon(int width, int height, String filePath) {
         ImageIcon icon;
 
         try {
             icon = new ImageIcon(
-                    new SimpleImageLoader().getImage("img/pause.png")
+                    new SimpleImageLoader().getImage(filePath)
             );
         } catch (Exception e) {
             icon = new ImageIcon(new BufferedImage(

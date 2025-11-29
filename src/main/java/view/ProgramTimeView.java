@@ -1,7 +1,6 @@
 package view;
 
-import app.uielements.PauseIcon;
-import app.uielements.PlayIcon;
+import app.uielements.PlayPausePauseIcon;
 import constants.Constants;
 import interfaceadapter.maptime.programtime.ProgramTimeController;
 import interfaceadapter.maptime.programtime.ProgramTimeState;
@@ -45,19 +44,23 @@ public class ProgramTimeView extends JPanel implements PropertyChangeListener {
         timeSlider.setPaintTicks(false);
         timeSlider.setPreferredSize(new Dimension(Constants.SLIDER_WIDTH, Constants.SLIDER_HEIGHT));
 
-        playPauseButton = new JButton(new PlayIcon(Constants.PLAY_PAUSE_BUTTON_WIDTH,
-                Constants.PLAY_PAUSE_BUTTON_HEIGHT));
-
+        final PlayPausePauseIcon playIcon = new PlayPausePauseIcon(
+                Constants.PLAY_PAUSE_BUTTON_WIDTH,
+                Constants.PLAY_PAUSE_BUTTON_HEIGHT,
+                Constants.PLAY_BUTTON_FILE_PATH);
+        playPauseButton = new JButton(playIcon);
+        final PlayPausePauseIcon pauseIcon = new PlayPausePauseIcon(
+                Constants.PLAY_PAUSE_BUTTON_WIDTH,
+                Constants.PLAY_PAUSE_BUTTON_HEIGHT,
+                Constants.PAUSE_BUTTON_FILE_PATH);
         playPauseButton.addActionListener((ActionEvent e1) -> {
             Icon current = playPauseButton.getIcon();
-            if (current instanceof PlayIcon) {
-                playPauseButton.setIcon(new PauseIcon(Constants.PLAY_PAUSE_BUTTON_WIDTH,
-                        Constants.PLAY_PAUSE_BUTTON_HEIGHT));
+            if (current.equals(playIcon)) {
+                playPauseButton.setIcon(pauseIcon);
                 timeAnimationController.play();
             }
             else{
-                playPauseButton.setIcon(new PlayIcon(Constants.PLAY_PAUSE_BUTTON_WIDTH,
-                        Constants.PLAY_PAUSE_BUTTON_HEIGHT));
+                playPauseButton.setIcon(playIcon);
                 timeAnimationController.pause();
             }
         });
