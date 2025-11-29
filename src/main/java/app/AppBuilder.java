@@ -111,18 +111,7 @@ public class AppBuilder {
     private PanAndZoomPresenter panAndZoomPresenter;
     private BookmarksView bookmarksView;
     private SearchBarView searchBarView;
-    private AddBookmarkInputBoundary addBookmarkUseCase;
-    private RemoveBookmarkInputBoundary removeBookmarkUseCase;
-    private ListBookmarksInputBoundary listBookmarksUseCase;
-    private AddBookmarkOutputBoundary addBookmarkPresenter;
-    private RemoveBookmarkOutputBoundary removeBookmarkPresenter;
-    private ListBookmarksPresenter listBookmarksPresenter;
-    private VisitBookmarkInputBoundary visitBookmarkUseCase;
-    private VisitBookmarkOutputBoundary visitBookmarkPresenter;
-    private VisitBookmarkController visitBookmarkController;
 
-    private LoadMapSettingsInputBoundary loadMapSettingsUseCase;
-    private SaveMapSettingsInputBoundary saveMapSettingsUseCase;
     private LoadMapSettingsController loadMapSettingsController;
     private SaveMapSettingsController saveMapSettingsController;
 
@@ -156,13 +145,13 @@ public AppBuilder addSearchBarView() {
         BookmarksViewModel bookmarksViewModel;
 
         bookmarksViewModel = new BookmarksViewModel();
-        removeBookmarkPresenter = new RemoveBookmarkPresenter(bookmarksViewModel);
-        listBookmarksPresenter = new ListBookmarksPresenter(bookmarksViewModel);
-        addBookmarkPresenter = new AddBookmarkPresenter(bookmarksViewModel);
+        RemoveBookmarkOutputBoundary removeBookmarkPresenter = new RemoveBookmarkPresenter(bookmarksViewModel);
+        ListBookmarksPresenter listBookmarksPresenter = new ListBookmarksPresenter(bookmarksViewModel);
+        AddBookmarkOutputBoundary addBookmarkPresenter = new AddBookmarkPresenter(bookmarksViewModel);
 
-        addBookmarkUseCase = new AddBookmarkUseCase(bookmarkStorage, addBookmarkPresenter);
-        removeBookmarkUseCase = new RemoveBookmarkUseCase(bookmarkStorage, removeBookmarkPresenter);
-        listBookmarksUseCase = new ListBookmarksUseCase(bookmarkStorage, listBookmarksPresenter);
+        AddBookmarkInputBoundary addBookmarkUseCase = new AddBookmarkUseCase(bookmarkStorage, addBookmarkPresenter);
+        RemoveBookmarkInputBoundary removeBookmarkUseCase = new RemoveBookmarkUseCase(bookmarkStorage, removeBookmarkPresenter);
+        ListBookmarksInputBoundary listBookmarksUseCase = new ListBookmarksUseCase(bookmarkStorage, listBookmarksPresenter);
 
         AddBookmarkController addBookmarkController =
                 new AddBookmarkController(addBookmarkUseCase);
@@ -171,14 +160,14 @@ public AppBuilder addSearchBarView() {
         ListBookmarksController listBookmarksController =
                 new ListBookmarksController(listBookmarksUseCase);
 
-        visitBookmarkPresenter = new VisitBookmarkPresenter(bookmarksViewModel);
-        visitBookmarkUseCase = new VisitBookmarkUseCase(
+        VisitBookmarkOutputBoundary visitBookmarkPresenter = new VisitBookmarkPresenter(bookmarksViewModel);
+        VisitBookmarkInputBoundary visitBookmarkUseCase = new VisitBookmarkUseCase(
                 viewport,
                 updateOverlayUseCase,
                 panAndZoomPresenter,
                 visitBookmarkPresenter
         );
-        visitBookmarkController = new VisitBookmarkController(visitBookmarkUseCase);
+        VisitBookmarkController visitBookmarkController = new VisitBookmarkController(visitBookmarkUseCase);
 
         bookmarksView = new BookmarksView(
                 bookmarksViewModel,
@@ -368,8 +357,8 @@ public AppBuilder addSearchBarView() {
                 changeLayerUseCase
         );
         
-        loadMapSettingsUseCase = new LoadMapSettingsUseCase(mapSettingsStorage, autoLoadPresenter);
-        saveMapSettingsUseCase = new SaveMapSettingsUseCase(mapSettingsStorage, 
+        LoadMapSettingsInputBoundary loadMapSettingsUseCase = new LoadMapSettingsUseCase(mapSettingsStorage, autoLoadPresenter);
+        SaveMapSettingsInputBoundary saveMapSettingsUseCase = new SaveMapSettingsUseCase(mapSettingsStorage, 
                 new interfaceadapter.mapsettings.savemapsettings.SaveMapSettingsPresenter(
                         new interfaceadapter.mapsettings.MapSettingsViewModel()));
         
