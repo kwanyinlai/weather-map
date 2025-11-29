@@ -1,6 +1,5 @@
 package app;
 
-
 import javax.swing.*;
 import java.awt.*;
 import java.time.Instant;
@@ -94,7 +93,6 @@ public class AppBuilder {
     private WeatherLayersViewModel weatherLayersViewModel;
     private ChangeWeatherLayersView changeWeatherView;
     private ChangeLayerUseCase changeLayerUseCase;
-    private MapOverlayStructureView mapOverlayStructure;
 
     private final JMapViewer mapViewer = new JMapViewer();
 
@@ -111,18 +109,7 @@ public class AppBuilder {
     private PanAndZoomPresenter panAndZoomPresenter;
     private BookmarksView bookmarksView;
     private SearchBarView searchBarView;
-    private AddBookmarkInputBoundary addBookmarkUseCase;
-    private RemoveBookmarkInputBoundary removeBookmarkUseCase;
     private ListBookmarksInputBoundary listBookmarksUseCase;
-    private AddBookmarkOutputBoundary addBookmarkPresenter;
-    private RemoveBookmarkOutputBoundary removeBookmarkPresenter;
-    private ListBookmarksPresenter listBookmarksPresenter;
-    private VisitBookmarkInputBoundary visitBookmarkUseCase;
-    private VisitBookmarkOutputBoundary visitBookmarkPresenter;
-    private VisitBookmarkController visitBookmarkController;
-
-    private LoadMapSettingsInputBoundary loadMapSettingsUseCase;
-    private SaveMapSettingsInputBoundary saveMapSettingsUseCase;
     private LoadMapSettingsController loadMapSettingsController;
     private SaveMapSettingsController saveMapSettingsController;
 
@@ -153,6 +140,14 @@ public AppBuilder addSearchBarView() {
 }
 
     public AppBuilder addBookmarkView(){
+        VisitBookmarkController visitBookmarkController;
+        VisitBookmarkOutputBoundary visitBookmarkPresenter;
+        VisitBookmarkInputBoundary visitBookmarkUseCase;
+        ListBookmarksPresenter listBookmarksPresenter;
+        RemoveBookmarkOutputBoundary removeBookmarkPresenter;
+        AddBookmarkOutputBoundary addBookmarkPresenter;
+        AddBookmarkInputBoundary addBookmarkUseCase;
+        RemoveBookmarkInputBoundary removeBookmarkUseCase;
         BookmarksViewModel bookmarksViewModel;
 
         bookmarksViewModel = new BookmarksViewModel();
@@ -252,7 +247,7 @@ public AppBuilder addSearchBarView() {
      * @return this
      */
     public AppBuilder addMapOverlayView(){
-        mapOverlayStructure = new MapOverlayStructureView();
+        MapOverlayStructureView mapOverlayStructure = new MapOverlayStructureView();
         mapOverlayStructure.addPropertyChangeListener(weatherOverlayView);
         mapOverlayStructure.addPropertyChangeListener(panAndZoomView);
         mapOverlayStructure.addComponent(panAndZoomView, 1);
@@ -325,22 +320,19 @@ public AppBuilder addSearchBarView() {
         return this;
     }
     public AppBuilder addPanZoomView() {
-        PanAndZoomController panAndZoomController;
         PanAndZoomInputBoundary panAndZoomUseCase;
         MapViewModel mapViewModel;
         mapViewModel = new MapViewModel();
-        panAndZoomView = new PanAndZoomView(mapViewModel, mapViewer);
+        panAndZoomView = new PanAndZoomView(mapViewer);
         panAndZoomPresenter = new PanAndZoomPresenter(
-                viewport,
                 panAndZoomView.getMapViewer(),
                 mapViewModel
         );
         panAndZoomUseCase = new PanAndZoomUseCase(viewport,panAndZoomPresenter);
-        panAndZoomController = new PanAndZoomController(
+        new PanAndZoomController(
                panAndZoomUseCase,
                 panAndZoomView.getMapViewer()
         );
-        panAndZoomView.setController(panAndZoomController);
         viewport.getSupport().addPropertyChangeListener(evt -> {
             // Refresh weather overlay when the viewport changes.
             if (updateOverlayUseCase != null) {
@@ -362,6 +354,8 @@ public AppBuilder addSearchBarView() {
      * Sets up map settings persistence (save/load).
      */
     public AppBuilder addMapSettingsPersistence() {
+        SaveMapSettingsInputBoundary saveMapSettingsUseCase;
+        LoadMapSettingsInputBoundary loadMapSettingsUseCase;
         // Create presenter that applies settings directly to viewport and overlay manager
         AutoLoadMapSettingsPresenter autoLoadPresenter = new AutoLoadMapSettingsPresenter(
                 viewport,
