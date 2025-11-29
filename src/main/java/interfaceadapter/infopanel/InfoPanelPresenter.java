@@ -1,69 +1,77 @@
 package interfaceadapter.infopanel;
 
-import usecase.infopanel.*;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Collections.*;
+
+import usecase.infopanel.InfoPanelError;
+import usecase.infopanel.InfoPanelOutputBoundary;
+import usecase.infopanel.InfoPanelOutputData;
 
 public class InfoPanelPresenter implements InfoPanelOutputBoundary {
     private final InfoPanelViewModel vm;
     private final List<ChangeListener> listeners = new ArrayList<>();
 
-    public InfoPanelPresenter(InfoPanelViewModel vm) {
-        this.vm = vm;
+    public InfoPanelPresenter(InfoPanelViewModel vmodel) {
+        this.vm = vmodel;
     }
 
-    public void addChangeListener(ChangeListener l) {
-        if (l != null){
-            listeners.add(l);
+    /**
+     * Adds a non-null change listener to this model.
+     *
+     * @param listen the listener to add; ignored if {@code null}
+     */
+    public void addChangeListener(ChangeListener listen) {
+        if (listen != null) {
+            listeners.add(listen);
         }
     }
+
     private void notifyChanged() {
-        ChangeEvent ev = new ChangeEvent(this);
-        for (ChangeListener l : listeners){
+        final ChangeEvent ev = new ChangeEvent(this);
+        for (ChangeListener l : listeners) {
             l.stateChanged(ev);
         }
     }
 
     @Override
     public void presentLoading() {
-        vm.loading = true;
-        vm.error = null;
-        vm.visible = true;
+        vm.setLoading(true);
+        vm.setError(null);
+        vm.setVisible(true);
         notifyChanged();
     }
 
     @Override
     public void present(InfoPanelOutputData data) {
-        vm.loading = false;
-        vm.error = null;
-        vm.visible = true;
+        vm.setLoading(false);
+        vm.setError(null);
+        vm.setVisible(true);
 
-        vm.placeName   = data.placeName;
-        vm.tempC       = data.tempC;
-        vm.condition   = data.condition;
-        vm.hourlyTemps = data.hourlyTemps;
-        vm.fetchedAt   = data.fetchedAt;
+        vm.setPlaceName(data.getPlaceName());
+        vm.setTempC(data.getTempC());
+        vm.setCondition(data.getCondition());
+        vm.setHourlyTemps(data.getHourlyTemps());
+        vm.setFetchedAt(data.getFetchedAt());
 
         notifyChanged();
     }
 
     @Override public void presentError(InfoPanelError error) {
-        vm.loading = false;
-        vm.error   = error;
+        vm.setLoading(false);
+        vm.setError(error);
 
-        vm.visible = !(error == InfoPanelError.HIDDEN_BY_ZOOM
-                || error == InfoPanelError.USER_CLOSED);
+        vm.setVisible(!(error == InfoPanelError.HIDDEN_BY_ZOOM
+                || error == InfoPanelError.USER_CLOSED));
 
-        if (!vm.visible) {
-            vm.placeName = null;
-            vm.tempC     = null;
-            vm.condition = null;
-            vm.hourlyTemps = java.util.Collections.emptyList();
-            vm.fetchedAt   = null;
+        if (!vm.getVisible()) {
+            vm.setPlaceName(null);
+            vm.setTempC(null);
+            vm.setCondition(null);
+            vm.setHourlyTemps(java.util.Collections.emptyList());
+            vm.setFetchedAt(null);
         }
 
         notifyChanged();

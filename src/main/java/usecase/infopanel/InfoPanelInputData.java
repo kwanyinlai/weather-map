@@ -10,7 +10,16 @@ public class InfoPanelInputData {
         this.centerLon = centerLon;
         this.zoom = zoom;
     }
-    public double getCenterLat() { return centerLat; }
-    public double getCenterLon() { return centerLon; }
-    public int getZoom() { return zoom; }
+
+    public double getCenterLat() {
+        return centerLat;
+    }
+
+    public double getCenterLon() {
+        return centerLon;
+    }
+
+    public int getZoom() {
+        return zoom;
+    }
 }
