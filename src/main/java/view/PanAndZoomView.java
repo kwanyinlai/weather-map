@@ -1,6 +1,4 @@
 package view;
-import interfaceadapter.mapnavigation.MapViewModel;
-import interfaceadapter.mapnavigation.PanAndZoomController;
 import org.openstreetmap.gui.jmapviewer.JMapViewer;
 
 import javax.swing.*;
@@ -12,10 +10,8 @@ import java.util.Objects;
 // PanAndZoomView.java
 public class PanAndZoomView extends JPanel implements PropertyChangeListener {
     private final JMapViewer mapViewer;
-    private final transient MapViewModel viewModel;
 
-    public PanAndZoomView(MapViewModel mapViewModel, JMapViewer mapViewer) {
-        this.viewModel = mapViewModel;
+    public PanAndZoomView(JMapViewer mapViewer) {
         this.mapViewer = mapViewer;
         JLabel errorLabel = new JLabel(" ");
         mapViewer.setZoomContolsVisible(true);
