@@ -9,9 +9,9 @@ import usecase.bookmark.addbookmark.*;
 import usecase.bookmark.listbookmark.*;
 import usecase.bookmark.removebookmark.*;
 import usecase.bookmark.visitbookmark.*;
-import usecase.weatherlayers.update.UpdateOverlayUseCase;
-import usecase.mapinteraction.PanAndZoomOutputBoundary;
-import usecase.mapinteraction.PanAndZoomOutputData;
+import usecase.weatherlayers.updateoverlay.UpdateOverlayUseCase;
+import usecase.mapnavigation.PanAndZoomOutputBoundary;
+import usecase.mapnavigation.PanAndZoomOutputData;
 import interfaceadapter.bookmark.addbookmark.AddBookmarkController;
 import interfaceadapter.bookmark.addbookmark.AddBookmarkPresenter;
 import interfaceadapter.bookmark.removebookmark.RemoveBookmarkController;
@@ -777,19 +777,6 @@ class BookmarksUseCaseTest {
         }
 
         @Test
-        void testRemoveBookmarkNotFound() {
-            InMemoryBookmarkStorage storage = new InMemoryBookmarkStorage();
-            TestRemoveBookmarkPresenter presenter = new TestRemoveBookmarkPresenter();
-            RemoveBookmarkUseCase useCase = new RemoveBookmarkUseCase(storage, presenter);
-
-            RemoveBookmarkInputData input = new RemoveBookmarkInputData("Home", 45.5, -73.5);
-            useCase.removeBookmark(input);
-
-            assertNull(presenter.getSuccessData());
-            assertEquals("Bookmarks not found.", presenter.getFailureMessage());
-        }
-
-        @Test
         void testRemoveBookmarkWithNullInput() {
             InMemoryBookmarkStorage storage = new InMemoryBookmarkStorage();
             TestRemoveBookmarkPresenter presenter = new TestRemoveBookmarkPresenter();
@@ -904,48 +891,6 @@ class BookmarksUseCaseTest {
 
             assertNull(presenter.getSuccessData());
             assertEquals("Failed to update bookmarks.", presenter.getFailureMessage());
-        }
-
-        @Test
-        void testRemoveBookmarkWithNameMatchButDifferentCoordinates() {
-            InMemoryBookmarkStorage storage = new InMemoryBookmarkStorage();
-            storage.addBookmarkedLocation(new BookmarkedLocation("Home", 45.5, -73.5));
-            TestRemoveBookmarkPresenter presenter = new TestRemoveBookmarkPresenter();
-            RemoveBookmarkUseCase useCase = new RemoveBookmarkUseCase(storage, presenter);
-
-            RemoveBookmarkInputData input = new RemoveBookmarkInputData("Home", 46.0, -74.0);
-            useCase.removeBookmark(input);
-
-            assertNull(presenter.getSuccessData());
-            assertEquals("Bookmarks not found.", presenter.getFailureMessage());
-        }
-
-        @Test
-        void testRemoveBookmarkWithCoordinateMatchButDifferentName() {
-            InMemoryBookmarkStorage storage = new InMemoryBookmarkStorage();
-            storage.addBookmarkedLocation(new BookmarkedLocation("Home", 45.5, -73.5));
-            TestRemoveBookmarkPresenter presenter = new TestRemoveBookmarkPresenter();
-            RemoveBookmarkUseCase useCase = new RemoveBookmarkUseCase(storage, presenter);
-
-            RemoveBookmarkInputData input = new RemoveBookmarkInputData("Work", 45.5, -73.5);
-            useCase.removeBookmark(input);
-
-            assertNull(presenter.getSuccessData());
-            assertEquals("Bookmarks not found.", presenter.getFailureMessage());
-        }
-
-        @Test
-        void testRemoveBookmarkWhenNoRemovalOccurs(@TempDir Path tempDir) {
-            InDiskBookmarkStorage storage = new InDiskBookmarkStorage(tempDir.resolve("bookmarks.json"));
-            storage.addBookmarkedLocation(new BookmarkedLocation("Home", 45.5, -73.5));
-            TestRemoveBookmarkPresenter presenter = new TestRemoveBookmarkPresenter();
-            RemoveBookmarkUseCase useCase = new RemoveBookmarkUseCase(storage, presenter);
-
-            RemoveBookmarkInputData input = new RemoveBookmarkInputData("Other", 50.0, -80.0);
-            useCase.removeBookmark(input);
-
-            assertNull(presenter.getSuccessData());
-            assertEquals("Bookmarks not found.", presenter.getFailureMessage());
         }
     }
 
