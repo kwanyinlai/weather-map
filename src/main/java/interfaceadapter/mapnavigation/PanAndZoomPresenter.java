@@ -12,8 +12,7 @@ public class PanAndZoomPresenter implements PanAndZoomOutputBoundary {
     private final JMapViewer mapViewer;
     private final MapViewModel mapViewModel;
 
-    public PanAndZoomPresenter(Viewport viewport,
-                               JMapViewer mapViewer,
+    public PanAndZoomPresenter(JMapViewer mapViewer,
                                MapViewModel mapViewModel) {
         this.mapViewer = mapViewer;
         this.mapViewModel = mapViewModel;

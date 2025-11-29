@@ -14,7 +14,8 @@ import java.nio.file.*;
  * persists the last map center and zoom level as a JSON object in a file.
  */
 
-public final class InDiskMapOverlaySettingsStorage implements SavedMapOverlaySettings {
+public final class InDiskMapOverlaySettingsStorage
+        implements SavedMapOverlaySettings {
 
     private static final String KEY_CENTER_LATITUDE = "centerLatitude";
     private static final String KEY_CENTER_LONGITUDE = "centerLongitude";

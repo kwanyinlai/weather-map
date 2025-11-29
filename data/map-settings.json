@@ -3,4 +3,8 @@
   "weatherType": "TMP2M",
   "centerLatitude": 13.752724664396988,
   "centerLongitude": 63.45703125
+  "zoomLevel": 9,
+  "weatherType": "TMP2M",
+  "centerLatitude": 48.87013489622034,
+  "centerLongitude": 14.9359130859375
 }

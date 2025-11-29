@@ -19,7 +19,7 @@ import java.util.*;
  *  store image data for {@link WeatherTile} efficiently using a cache. Cache
  *  grows up to a fixed size, and stores nodes by Least Recently Used.
  */
-public class CachedTileRepository implements TileRepository {
+public final class CachedTileRepository implements TileRepository {
     private final WeatherTileApiFetcher weatherTileApiFetcher = new OkHttpsWeatherTileApiFetcher();
     private Map<WeatherTile, BufferedImage> tileCache;
     private final TileJobSystem tileJobSystem;
@@ -30,9 +30,9 @@ public class CachedTileRepository implements TileRepository {
     /**
      * @param tileCacheSize The maximum cache size for the cache
      */
-    private CachedTileRepository(int tileCacheSize){
+    private CachedTileRepository(int tileCacheSize) {
         tileCache = Collections.synchronizedMap(
-                new LinkedHashMap<WeatherTile, BufferedImage>(){
+                new LinkedHashMap<WeatherTile, BufferedImage>() {
                     @Override
                     protected boolean removeEldestEntry(Map.Entry<WeatherTile, BufferedImage> eldest) {
                         return size() > tileCacheSize;
@@ -45,16 +45,16 @@ public class CachedTileRepository implements TileRepository {
     /**
      * Get and return the singleton instance of the CachedTileRepository, and create one
      * if one hasn't been instantiated yet.
-     * @return
+     * @return the singleton instance of CachedTileRepository
      */
-    public static CachedTileRepository getInstance(){
-        if (instance == null){
+    public static CachedTileRepository getInstance() {
+        if (instance == null) {
             instance = new CachedTileRepository(Constants.CACHE_SIZE);
         }
         return instance;
     }
 
-    /** Return the tile image data associated with the given parms
+    /** Return the tile image data associated with the given parms.
      *
      * @param x The x-coordinate of the tile
      * @param y The y-coordinate of the tile
@@ -81,7 +81,7 @@ public class CachedTileRepository implements TileRepository {
         }
     }
 
-    /** Return the tile image data associated with the Tile object
+    /** Return the tile image data associated with the Tile object.
      *
      * @param tile The tile to which the image data is to be retrieved for
      * @return The image data of the tile associated with the params or <code> null </code>
@@ -97,7 +97,7 @@ public class CachedTileRepository implements TileRepository {
     }
 
     private BufferedImage getTileImageDataHelper(WeatherTile tile) throws TileNotFoundException {
-        if (tileCache.containsKey(tile)){
+        if (tileCache.containsKey(tile)) {
             return tileCache.get(tile);
         }
         else {
@@ -122,23 +122,24 @@ public class CachedTileRepository implements TileRepository {
      * @param viewportState     the latitude longitude of the centre of the viewport at the time of requesting
      * @param currentTime       the current program time at the time of requesting
      */
-    public void requestTile(WeatherTile tile, Vector topLeft, Vector botRight, Location viewportState, Instant currentTime){
-        if (tileCache.containsKey(tile)){
+    public void requestTile(WeatherTile tile, Vector topLeft, Vector botRight, Location viewportState,
+                            Instant currentTime) {
+        if (tileCache.containsKey(tile)) {
             BufferedImage image = tileCache.get(tile);
-            for (TileCompletedListener listener : listeners){
+            for (TileCompletedListener listener : listeners) {
                 listener.onTileCompleted(new IncompleteTile(topLeft, botRight, viewportState, tile, currentTime), image);
             }
         }
-        else{
+        else {
             TileJob tileJob = new TileJob(tile, topLeft, botRight, viewportState, currentTime);
             tileJobSystem.submitJob(tileJob);
             tileJob.getFuture().component2().thenAccept(future -> {
-                for (TileCompletedListener listener : listeners){
+                for (TileCompletedListener listener : listeners) {
                     tileCache.put(tile, future);
                     listener.onTileCompleted(tileJob.getFuture().component1(), future);
                 }
             }).exceptionally(e -> {
-                for (TileCompletedListener listener : listeners){
+                for (TileCompletedListener listener : listeners) {
                     listener.onTileFailed(tileJob.getFuture().component1(), (TileNotFoundException) e);
                 }
                 return null;
@@ -156,12 +157,8 @@ public class CachedTileRepository implements TileRepository {
     }
 
     private void addTileImagePairToCache(WeatherTile tile, BufferedImage image) {
-        if (tileCache.containsKey(tile)){
-            return;
-        }
-        else{
-            tileCache.put(tile, image);
-        }
+        tileCache.put(tile, image);
+
     }
 
     public void addTileToCache(WeatherTile tile) throws TileNotFoundException {
@@ -180,9 +177,9 @@ public class CachedTileRepository implements TileRepository {
     /** Remove all <code><WeatherTile, BufferedImage></code> key-pairs
      * that have a timestamp after the current time.
      */
-    public void forceClearOutdatedCache(){
+    public void forceClearOutdatedCache() {
         tileCache.entrySet().removeIf(
-                tileImagePair->
+                tileImagePair ->
                         tileImagePair.
                                 getKey().
                                 getTimestamp().
@@ -196,9 +193,9 @@ public class CachedTileRepository implements TileRepository {
      *
      * @param time all tiles that have timestamp before this time will be removed
      */
-    public void forceClearOutdatedCache(java.time.Instant time){
+    public void forceClearOutdatedCache(java.time.Instant time) {
         tileCache.entrySet().removeIf(
-                tileImagePair->
+                tileImagePair ->
                         tileImagePair.
                                 getKey().
                                 getTimestamp().
@@ -206,11 +203,11 @@ public class CachedTileRepository implements TileRepository {
         );
     }
 
-    public void clearCache(){
+    public void clearCache() {
         tileCache.clear();
     }
 
-    public void addListener(TileCompletedListener listener){
+    public void addListener(TileCompletedListener listener) {
         listeners.add(listener);
     }
 

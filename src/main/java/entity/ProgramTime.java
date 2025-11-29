@@ -5,9 +5,9 @@ package entity;
  */
 public class ProgramTime {
 
-    /** the time which is represented */
+    /** the time which is represented. */
     private java.time.Instant currentTime;
-    /** the minimum interval in which program time can be incremented */
+    /** the minimum interval in which program time can be incremented. */
     public static final java.time.Duration TIME_INCREMENT = java.time.Duration.ofHours(1);
     private static final java.time.Duration MAX_FORECAST = java.time.Duration.ofDays(3);
 
@@ -15,7 +15,7 @@ public class ProgramTime {
         this.currentTime = currentTime;
     }
 
-    /** Increment time by the minimum interval
+    /** Increment time by the minimum interval.
      *
      */
     public void incrementTime(){
@@ -25,7 +25,7 @@ public class ProgramTime {
         }
     }
 
-    /** Increment time by amount of <code>duration</code>
+    /** Increment time by amount of <code>duration</code>.
      *
      * @param duration the duration to which program time should be incremented
      */

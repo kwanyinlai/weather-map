@@ -1,7 +1,6 @@
 package view;
 
-import app.uielements.PauseIcon;
-import app.uielements.PlayIcon;
+import app.uielements.PlayPausePauseIcon;
 import constants.Constants;
 import interfaceadapter.maptime.programtime.ProgramTimeController;
 import interfaceadapter.maptime.programtime.ProgramTimeState;
@@ -16,7 +15,7 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 
 /**
- * The View for the Program Time slider
+ * The View for the Program Time slider.
  */
 public class ProgramTimeView extends JPanel implements PropertyChangeListener {
 
@@ -30,7 +29,7 @@ public class ProgramTimeView extends JPanel implements PropertyChangeListener {
         programTimeViewModel.addPropertyChangeListener(this);
         this.setLayout(new BoxLayout(this, BoxLayout.LINE_AXIS));
 
-        timeSlider = new JSlider(SwingConstants.HORIZONTAL, 0, 100, 0);
+        timeSlider = new JSlider(SwingConstants.HORIZONTAL, 0, Constants.PERCENT_MULTIPLIER, 0);
         timeSlider.setUI(new CustomSliderUI(timeSlider));
         timeSlider.setPaintTicks(false);
         timeSlider.addChangeListener(
@@ -45,19 +44,23 @@ public class ProgramTimeView extends JPanel implements PropertyChangeListener {
         timeSlider.setPaintTicks(false);
         timeSlider.setPreferredSize(new Dimension(Constants.SLIDER_WIDTH, Constants.SLIDER_HEIGHT));
 
-        playPauseButton = new JButton(new PlayIcon(Constants.PLAY_PAUSE_BUTTON_HEIGHT,
-                Constants.PLAY_PAUSE_BUTTON_WIDTH, Color.ORANGE));
-
+        final PlayPausePauseIcon playIcon = new PlayPausePauseIcon(
+                Constants.PLAY_PAUSE_BUTTON_WIDTH,
+                Constants.PLAY_PAUSE_BUTTON_HEIGHT,
+                Constants.PLAY_BUTTON_FILE_PATH);
+        playPauseButton = new JButton(playIcon);
+        final PlayPausePauseIcon pauseIcon = new PlayPausePauseIcon(
+                Constants.PLAY_PAUSE_BUTTON_WIDTH,
+                Constants.PLAY_PAUSE_BUTTON_HEIGHT,
+                Constants.PAUSE_BUTTON_FILE_PATH);
         playPauseButton.addActionListener((ActionEvent e1) -> {
             Icon current = playPauseButton.getIcon();
-            if (current instanceof PlayIcon ) {
-                playPauseButton.setIcon(new PauseIcon(Constants.PLAY_PAUSE_BUTTON_WIDTH,
-                        Constants.PLAY_PAUSE_BUTTON_HEIGHT, Color.ORANGE));
+            if (current.equals(playIcon)) {
+                playPauseButton.setIcon(pauseIcon);
                 timeAnimationController.play();
             }
             else{
-                playPauseButton.setIcon(new PlayIcon(Constants.PLAY_PAUSE_BUTTON_HEIGHT,
-                        Constants.PLAY_PAUSE_BUTTON_WIDTH, Color.ORANGE));
+                playPauseButton.setIcon(playIcon);
                 timeAnimationController.pause();
             }
         });
