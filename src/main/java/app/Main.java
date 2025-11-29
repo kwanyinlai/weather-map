@@ -8,6 +8,7 @@ public final class Main {
         JFrame application = appBuilder
                 .addUpdateOverlayUseCase()
                 .createOverlayView()
+                .addInfoPanelView()
                 .addPanZoomView()
                 .addMapOverlayView()
                 .addLegendView()
@@ -19,7 +20,6 @@ public final class Main {
                 .addBookmarkView()
                 .addSearchBarView()
                 .addSettingsAndBookmarkSidePanel()
-//                .addInfoPanelView()
                 .build();
         application.pack();
         application.setLocationRelativeTo(null);

@@ -1,53 +1,79 @@
 package interfaceadapter.infopanel;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
+
 import usecase.infopanel.InfoPanelError;
 import usecase.infopanel.InfoPanelOutputBoundary;
 import usecase.infopanel.InfoPanelOutputData;
 
-import javax.swing.SwingUtilities;
-import view.InfoPanelView;
-
 public class InfoPanelPresenter implements InfoPanelOutputBoundary {
     private final InfoPanelViewModel vm;
-    private final InfoPanelView view;
+    private final List<ChangeListener> listeners = new ArrayList<>();
 
-    public InfoPanelPresenter(InfoPanelViewModel vm, InfoPanelView view) {
-        this.vm = vm;
-        this.view = view;
+    public InfoPanelPresenter(InfoPanelViewModel vmodel) {
+        this.vm = vmodel;
     }
 
-    @Override public void presentLoading() {
-        vm.loading = true;
-        vm.error = null;
-        repaintOnEDT();
+    /**
+     * Adds a non-null change listener to this model.
+     *
+     * @param listen the listener to add; ignored if {@code null}
+     */
+    public void addChangeListener(ChangeListener listen) {
+        if (listen != null) {
+            listeners.add(listen);
+        }
     }
 
-    @Override public void present(InfoPanelOutputData data) {
-        vm.loading = false;
-        vm.error = null;
-        vm.placeName   = data.placeName;
-        vm.tempC       = data.tempC;
-        vm.condition   = data.condition;
-        vm.hourlyTemps = data.hourlyTemps;
-        vm.fetchedAt   = data.fetchedAt;
-        repaintOnEDT();
+    private void notifyChanged() {
+        final ChangeEvent ev = new ChangeEvent(this);
+        for (ChangeListener l : listeners) {
+            l.stateChanged(ev);
+        }
+    }
+
+    @Override
+    public void presentLoading() {
+        vm.setLoading(true);
+        vm.setError(null);
+        vm.setVisible(true);
+        notifyChanged();
+    }
+
+    @Override
+    public void present(InfoPanelOutputData data) {
+        vm.setLoading(false);
+        vm.setError(null);
+        vm.setVisible(true);
+
+        vm.setPlaceName(data.getPlaceName());
+        vm.setTempC(data.getTempC());
+        vm.setCondition(data.getCondition());
+        vm.setHourlyTemps(data.getHourlyTemps());
+        vm.setFetchedAt(data.getFetchedAt());
+
+        notifyChanged();
     }
 
     @Override public void presentError(InfoPanelError error) {
-        vm.loading = false;
-        vm.error = error;
-        vm.placeName = null;
-        vm.hourlyTemps = java.util.Collections.emptyList(); vm.loading = true;
+        vm.setLoading(false);
+        vm.setError(error);
 
-        repaintOnEDT();
-    }
+        vm.setVisible(!(error == InfoPanelError.HIDDEN_BY_ZOOM
+                || error == InfoPanelError.USER_CLOSED));
 
-    private void repaintOnEDT() {
-        if (view == null) return;
-        if (SwingUtilities.isEventDispatchThread()) {
-            view.repaint();
-        } else {
-            SwingUtilities.invokeLater(view::repaint);
+        if (!vm.getVisible()) {
+            vm.setPlaceName(null);
+            vm.setTempC(null);
+            vm.setCondition(null);
+            vm.setHourlyTemps(java.util.Collections.emptyList());
+            vm.setFetchedAt(null);
         }
+
+        notifyChanged();
     }
 }

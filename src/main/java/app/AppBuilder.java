@@ -14,6 +14,10 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.WindowConstants;
 
+import dataaccessinterface.OkHttpsPointWeatherGatewayXml;
+import interfaceadapter.infopanel.InfoPanelController;
+import interfaceadapter.infopanel.InfoPanelPresenter;
+import interfaceadapter.infopanel.InfoPanelViewModel;
 import org.jetbrains.annotations.NotNull;
 import org.openstreetmap.gui.jmapviewer.JMapViewer;
 
@@ -76,6 +80,8 @@ import usecase.bookmark.removebookmark.RemoveBookmarkUseCase;
 import usecase.bookmark.visitbookmark.VisitBookmarkInputBoundary;
 import usecase.bookmark.visitbookmark.VisitBookmarkOutputBoundary;
 import usecase.bookmark.visitbookmark.VisitBookmarkUseCase;
+import usecase.infopanel.InfoPanelInteractor;
+import usecase.infopanel.PointWeatherFetcher;
 import usecase.mapnavigation.PanAndZoomInputBoundary;
 import usecase.mapnavigation.PanAndZoomUseCase;
 import usecase.mapsettings.loadmapsettings.LoadMapSettingsInputBoundary;
@@ -93,15 +99,7 @@ import usecase.weatherlayers.layers.UpdateLegendOutputBoundary;
 import usecase.weatherlayers.updateoverlay.UpdateOverlayOutputBoundary;
 import usecase.weatherlayers.updateoverlay.UpdateOverlaySizeUseCase;
 import usecase.weatherlayers.updateoverlay.UpdateOverlayUseCase;
-import view.BookmarkAndMapSettingsStructureView;
-import view.BookmarksView;
-import view.ChangeWeatherLayersView;
-import view.DisplayOverlayView;
-import view.LegendsView;
-import view.MapOverlayStructureView;
-import view.PanAndZoomView;
-import view.ProgramTimeView;
-import view.SearchBarView;
+import view.*;
 
 public class AppBuilder {
     private final JPanel borderPanel = new JPanel();
@@ -136,6 +134,8 @@ public class AppBuilder {
     private PanAndZoomPresenter panAndZoomPresenter;
     private BookmarksView bookmarksView;
     private SearchBarView searchBarView;
+    private view.InfoPanelView infoPanelView;
+
     private LoadMapSettingsController loadMapSettingsController;
     private SaveMapSettingsController saveMapSettingsController;
 
@@ -144,14 +144,25 @@ public class AppBuilder {
         borderPanel.setLayout(borderLayout);
         }
 
-//    public AppBuilder addInfoPanelView(){
-//        infoPanelViewModel = new InfoPanelViewModel();
-//        infoPanelController = new InfoPanelController();
-//        infoPanelUseCase = new InfoPanelInteractor();
-//        infoPanelView = new InfoPanelView();
-//        borderPanel.add(bookmarksView, BorderLayout.WEST);
-//        return this;
-//    }
+    public AppBuilder addInfoPanelView() {
+        interfaceadapter.infopanel.InfoPanelController infoPanelController;
+        interfaceadapter.infopanel.InfoPanelViewModel infoPanelViewModel;
+        infoPanelViewModel = new InfoPanelViewModel();
+        InfoPanelPresenter presenter = new InfoPanelPresenter(infoPanelViewModel);
+
+        PointWeatherFetcher fetcher = new OkHttpsPointWeatherGatewayXml();
+        InfoPanelInteractor useCase = new InfoPanelInteractor(fetcher, presenter);
+
+        infoPanelController = new InfoPanelController(useCase, presenter);
+
+        infoPanelView = new InfoPanelView(infoPanelViewModel);
+        infoPanelView.setController(infoPanelController);
+        infoPanelView.bind(presenter);
+
+        return this;
+    }
+
+
     public AppBuilder addSearchBarView() {
         final SearchBarViewModel viewModel = new SearchBarViewModel();
         final GeocodingAPI api = new OpenWeatherGeocodingAPI();
@@ -288,6 +299,9 @@ public class AppBuilder {
         mapOverlayStructure.addPropertyChangeListener(panAndZoomView);
         mapOverlayStructure.addComponent(panAndZoomView, 1);
         mapOverlayStructure.addComponent(weatherOverlayView, 2);
+        if (infoPanelView != null) {
+            mapOverlayStructure.addComponent(infoPanelView, 99);
+        }
         borderPanel.add(mapOverlayStructure, BorderLayout.CENTER);
         return this;
     }
@@ -394,9 +408,14 @@ public class AppBuilder {
             if (updateOverlayUseCase != null) {
                 updateOverlayUseCase.update();
             }
-            // Keep the bookmark Lat/Lon fields in sync with the
-            // viewport centre.
+            if (infoPanelView != null) {
+                final var c = viewport.getCentre();
+                final int z = viewport.getZoomLevel();
+                infoPanelView.onViewportChanged(c.getLatitude(), c.getLongitude(), z);
+            }
+            // Keep the bookmark Lat/Lon fields in sync with the viewport centre.
             syncLatLonFieldsToViewport();
+
             // Save settings when viewport changes
             if ("viewportUpdated".equals(evt.getPropertyName())
                     && saveMapSettingsController != null) {
