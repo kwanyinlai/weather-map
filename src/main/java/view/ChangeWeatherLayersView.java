@@ -70,6 +70,9 @@ public class ChangeWeatherLayersView extends JPanel{
         this.add(slider);
     }
 
+    /**
+     * Create the dropdown menu for the basemap options
+     */
     @NotNull
     private static JComboBox<TileSource> getTileSourceJComboBox(JMapViewer mapViewer) {
         JComboBox<TileSource> basemapDropdown = new JComboBox<>(new TileSource[]{

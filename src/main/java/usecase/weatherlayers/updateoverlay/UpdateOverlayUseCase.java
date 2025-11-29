@@ -41,6 +41,9 @@ public final class UpdateOverlayUseCase implements UpdateOverlayInputBoundary, T
         }
     }
 
+    /**
+     * Update the overlay to display the current visible tiles.
+     */
     public void update(){
         int zoom = this.viewport.getZoomLevel();
         if (zoom > Constants.MAX_WEATHERTILE_ZOOM + 4){
@@ -52,8 +55,11 @@ public final class UpdateOverlayUseCase implements UpdateOverlayInputBoundary, T
         zoom = (int)Math.max(0, Math.min(Constants.MAX_WEATHERTILE_ZOOM ,zoom / 1.5));
         BoundingBox bBox = this.viewport.calculateBBox();
 
+        //Calculate the visible tiles and request them from the tile cache.
+        //Tell the overlay manager to draw the requested tiles.
+
         //Convert to tile coords,
-        //lat lon as bounding box, convert lat lon to 0-1. //Move this to boundingbox entity?
+        //lat lon as bounding box, convert lat lon to 0-1.
         double bBoxLY = bBox.getTopLeft().getNormalizedLatitude();
         double bBoxRY = bBox.getBottomRight().getNormalizedLatitude();
         double bBoxLX = bBox.getTopLeft().getNormalizedLongitude();
@@ -101,7 +107,7 @@ public final class UpdateOverlayUseCase implements UpdateOverlayInputBoundary, T
                 imgData = tileCache.getTileImageData(tile);
             }
             catch (TileNotFoundException e){
-                imgData = new BufferedImage(256, 256, BufferedImage.TYPE_3BYTE_BGR);
+                imgData = loadingImage;
             }
             overlayManager.drawTileToOverlay(topLeft, botRight, tile, imgData);
         }
@@ -116,16 +122,15 @@ public final class UpdateOverlayUseCase implements UpdateOverlayInputBoundary, T
             overlayManager.drawTileToOverlay(tile.getTopLeft(), tile.getBotRight(), tile.getWeatherTile(), tileImage);
             output.updateImage(new UpdateOverlayOutputData(overlayManager.getOverlay()));
         } else{
-            BufferedImage tileImg = loadingImage;
-            overlayManager.drawTileToOverlay(tile.getTopLeft(), tile.getBotRight(), tile.getWeatherTile(), tileImg);
+            overlayManager.drawTileToOverlay(tile.getTopLeft(), tile.getBotRight(),
+                    tile.getWeatherTile(), loadingImage);
             output.updateImage(new UpdateOverlayOutputData(overlayManager.getOverlay()));
         }
     }
 
     @Override
     public void onTileFailed(IncompleteTile tile, TileNotFoundException e) {
-        BufferedImage tileImg = loadingImage;
-        overlayManager.drawTileToOverlay(tile.getTopLeft(), tile.getBotRight(), tile.getWeatherTile(), tileImg);
+        overlayManager.drawTileToOverlay(tile.getTopLeft(), tile.getBotRight(), tile.getWeatherTile(), loadingImage);
         output.updateImage(new UpdateOverlayOutputData(overlayManager.getOverlay()));
 
     }
