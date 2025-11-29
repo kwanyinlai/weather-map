@@ -45,8 +45,8 @@
 
   
 ### Searchbar:
-   - The search bar panel allows user to search the specific locations they want and select it in resultscroll.
-     - Typing the location name you want in the search bar.
+   - The search bar panel allows user to search the specific cities they want and select it in resultscroll.
+     - Typing the city name you want in the search bar.
      - Clicking **search** to have a result list of all related location.
      - Select the location you want in the resultscroll.
      - The map will automatically switch to the location you want.
