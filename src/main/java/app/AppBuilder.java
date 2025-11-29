@@ -203,7 +203,8 @@ public AppBuilder addSearchBarView() {
 
     public AppBuilder addChangeOpacityView(){
         weatherLayersViewModel = new WeatherLayersViewModel(Constants.DEFAULT_OPACITY);
-        changeWeatherView = new ChangeWeatherLayersView(weatherLayersViewModel, mapViewer);
+        changeWeatherView =
+                new ChangeWeatherLayersView(weatherLayersViewModel, mapViewer);
         return this;
     }
     
