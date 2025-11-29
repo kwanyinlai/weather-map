@@ -1,6 +1,8 @@
 # Weather Map Viewer:
 
- TODO ADD IMAGES/VIDEOS
+![A screeshot of the application showing the wind speed weather map](img/demo_1.png)
+![A screenshot showing the temperature weather map](img/demo_2.png)
+![A screenshot showing a loading pressure weather map](img/demo_3.png)
 
 - Application Summary:
     <br> This application displays a weather overlay over an interactive map, allowing the user to view the weather 
