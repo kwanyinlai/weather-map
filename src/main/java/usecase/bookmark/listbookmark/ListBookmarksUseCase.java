@@ -29,7 +29,7 @@ public final class ListBookmarksUseCase implements ListBookmarksInputBoundary {
     public void listBookmarks(ListBookmarksInputData inputData) {
 
         try {
-            List <BookmarkedLocation> bookmarks = bookmarkedLocationStorage.getBookmarkedLocations();
+            List<BookmarkedLocation> bookmarks = bookmarkedLocationStorage.getBookmarkedLocations();
 
             ListBookmarksOutputData outputData = new ListBookmarksOutputData(bookmarks);
 

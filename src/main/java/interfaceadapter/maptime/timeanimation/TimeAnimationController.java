@@ -9,7 +9,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
-/** Class that centrally modifies the current program time state
+/** Class that centrally modifies the current program time state.
  *
  */
 public class TimeAnimationController {

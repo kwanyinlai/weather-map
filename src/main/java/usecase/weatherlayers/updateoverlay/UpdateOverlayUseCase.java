@@ -52,7 +52,7 @@ public final class UpdateOverlayUseCase implements UpdateOverlayInputBoundary, T
             this.overlayManager.clearAll();
             return;
         }
-        zoom = (int)Math.max(0, Math.min(Constants.MAX_WEATHERTILE_ZOOM ,zoom / 1.5));
+        zoom = (int)Math.max(0, Math.min(Constants.MAX_WEATHERTILE_ZOOM, zoom / 1.5));
         BoundingBox bBox = this.viewport.calculateBBox();
 
         //Calculate the visible tiles and request them from the tile cache.

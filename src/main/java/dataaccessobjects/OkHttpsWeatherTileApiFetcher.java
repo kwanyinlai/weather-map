@@ -20,10 +20,11 @@ import javax.imageio.ImageIO;
 
 /**
  * This WeatherTile fetcher makes a direct call to the API using OkHttps and
- * returns the image data with no caching
+ * returns the image data with no caching.
  */
 public class OkHttpsWeatherTileApiFetcher implements WeatherTileApiFetcher {
     private final OkHttpClient client = new OkHttpClient();
+    private static final int ERROR_CODE = 404;
 
     public BufferedImage getWeatherTileImageData(WeatherTile tile) throws TileNotFoundException {
         String url = "https://weathermaps.weatherapi.com";
@@ -33,14 +34,14 @@ public class OkHttpsWeatherTileApiFetcher implements WeatherTileApiFetcher {
                         tile.getWeatherType().name().toLowerCase(),
                         tile.getUtcDateAsString(),
                         tile.getUtcHourAsString(),
-                        tile.getCoordinates().zoom,
-                        tile.getCoordinates().x,
-                        tile.getCoordinates().y
+                        tile.getCoordinates().getZoom(),
+                        tile.getCoordinates().getX(),
+                        tile.getCoordinates().getY()
                         ))
                 .build();
 
-        try (Response response = client.newCall(request).execute()){
-            if (response.code() == 404) {
+        try (Response response = client.newCall(request).execute()) {
+            if (response.code() == ERROR_CODE) {
                 throw new TileNotFoundException(tile);
             }
             return extractImageData(response);
@@ -56,12 +57,12 @@ public class OkHttpsWeatherTileApiFetcher implements WeatherTileApiFetcher {
             assert response.body() != null;
             InputStream in = response.body().byteStream();
             BufferedImage image = ImageIO.read(in);
-            if (image == null){
+            if (image == null) {
                 throw new IOException();
             }
             return image;
         }
-        catch (IOException e){
+        catch (IOException e) {
             throw new IOException();
         }
     }

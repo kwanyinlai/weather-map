@@ -1,126 +1,178 @@
 package usecase.infopanel;
 
-import org.w3c.dom.*;
-import javax.xml.parsers.DocumentBuilderFactory;
+import static interfaceadapter.infopanel.InfoPanelViewModel.*;
+
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+
+import org.w3c.dom.*;
+import org.xml.sax.SAXException;
 
 public class InfoPanelInteractor implements InfoPanelInputBoundary {
 
     private final PointWeatherFetcher fetcher;
     private final InfoPanelOutputBoundary presenter;
-    private final int zoomThreshold;
 
     public InfoPanelInteractor(PointWeatherFetcher fetcher,
-                               InfoPanelOutputBoundary presenter,
-                               int zoomThreshold) {
+                               InfoPanelOutputBoundary presenter) {
         this.fetcher = fetcher;
         this.presenter = presenter;
-        this.zoomThreshold = zoomThreshold;
     }
 
     @Override
     public void execute(InfoPanelInputData req) {
-        if (req.getZoom() < zoomThreshold) {
-            presenter.presentError(InfoPanelError.ZOOM_TOO_LOW);
-            return;
-        }
-
-        presenter.presentLoading();
-
         try {
-            String xml = fetcher.fetch(req.getCenterLat(), req.getCenterLon());
-            InfoPanelOutputData out = parseXmlToOutput(xml);
+            final String xml = fetcher.fetch(req.getCenterLat(), req.getCenterLon());
+            final InfoPanelOutputData out = parseXmlToOutput(xml);
             presenter.present(out);
-        } catch (Exception e) {
+        }
+        catch (IOException | ParserConfigurationException | SAXException exc) {
             presenter.presentError(InfoPanelError.FETCH_FAILED);
         }
     }
 
-    private InfoPanelOutputData parseXmlToOutput(String xml) throws Exception {
-        DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
-        Document doc = docFactory.newDocumentBuilder()
-                .parse(new ByteArrayInputStream(xml.getBytes(StandardCharsets.UTF_8)));
-        doc.getDocumentElement().normalize();
+    private InfoPanelOutputData parseXmlToOutput(String xml)
+            throws ParserConfigurationException, SAXException, IOException {
 
-        // Place
-        String place = "Selected location";
-        NodeList locList = doc.getElementsByTagName("location");
-        if (locList.getLength() > 0) {
-            Element loc = (Element) locList.item(0);
-            String name = getFirstTagText(loc, "name");
-            if (name != null && !name.isBlank()) place = name;
-        }
+        final Document doc = parseDocument(xml);
 
-        // Current Temperature and weather
-        Double curTemp = null;
-        String condition = null;
-        NodeList curList = doc.getElementsByTagName("current");
-        if (curList.getLength() > 0) {
-            Element cur = (Element) curList.item(0);
-            curTemp = toDouble(getFirstTagText(cur, "temp_c"));
-            NodeList condList = cur.getElementsByTagName("condition");
-            if (condList.getLength() > 0) {
-                Element c = (Element) condList.item(0);
-                condition = getFirstTagText(c, "text");
-            }
-        }
-
-        // Hourly Temperature List of the Day
-        List<Double> hourlyTemps = new ArrayList<>();
-        NodeList days = doc.getElementsByTagName("forecastday");
-        if (days.getLength() > 0) {
-            Element day0 = (Element) days.item(0);
-            NodeList hours = day0.getElementsByTagName("hour");
-            for (int i = 0; i < hours.getLength(); i++) {
-                Element h = (Element) hours.item(i);
-                hourlyTemps.add(toDouble(getFirstTagText(h, "temp_c")));
-            }
-        }
-
-        // More Data
-        Map<String, String> extra = new HashMap<>();
-        if (curList.getLength() > 0) {
-            Element cur = (Element) curList.item(0);
-            putIfNotBlank(extra, "humidity",      getFirstTagText(cur, "humidity"));
-            putIfNotBlank(extra, "wind_kph",      getFirstTagText(cur, "wind_kph"));
-            putIfNotBlank(extra, "wind_dir",      getFirstTagText(cur, "wind_dir"));
-            putIfNotBlank(extra, "pressure_mb",   getFirstTagText(cur, "pressure_mb"));
-            putIfNotBlank(extra, "precip_mm",     getFirstTagText(cur, "precip_mm"));
-            putIfNotBlank(extra, "feelslike_c",   getFirstTagText(cur, "feelslike_c"));
-            putIfNotBlank(extra, "uv",            getFirstTagText(cur, "uv"));
-            putIfNotBlank(extra, "cloud",         getFirstTagText(cur, "cloud"));
-        }
+        final String place = parsePlace(doc);
+        final Double curTemp = parseCurrentTemp(doc);
+        final String condition = parseCurrentCondition(doc);
+        final List<Double> hourlyTemps = parseHourlyTemps(doc);
+        final Map<String, String> extra = parseExtra(doc);
 
         return new InfoPanelOutputData(
                 place,
                 curTemp,
                 condition,
-                hourlyTemps == null ? Collections.emptyList() : hourlyTemps,
+                hourlyTemps,
                 Instant.now(),
                 extra
         );
     }
 
-    private static String getFirstTagText(Element parent, String tag) {
-        NodeList list = parent.getElementsByTagName(tag);
-        if (list.getLength() == 0) return null;
-        Node n = list.item(0).getFirstChild();
-        return n == null ? null : n.getNodeValue();
+    // helpers
+    private static String textOf(Element parent, String tag) {
+        String result = null;
+
+        final NodeList list = parent.getElementsByTagName(tag);
+        if (list.getLength() > 0) {
+            final Node node = list.item(0).getFirstChild();
+            if (node != null) {
+                result = node.getNodeValue();
+            }
+        }
+        return result;
     }
 
     private static Double toDouble(String s) {
-        try { return s == null ? null : Double.valueOf(s); }
-        catch (Exception e) { return null; }
+        Double result;
+
+        if (s == null) {
+            result = null;
+        }
+        else {
+            try {
+                result = Double.valueOf(s);
+            }
+            catch (NumberFormatException ignored) {
+                result = null;
+            }
+        }
+
+        return result;
     }
 
-    private static void putIfNotBlank(Map<String, String> m, String k, String v) {
-        if (v != null && !v.isBlank()) m.put(k, v);
+    private static void put(Map<String, String> strm, String strk, String strv) {
+        if (strv != null && !strv.isBlank()) {
+            strm.put(strk, strv);
+        }
+    }
+
+    private Document parseDocument(String xml)
+            throws ParserConfigurationException, SAXException, IOException {
+
+        final DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+        final DocumentBuilder builder = factory.newDocumentBuilder();
+        final Document document = builder.parse(
+                new ByteArrayInputStream(xml.getBytes(StandardCharsets.UTF_8)));
+        document.getDocumentElement().normalize();
+        return document;
+    }
+
+    private String parsePlace(Document doc) {
+        String place = TAG_LOCATION;
+        final NodeList locList = doc.getElementsByTagName(TAG_LOCATION);
+        if (locList.getLength() > 0) {
+            final Element loc = (Element) locList.item(0);
+            final String name = textOf(loc, TAG_NAME);
+            if (name != null && !name.isBlank()) {
+                place = name;
+            }
+        }
+        return place;
+    }
+
+    private Double parseCurrentTemp(Document doc) {
+        Double curTemp = null;
+        final NodeList curList = doc.getElementsByTagName(TAG_CURRENT);
+        if (curList.getLength() > 0) {
+            final Element cur = (Element) curList.item(0);
+            curTemp = toDouble(textOf(cur, TAG_TEMP_C));
+        }
+        return curTemp;
+    }
+
+    private String parseCurrentCondition(Document doc) {
+        String condition = null;
+        final NodeList curList = doc.getElementsByTagName(TAG_CURRENT);
+        if (curList.getLength() > 0) {
+            final Element cur = (Element) curList.item(0);
+            final NodeList condList = cur.getElementsByTagName(TAG_CONDITION);
+            if (condList.getLength() > 0) {
+                final Element c = (Element) condList.item(0);
+                condition = textOf(c, TAG_CONDITION_TEXT);
+            }
+        }
+        return condition;
+    }
+
+    private List<Double> parseHourlyTemps(Document doc) {
+        final List<Double> hourlyTemps = new ArrayList<>();
+        final NodeList days = doc.getElementsByTagName(TAG_FORECAST_DAY);
+        if (days.getLength() > 0) {
+            final Element day0 = (Element) days.item(0);
+            final NodeList hours = day0.getElementsByTagName(TAG_HOUR);
+            for (int i = 0; i < hours.getLength(); i++) {
+                final Element h = (Element) hours.item(i);
+                hourlyTemps.add(toDouble(textOf(h, TAG_TEMP_C)));
+            }
+        }
+        return hourlyTemps;
+    }
+
+    private Map<String, String> parseExtra(Document doc) {
+        final Map<String, String> extra = new HashMap<>();
+        final NodeList curList = doc.getElementsByTagName(TAG_CURRENT);
+        if (curList.getLength() > 0) {
+            final Element cur = (Element) curList.item(0);
+            put(extra, EXTRA_HUMIDITY, textOf(cur, EXTRA_HUMIDITY));
+            put(extra, EXTRA_WIND_KPH, textOf(cur, EXTRA_WIND_KPH));
+            put(extra, EXTRA_WIND_DIR, textOf(cur, EXTRA_WIND_DIR));
+            put(extra, EXTRA_PRESSURE_MB, textOf(cur, EXTRA_PRESSURE_MB));
+            put(extra, EXTRA_PRECIP_MM, textOf(cur, EXTRA_PRECIP_MM));
+            put(extra, EXTRA_FEELSLIKE_C, textOf(cur, EXTRA_FEELSLIKE_C));
+            put(extra, EXTRA_UV, textOf(cur, EXTRA_UV));
+            put(extra, EXTRA_CLOUD, textOf(cur, EXTRA_CLOUD));
+        }
+        return extra;
     }
 }

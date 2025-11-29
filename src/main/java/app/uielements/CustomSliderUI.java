@@ -15,6 +15,8 @@ public class CustomSliderUI extends BasicSliderUI {
     private static final int DEFAULT_ARC_RADIUS = 20;
     private static final int DEFAULT_ARROW_WIDTH = 12;
     private static final int DEFAULT_ARROW_HEIGHT = 10;
+    private static final int DEFAULT_THUMB_HEIGHT = 50;
+    private static final int DEFAULT_THUMB_WIDTH = 20;
 
 
     public CustomSliderUI(JSlider slider) {
@@ -29,7 +31,7 @@ public class CustomSliderUI extends BasicSliderUI {
         GradientPaint gradientPaint =
                 new GradientPaint(
                         trackRect.x,
-                        0 ,
+                        0,
                         DEFAULT_START_COLOUR,
                         (trackRect.x + trackRect.width),
                         0,
@@ -75,7 +77,10 @@ public class CustomSliderUI extends BasicSliderUI {
 
     @Override
     protected Dimension getThumbSize() {
-        return new Dimension(20,50);
+        return new Dimension(
+                DEFAULT_THUMB_WIDTH,
+                DEFAULT_THUMB_HEIGHT
+        );
     }
     @Override
     public void paintFocus(Graphics g){

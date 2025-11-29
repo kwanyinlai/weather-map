@@ -12,27 +12,27 @@ import java.util.EnumMap;
 
 public class InDiskGradientLoader implements GradientLegendLoader {
     private final EnumMap<WeatherType, BufferedImage> legends;
-    public InDiskGradientLoader(){
+    public InDiskGradientLoader() {
         legends = new EnumMap<>(WeatherType.class);
         loadLegends();
     }
 
     @Override
-    public BufferedImage getLegend(WeatherType type){
+    public BufferedImage getLegend(WeatherType type) {
         return legends.get(type);
     }
 
-    private void loadLegends(){
+    private void loadLegends() {
         BufferedImage blank;
 
-        try{
+        try {
             File imageFile = new File("img/legends/legendblank.png");
             blank = ImageIO.read(imageFile);
         } catch (IOException e) {
             blank = new BufferedImage(1,1,1);
         }
-        for(WeatherType type: WeatherType.values()){
-            try{
+        for (WeatherType type: WeatherType.values()) {
+            try {
                 BufferedImage legendImg = null;
                 File imageFile = new File("img/legends/legend" + type.toString().replace(" ","").toLowerCase() + ".png");
                 legendImg = ImageIO.read(imageFile);

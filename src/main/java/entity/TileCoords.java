@@ -3,9 +3,9 @@ package entity;
 import java.util.Objects;
 
 public class TileCoords {
-    public final int x;
-    public final int y;
-    public final int zoom;
+    private final int x;
+    private final int y;
+    private final int zoom;
 
     public TileCoords(int x, int y, int zoom) {
         this.x = x;
