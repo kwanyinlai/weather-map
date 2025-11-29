@@ -129,9 +129,6 @@ public class AppBuilder {
     private interfaceadapter.infopanel.InfoPanelController infoPanelController;
     private usecase.infopanel.InfoPanelInteractor infoPanelUseCase;
     private view.InfoPanelView infoPanelView;
-    private AddBookmarkController addBookmarkController;
-    private RemoveBookmarkController removeBookmarkController;
-    private ListBookmarksController listBookmarksController;
 
     private LoadMapSettingsInputBoundary loadMapSettingsUseCase;
     private SaveMapSettingsInputBoundary saveMapSettingsUseCase;
