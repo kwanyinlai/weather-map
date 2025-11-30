@@ -51,7 +51,7 @@ public class MapOverlayStructureView extends JLayeredPane{
     }
 
     public void addComponent(JPanel component, int layer){
-        this.add(component, new Integer(layer));
+        this.add(component, Integer.valueOf(layer));
         //new Integer object required as specified in docs
         //https://docs.oracle.com/javase/8/docs/api/javax/swing/JLayeredPane.html
     }

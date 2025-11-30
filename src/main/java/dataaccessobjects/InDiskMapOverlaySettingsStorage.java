@@ -153,7 +153,7 @@ public final class InDiskMapOverlaySettingsStorage
         obj.put(KEY_CENTER_LONGITUDE, centerLocation.getLongitude());
         obj.put(KEY_ZOOM_LEVEL, zoomLevel);
         if (weatherType != null) {
-            obj.put("weatherType", weatherType);
+            obj.put(KEY_WEATHER_TYPE, weatherType);
         }
 
         try {
