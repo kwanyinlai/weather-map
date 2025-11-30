@@ -201,7 +201,7 @@ class MapSettingsUseCaseTest {
             InDiskMapOverlaySettingsStorage storage = new InDiskMapOverlaySettingsStorage(filePath);
 
             Location center = new Location(45.5, -73.5);
-            storage.save(center, 5, WeatherType.Tmp2m);
+            storage.save(center, 5, WeatherType.TMP2M);
 
             assertTrue(storage.hasSavedSettings());
         }
@@ -212,7 +212,7 @@ class MapSettingsUseCaseTest {
             InDiskMapOverlaySettingsStorage storage = new InDiskMapOverlaySettingsStorage(filePath);
 
             Location center = new Location(45.5, -73.5);
-            storage.save(center, 5, WeatherType.Tmp2m);
+            storage.save(center, 5, WeatherType.TMP2M);
 
             Location retrieved = storage.getSavedCenterLocation();
             assertEquals(45.5, retrieved.getLatitude());
@@ -225,7 +225,7 @@ class MapSettingsUseCaseTest {
             InDiskMapOverlaySettingsStorage storage = new InDiskMapOverlaySettingsStorage(filePath);
 
             Location center = new Location(45.5, -73.5);
-            storage.save(center, 7, WeatherType.Precip);
+            storage.save(center, 7, WeatherType.PRECIP);
 
             assertEquals(7, storage.getSavedZoomLevel());
         }
@@ -236,9 +236,9 @@ class MapSettingsUseCaseTest {
             InDiskMapOverlaySettingsStorage storage = new InDiskMapOverlaySettingsStorage(filePath);
 
             Location center = new Location(45.5, -73.5);
-            storage.save(center, 5, WeatherType.Pressure);
+            storage.save(center, 5, WeatherType.PRESSURE);
 
-            assertEquals(WeatherType.Pressure, storage.getSavedWeatherType());
+            assertEquals(WeatherType.PRESSURE, storage.getSavedWeatherType());
         }
 
         @Test
@@ -258,16 +258,16 @@ class MapSettingsUseCaseTest {
             InDiskMapOverlaySettingsStorage storage = new InDiskMapOverlaySettingsStorage(filePath);
 
             Location center1 = new Location(45.5, -73.5);
-            storage.save(center1, 5, WeatherType.Tmp2m);
+            storage.save(center1, 5, WeatherType.TMP2M);
 
             Location center2 = new Location(46.0, -74.0);
-            storage.save(center2, 7, WeatherType.Wind);
+            storage.save(center2, 7, WeatherType.WIND);
 
             Location retrieved = storage.getSavedCenterLocation();
             assertEquals(46.0, retrieved.getLatitude());
             assertEquals(-74.0, retrieved.getLongitude());
             assertEquals(7, storage.getSavedZoomLevel());
-            assertEquals(WeatherType.Wind, storage.getSavedWeatherType());
+            assertEquals(WeatherType.WIND, storage.getSavedWeatherType());
         }
 
         @Test
@@ -357,7 +357,7 @@ class MapSettingsUseCaseTest {
             TestSaveMapSettingsPresenter presenter = new TestSaveMapSettingsPresenter();
             SaveMapSettingsUseCase useCase = new SaveMapSettingsUseCase(storage, presenter);
 
-            SaveMapSettingsInputData input = new SaveMapSettingsInputData(45.5, -73.5, 5, WeatherType.Tmp2m);
+            SaveMapSettingsInputData input = new SaveMapSettingsInputData(45.5, -73.5, 5, WeatherType.TMP2M);
             useCase.saveMapSettings(input);
 
             assertNotNull(presenter.getSuccessData());
@@ -369,7 +369,7 @@ class MapSettingsUseCaseTest {
             assertEquals(45.5, saved.getLatitude());
             assertEquals(-73.5, saved.getLongitude());
             assertEquals(5, storage.getSavedZoomLevel());
-            assertEquals(WeatherType.Tmp2m, storage.getSavedWeatherType());
+            assertEquals(WeatherType.TMP2M, storage.getSavedWeatherType());
         }
 
         @Test
@@ -404,7 +404,7 @@ class MapSettingsUseCaseTest {
             TestSaveMapSettingsPresenter presenter = new TestSaveMapSettingsPresenter();
             SaveMapSettingsUseCase useCase = new SaveMapSettingsUseCase(storage, presenter);
 
-            SaveMapSettingsInputData input = new SaveMapSettingsInputData(Double.NaN, -73.5, 5, WeatherType.Tmp2m);
+            SaveMapSettingsInputData input = new SaveMapSettingsInputData(Double.NaN, -73.5, 5, WeatherType.TMP2M);
             useCase.saveMapSettings(input);
 
             assertNull(presenter.getSuccessData());
@@ -417,7 +417,7 @@ class MapSettingsUseCaseTest {
             TestSaveMapSettingsPresenter presenter = new TestSaveMapSettingsPresenter();
             SaveMapSettingsUseCase useCase = new SaveMapSettingsUseCase(storage, presenter);
 
-            SaveMapSettingsInputData input = new SaveMapSettingsInputData(45.5, Double.NaN, 5, WeatherType.Tmp2m);
+            SaveMapSettingsInputData input = new SaveMapSettingsInputData(45.5, Double.NaN, 5, WeatherType.TMP2M);
             useCase.saveMapSettings(input);
 
             assertNull(presenter.getSuccessData());
@@ -430,7 +430,7 @@ class MapSettingsUseCaseTest {
             TestSaveMapSettingsPresenter presenter = new TestSaveMapSettingsPresenter();
             SaveMapSettingsUseCase useCase = new SaveMapSettingsUseCase(storage, presenter);
 
-            SaveMapSettingsInputData input = new SaveMapSettingsInputData(45.5, -73.5, 5, WeatherType.Tmp2m);
+            SaveMapSettingsInputData input = new SaveMapSettingsInputData(45.5, -73.5, 5, WeatherType.TMP2M);
             useCase.saveMapSettings(input);
 
             assertNull(presenter.getSuccessData());
@@ -459,7 +459,7 @@ class MapSettingsUseCaseTest {
             TestSaveMapSettingsPresenter presenter = new TestSaveMapSettingsPresenter();
             SaveMapSettingsUseCase useCase = new SaveMapSettingsUseCase(storage, presenter);
 
-            SaveMapSettingsInputData input = new SaveMapSettingsInputData(90.0, 180.0, 10, WeatherType.Wind);
+            SaveMapSettingsInputData input = new SaveMapSettingsInputData(90.0, 180.0, 10, WeatherType.WIND);
             useCase.saveMapSettings(input);
 
             assertNotNull(presenter.getSuccessData());
@@ -477,7 +477,7 @@ class MapSettingsUseCaseTest {
         void testLoadMapSettingsSuccess() {
             InMemoryMapSettingsStorage storage = new InMemoryMapSettingsStorage();
             Location center = new Location(45.5, -73.5);
-            storage.save(center, 7, WeatherType.Precip);
+            storage.save(center, 7, WeatherType.PRECIP);
 
             TestLoadMapSettingsPresenter presenter = new TestLoadMapSettingsPresenter();
             LoadMapSettingsUseCase useCase = new LoadMapSettingsUseCase(storage, presenter);
@@ -489,7 +489,7 @@ class MapSettingsUseCaseTest {
             assertEquals(45.5, presenter.getSuccessData().getCenterLatitude());
             assertEquals(-73.5, presenter.getSuccessData().getCenterLongitude());
             assertEquals(7, presenter.getSuccessData().getZoomLevel());
-            assertEquals(WeatherType.Precip, presenter.getSuccessData().getWeatherType());
+            assertEquals(WeatherType.PRECIP, presenter.getSuccessData().getWeatherType());
             assertFalse(presenter.isNoSettingsCalled());
             assertNull(presenter.getFailureMessage());
         }
@@ -568,7 +568,7 @@ class MapSettingsUseCaseTest {
             for (int zoom : zoomLevels) {
                 presenter.reset();
                 Location center = new Location(45.5, -73.5);
-                storage.save(center, zoom, WeatherType.Tmp2m);
+                storage.save(center, zoom, WeatherType.TMP2M);
 
                 LoadMapSettingsInputData input = new LoadMapSettingsInputData();
                 useCase.loadMapSettings(input);
@@ -595,7 +595,7 @@ class MapSettingsUseCaseTest {
             for (double[] coord : coordinates) {
                 presenter.reset();
                 Location center = new Location(coord[0], coord[1]);
-                storage.save(center, 5, WeatherType.Pressure);
+                storage.save(center, 5, WeatherType.PRESSURE);
 
                 LoadMapSettingsInputData input = new LoadMapSettingsInputData();
                 useCase.loadMapSettings(input);
@@ -626,13 +626,13 @@ class MapSettingsUseCaseTest {
             SaveMapSettingsInputBoundary mockUseCase = Mockito.mock(SaveMapSettingsInputBoundary.class);
             SaveMapSettingsController controller = new SaveMapSettingsController(mockUseCase);
 
-            controller.saveMapSettings(45.5, -73.5, 5, WeatherType.Tmp2m);
+            controller.saveMapSettings(45.5, -73.5, 5, WeatherType.TMP2M);
 
             Mockito.verify(mockUseCase).saveMapSettings(Mockito.argThat(input ->
                     input.getCenterLatitude() == 45.5 &&
                     input.getCenterLongitude() == -73.5 &&
                     input.getZoomLevel() == 5 &&
-                    input.getWeatherType() == WeatherType.Tmp2m
+                    input.getWeatherType() == WeatherType.TMP2M
             ));
         }
 
@@ -658,7 +658,7 @@ class MapSettingsUseCaseTest {
             MapSettingsViewModel viewModel = new MapSettingsViewModel();
             LoadMapSettingsPresenter presenter = new LoadMapSettingsPresenter(viewModel);
 
-            LoadMapSettingsOutputData outputData = new LoadMapSettingsOutputData(45.5, -73.5, 5, WeatherType.Tmp2m);
+            LoadMapSettingsOutputData outputData = new LoadMapSettingsOutputData(45.5, -73.5, 5, WeatherType.TMP2M);
             presenter.presentLoadedSettings(outputData);
 
             MapSettingsViewModel.MapSettingsState state = viewModel.getState();
@@ -739,7 +739,7 @@ class MapSettingsUseCaseTest {
             AutoLoadMapSettingsPresenter presenter = new AutoLoadMapSettingsPresenter(viewport, mockChangeLayer);
 
             LoadMapSettingsOutputData outputData = new LoadMapSettingsOutputData(
-                    45.5, -73.5, 5, entity.WeatherType.Tmp2m);
+                    45.5, -73.5, 5, entity.WeatherType.TMP2M);
             presenter.presentLoadedSettings(outputData);
 
             assertEquals(5, viewport.getZoomLevel());
@@ -768,7 +768,7 @@ class MapSettingsUseCaseTest {
             AutoLoadMapSettingsPresenter presenter = new AutoLoadMapSettingsPresenter(viewport, mockChangeLayer);
 
             LoadMapSettingsOutputData outputData = new LoadMapSettingsOutputData(
-                    45.5, -73.5, 5, entity.WeatherType.Tmp2m);
+                    45.5, -73.5, 5, entity.WeatherType.TMP2M);
 
             presenter.presentLoadedSettings(outputData);
 

@@ -163,6 +163,14 @@ public class AppBuilder {
     }
 
 
+        bookmarksViewModel = new BookmarksViewModel();
+        RemoveBookmarkOutputBoundary removeBookmarkPresenter = new RemoveBookmarkPresenter(bookmarksViewModel);
+        ListBookmarksPresenter listBookmarksPresenter = new ListBookmarksPresenter(bookmarksViewModel);
+        AddBookmarkOutputBoundary addBookmarkPresenter = new AddBookmarkPresenter(bookmarksViewModel);
+
+        AddBookmarkInputBoundary addBookmarkUseCase = new AddBookmarkUseCase(bookmarkStorage, addBookmarkPresenter);
+        RemoveBookmarkInputBoundary removeBookmarkUseCase = new RemoveBookmarkUseCase(bookmarkStorage, removeBookmarkPresenter);
+        ListBookmarksInputBoundary listBookmarksUseCase = new ListBookmarksUseCase(bookmarkStorage, listBookmarksPresenter);
     public AppBuilder addSearchBarView() {
         final SearchBarViewModel viewModel = new SearchBarViewModel();
         final GeocodingAPI api = new OpenWeatherGeocodingAPI();
@@ -210,6 +218,8 @@ public class AppBuilder {
         final ListBookmarksController listBookmarksController =
                 new ListBookmarksController(listBookmarksUseCase);
 
+        VisitBookmarkOutputBoundary visitBookmarkPresenter = new VisitBookmarkPresenter(bookmarksViewModel);
+        VisitBookmarkInputBoundary visitBookmarkUseCase = new VisitBookmarkUseCase(
         final VisitBookmarkOutputBoundary visitBookmarkPresenter =
                 new VisitBookmarkPresenter(bookmarksViewModel);
         final VisitBookmarkInputBoundary visitBookmarkUseCase =
@@ -219,6 +229,7 @@ public class AppBuilder {
                 panAndZoomPresenter,
                 visitBookmarkPresenter
         );
+        VisitBookmarkController visitBookmarkController = new VisitBookmarkController(visitBookmarkUseCase);
         final VisitBookmarkController visitBookmarkController =
                 new VisitBookmarkController(visitBookmarkUseCase);
 
@@ -437,6 +448,15 @@ public class AppBuilder {
                     viewport,
                     changeLayerUseCase
         );
+        
+        LoadMapSettingsInputBoundary loadMapSettingsUseCase = new LoadMapSettingsUseCase(mapSettingsStorage, autoLoadPresenter);
+        SaveMapSettingsInputBoundary saveMapSettingsUseCase = new SaveMapSettingsUseCase(mapSettingsStorage, 
+                new interfaceadapter.mapsettings.savemapsettings.SaveMapSettingsPresenter(
+                        new interfaceadapter.mapsettings.MapSettingsViewModel()));
+        
+        loadMapSettingsController = new LoadMapSettingsController(loadMapSettingsUseCase);
+        saveMapSettingsController = new SaveMapSettingsController(saveMapSettingsUseCase);
+
         loadMapSettingsUseCase = new LoadMapSettingsUseCase(
                 mapSettingsStorage,
                 autoLoadPresenter);
