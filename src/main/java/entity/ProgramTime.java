@@ -25,18 +25,16 @@ public class ProgramTime {
         }
     }
 
-    /** Increment time by amount of <code>duration</code>.
-     *
-     * @param duration the duration to which program time should be incremented
+    /** Set the current program time to a specific time.
+     * @param currentTime the time to set program time to
      */
-    public void incrementTime(java.time.Duration duration){
-        currentTime = currentTime.plus(duration);
-    }
-
     public void setTime(java.time.Instant currentTime) {
         this.currentTime = currentTime;
     }
 
+    /** Get the current program time.
+     * @return the current program time as a {@link java.time.Instant}
+     */
     public java.time.Instant getCurrentTime() {
         return currentTime;
     }
