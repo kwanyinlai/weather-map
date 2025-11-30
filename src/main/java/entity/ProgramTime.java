@@ -32,7 +32,7 @@ public class ProgramTime {
         this.currentTime = currentTime;
     }
 
-    /** Get the current program time
+    /** Get the current program time.
      * @return the current program time as a {@link java.time.Instant}
      */
     public java.time.Instant getCurrentTime() {
