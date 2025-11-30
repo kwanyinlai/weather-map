@@ -1,4 +1,4 @@
-package usecase.infopanel;
+package dataaccessinterface;
 
 import java.io.IOException;
 
