@@ -32,8 +32,11 @@
    laggy, but it will be much smoother once all tiles have been cached.
    
 ### Info Panel:
-   Zooming into an area will cause an info panel to pop up, showing the conditions and horly forecast of the visible 
-   area.
+   - When the user zooms in past a certain zoom level, an info panel pops up on the map, showing detailed weather information for the current view.
+   - The panel displays point-based current conditions for the center of the visible area.
+   - Below the current conditions, the panel shows an hourly forecast timeline for that location, allowing the user to see how the weather will change over the next several hours.
+   - As the user pans or zooms the map (while staying above the zoom threshold), the info panel automatically updates to reflect the new center location.
+   - If weather data cannot be retrieved for the current location (for example, due to network or API issues), the panel shows a clear error message instead of outdated information.
 ### Bookmarks:
    - The bookmarks panel lets the user save specific locations on the map so they can quickly return to them later.
    - Clicking **Add** creates a new bookmark for the current map view, storing the location (latitude/longitude) together with a user-provided name.
@@ -66,7 +69,7 @@
    - As a user, I want to add and remove location bookmarks that persist across app sessions, and jump to a bookmarked location by pressing a “Visit” button.
    - As a user, I want the map layout and settings to be saved and automatically restored when I reopen the app.
    - As a user, I want to check the weather conditions around me by being able to zoom in/out on the map, or pan around the map to look at a specific location.
-   - As a user, I want an information panel to pop up when I zoom in close enough to a specific city (or landmark), displaying the temperature and-or other forecasted weather at the location.
+   - As a user, I want an information panel to pop up when I zoom in close enough to a specific city (or landmark), displaying the temperature and-or other forecasted weather at the location. (Griffin Wang)
    - As a user, I want to freely switch between multiple weather overlays (such as temperature, cloud cover, and air pressure) on the map and change the base map. (Ian Lee)
    - As a user, I want to be able to navigate backwards and forwards in time using a slider, accompanied by a play button which will automatically move the time slider across this time scale.
    - As a user, I want to check the weather conditions around me by being able to zoom in/out on the map, or pan around the map to look at a specific location.(Junxi Huang)
@@ -79,7 +82,7 @@
     - https://www.weatherapi.com/docs/: We are using 2 services provided by this provider. 
       - weathermaps: returns an image based on the specified time, zoom level, and tile coordinates. Used to construct
       the weather overlay. Does not require a key.
-      - forecast: TODO Key setup:
+      - forecast: shows the hourly forecast. Set environment variable WEATHER_API_KEY = [key here]
     - https://openweathermap.org/api/geocoding-api Geocoding API: This API is used to provide all related search result 
       as a list when a user type a location name in search bar.
       Set environment variable GEOCODING_KEY =[key here] to enable the search result list.
