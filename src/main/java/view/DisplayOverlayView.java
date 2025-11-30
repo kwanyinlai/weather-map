@@ -39,7 +39,8 @@ public class DisplayOverlayView extends JPanel implements PropertyChangeListener
         if(Objects.equals(evt.getPropertyName(), "size")) {
             Rectangle rect = new Rectangle((Dimension) evt.getNewValue());
             //five pixel offset needed for proper alignment
-            this.setBounds(0, rect.y - 5, rect.width, rect.height - 5);
+            this.setBounds(0, rect.y - Constants.OVERLAY_ALIGNMENT_OFFSET, rect.width,
+                    rect.height - Constants.OVERLAY_ALIGNMENT_OFFSET);
             this.setSize((Dimension)evt.getNewValue());
             sizeController.changeSize((Dimension) evt.getNewValue());
         } else { //overlay update

@@ -37,7 +37,8 @@ public final class UpdateOverlayUseCase implements UpdateOverlayInputBoundary, T
         try {
             return imageLoader.getImage("img/hourglass.png");
         } catch (IOException e) {
-            return new BufferedImage(255, 255, BufferedImage.TYPE_3BYTE_BGR);
+            return new BufferedImage(Constants.WEATHERTILE_SIZE, Constants.WEATHERTILE_SIZE,
+                    BufferedImage.TYPE_3BYTE_BGR);
         }
     }
 
@@ -46,13 +47,13 @@ public final class UpdateOverlayUseCase implements UpdateOverlayInputBoundary, T
      */
     public void update(){
         int zoom = this.viewport.getZoomLevel();
-        if (zoom > Constants.MAX_WEATHERTILE_ZOOM + 4){
+        if (zoom > Constants.MAX_WEATHERTILE_ZOOM + Constants.ZOOM_BAILOUT_OFFSET){
             //with current tiling implemetation zooming in too much will cause a crash due to scaling an image too much,
             //so skip drawing overlay if too zoomed in.
             this.overlayManager.clearAll();
             return;
         }
-        zoom = (int)Math.max(0, Math.min(Constants.MAX_WEATHERTILE_ZOOM, zoom / 1.5));
+        zoom = (int)Math.max(0, Math.min(Constants.MAX_WEATHERTILE_ZOOM ,zoom / Constants.ZOOM_MAP_TO_WEATHER_FACTOR));
         BoundingBox bBox = this.viewport.calculateBBox();
 
         //Calculate the visible tiles and request them from the tile cache.

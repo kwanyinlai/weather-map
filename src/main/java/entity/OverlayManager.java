@@ -158,9 +158,10 @@ public class OverlayManager {
         // each tile png is 256x256.
         // (theoratical) "scale" the image to fit onto the UV tile grid, then scale by c.
         // same as c * "scale" = c / (2^zoom * 256)
-        double pngToTileFactor = scaleToOvl / 256;
+        double pngToTileFactor = scaleToOvl / Constants.WEATHERTILE_SIZE ;
         //apply scale to the tile image.
-        Image scaledTileImg = tileImg.getScaledInstance((int)(256*pngToTileFactor), -1, Image.SCALE_FAST);
+        Image scaledTileImg = tileImg.getScaledInstance((int)(Constants.WEATHERTILE_SIZE*pngToTileFactor), -1,
+                Image.SCALE_FAST);
 
         //draw tile image onto overlay with selected layer's opacity.
         Graphics2D g = this.overlay.createGraphics();
