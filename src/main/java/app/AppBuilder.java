@@ -244,10 +244,9 @@ public class AppBuilder {
         return this;
     }
 
-    public AppBuilder addChangeOpacityView() {
-        weatherLayersViewModel = new WeatherLayersViewModel(0.5);
-        changeWeatherView =
-                new ChangeWeatherLayersView(weatherLayersViewModel, mapViewer);
+    public AppBuilder addChangeOpacityView(){
+        weatherLayersViewModel = new WeatherLayersViewModel(Constants.DEFAULT_OPACITY);
+        changeWeatherView = new ChangeWeatherLayersView(weatherLayersViewModel, mapViewer);
         return this;
     }
     /**

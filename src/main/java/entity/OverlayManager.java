@@ -21,12 +21,19 @@ public class OverlayManager {
         this.overlay = new BufferedImage(x, y, BufferedImage.TYPE_INT_ARGB);
     }
 
+    /**
+     * initiate the opacity list such that every weather type has an opacity value.
+     */
     private void initOpacityList(){
         for (int i = 0; i < types.size(); i++){
             this.opacity.add(Constants.DEFAULT_OPACITY);
         }
     }
 
+    /**
+     * Change the overlay's BufferedImage size
+     * @param size The new dimension to change to
+     */
     public void changeSize(Dimension size){
         this.overlay = new BufferedImage(size.width, size.height, BufferedImage.TYPE_INT_ARGB);
     }
@@ -35,7 +42,7 @@ public class OverlayManager {
      * Clear the overlay area that is outside the map area.
      * @param tl the viewport's top left tile coordinate
      * @param br the viewport's bottom right tile coordinate
-     * @param zoom
+     * @param zoom the current zoom level
      */
     public void clear(Vector tl, Vector br, int zoom){
         if (tl.x() < 0 || tl.y() < 0){
@@ -56,6 +63,13 @@ public class OverlayManager {
 
     }
 
+    /**
+     * Clear the given area of the BufferedImage
+     * @param tx top left x
+     * @param ty top right y
+     * @param width width to clear
+     * @param height height to cleara
+     */
     private void clearArea(int tx, int ty, int width, int height){
         Graphics2D g = (Graphics2D) overlay.getGraphics();
         g.setBackground(new Color(0,0,0,0));
@@ -63,10 +77,18 @@ public class OverlayManager {
         g.dispose();
     }
 
+    /**
+     * Clear the entire overlay
+     */
     public void clearAll(){
         clearArea(0,0, overlay.getWidth(), overlay.getHeight());
     }
 
+    /**
+     * Set the selected/displayed weather type
+     * @param selection - The weather type to show
+     * @throws LayerNotFoundException - The given weather type is not in types list
+     */
     public void setSelected(WeatherType selection) throws LayerNotFoundException {
         // Change the selected layer. Raise LayerNotFoundException if selection is not an added overlay type.
         if(this.types.contains(selection)) {
@@ -75,18 +97,31 @@ public class OverlayManager {
         else {throw new LayerNotFoundException(selection.toString());}
     }
 
+    /**
+     * @return the selected weather type
+     */
     public WeatherType getSelected(){return this.selected;}
 
+    /**
+     * @return the selected weather type's opacity
+     */
     public float getSelectedOpacity(){
         if (this.selected == null) {return 0;}
         return this.opacity.get(this.types.indexOf(this.selected));
     }
 
+    /**
+     * Set the selected weather type's opacity
+     * @param opacity the new opacity value
+     */
     public void setSelectedOpacity(float opacity){
         if (this.selected == null) {return;}
         this.opacity.set(this.types.indexOf(this.selected), opacity);
     }
 
+    /**
+     * @return the overlay's BufferedImage
+     */
     public BufferedImage getOverlay() {
         return overlay;
     }
