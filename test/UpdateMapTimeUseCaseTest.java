@@ -10,6 +10,7 @@ import java.time.ZoneOffset;
 import java.time.temporal.ChronoUnit;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 
 class UpdateMapTimeUseCaseTest {
@@ -116,5 +117,9 @@ class UpdateMapTimeUseCaseTest {
 
     }
 
-
+    @Test
+    void negativeTicksExceptionThrown(){
+        assertThrows(IllegalArgumentException.class, () -> new TickMapTimeInputData(0));
+        assertThrows(IllegalArgumentException.class, () -> new TickMapTimeInputData(-5));
+    }
 }
