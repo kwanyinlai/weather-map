@@ -13,6 +13,7 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
+import dataaccessinterface.PointWeatherFetcher;
 import org.w3c.dom.*;
 import org.xml.sax.SAXException;
 
