@@ -1,9 +1,9 @@
+import dataaccessinterface.PointWeatherFetcher;
 import interfaceadapter.infopanel.InfoPanelController;
 import interfaceadapter.infopanel.InfoPanelPresenter;
 import interfaceadapter.infopanel.InfoPanelViewModel;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 import usecase.infopanel.*;
 
 import javax.swing.event.ChangeEvent;
@@ -110,33 +110,32 @@ class InfoPanelUseCaseTest {
         @Test
         void execute_success_parsesAllFields() {
             // language=XML
-            String xml = """
-                    <root>
-                      <location>
-                        <name>Toronto</name>
-                      </location>
-                      <current>
-                        <temp_c>12.3</temp_c>
-                        <condition>
-                          <text>Cloudy</text>
-                        </condition>
-                        <humidity>70</humidity>
-                        <wind_kph>15.5</wind_kph>
-                        <wind_dir>NW</wind_dir>
-                        <pressure_mb>1012</pressure_mb>
-                        <precip_mm>0.5</precip_mm>
-                        <feelslike_c>10.0</feelslike_c>
-                        <uv>3</uv>
-                        <cloud>80</cloud>
-                      </current>
-                      <forecast>
-                        <forecastday>
-                          <hour><temp_c>1.0</temp_c></hour>
-                          <hour><temp_c>2.0</temp_c></hour>
-                        </forecastday>
-                      </forecast>
-                    </root>
-                    """;
+            String xml =
+                    "<root>\n" +
+                            "  <location>\n" +
+                            "    <name>Toronto</name>\n" +
+                            "  </location>\n" +
+                            "  <current>\n" +
+                            "    <temp_c>12.3</temp_c>\n" +
+                            "    <condition>\n" +
+                            "      <text>Cloudy</text>\n" +
+                            "    </condition>\n" +
+                            "    <humidity>70</humidity>\n" +
+                            "    <wind_kph>15.5</wind_kph>\n" +
+                            "    <wind_dir>NW</wind_dir>\n" +
+                            "    <pressure_mb>1012</pressure_mb>\n" +
+                            "    <precip_mm>0.5</precip_mm>\n" +
+                            "    <feelslike_c>10.0</feelslike_c>\n" +
+                            "    <uv>3</uv>\n" +
+                            "    <cloud>80</cloud>\n" +
+                            "  </current>\n" +
+                            "  <forecast>\n" +
+                            "    <forecastday>\n" +
+                            "      <hour><temp_c>1.0</temp_c></hour>\n" +
+                            "      <hour><temp_c>2.0</temp_c></hour>\n" +
+                            "    </forecastday>\n" +
+                            "  </forecast>\n" +
+                            "</root>\n";
 
             FakeFetcher fetcher = new FakeFetcher();
             fetcher.setXml(xml);
@@ -196,13 +195,12 @@ class InfoPanelUseCaseTest {
 
         @Test
         void execute_invalidNumericFields_turnsIntoNull() {
-            String xml = """
-                    <root>
-                      <current>
-                        <temp_c>not_a_number</temp_c>
-                      </current>
-                    </root>
-                    """;
+            String xml =
+                    "<root>\n" +
+                            "  <current>\n" +
+                            "    <temp_c>not_a_number</temp_c>\n" +
+                            "  </current>\n" +
+                            "</root>\n";
 
             FakeFetcher fetcher = new FakeFetcher();
             fetcher.setXml(xml);
@@ -310,7 +308,7 @@ class InfoPanelUseCaseTest {
             InfoPanelViewModel vm = new InfoPanelViewModel();
             InfoPanelPresenter presenter = new InfoPanelPresenter(vm);
 
-            presenter.addChangeListener(null);
+            assertDoesNotThrow(() -> presenter.addChangeListener(null));
         }
 
         @Test

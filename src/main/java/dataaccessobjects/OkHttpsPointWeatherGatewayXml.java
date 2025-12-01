@@ -15,14 +15,14 @@ public class OkHttpsPointWeatherGatewayXml implements PointWeatherFetcher {
     public OkHttpsPointWeatherGatewayXml() {
         final String loadedApiKey = System.getenv("WEATHER_API_KEY");
         if (loadedApiKey == null || loadedApiKey.isBlank()) {
-            throw new IllegalArgumentException("apiKey is blank");
+            throw new IllegalArgumentException("weatherApiKey is blank");
         }
         this.apiKey = loadedApiKey;
     }
 
     public OkHttpsPointWeatherGatewayXml(String apiKey) {
         if (apiKey == null || apiKey.isBlank()) {
-            throw new IllegalArgumentException("apiKey is blank");
+            throw new IllegalArgumentException("weatherApiKey is blank");
         }
         this.apiKey = apiKey;
     }
