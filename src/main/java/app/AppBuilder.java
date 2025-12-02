@@ -14,7 +14,7 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.WindowConstants;
 
-import dataaccessinterface.OkHttpsPointWeatherGatewayXml;
+import dataaccessobjects.OkHttpsPointWeatherGatewayXml;
 import interfaceadapter.infopanel.InfoPanelController;
 import interfaceadapter.infopanel.InfoPanelPresenter;
 import interfaceadapter.infopanel.InfoPanelViewModel;
@@ -81,7 +81,7 @@ import usecase.bookmark.visitbookmark.VisitBookmarkInputBoundary;
 import usecase.bookmark.visitbookmark.VisitBookmarkOutputBoundary;
 import usecase.bookmark.visitbookmark.VisitBookmarkUseCase;
 import usecase.infopanel.InfoPanelInteractor;
-import usecase.infopanel.PointWeatherFetcher;
+import dataaccessinterface.PointWeatherFetcher;
 import usecase.mapnavigation.PanAndZoomInputBoundary;
 import usecase.mapnavigation.PanAndZoomUseCase;
 import usecase.mapsettings.loadmapsettings.LoadMapSettingsInputBoundary;
@@ -163,6 +163,14 @@ public class AppBuilder {
     }
 
 
+        bookmarksViewModel = new BookmarksViewModel();
+        RemoveBookmarkOutputBoundary removeBookmarkPresenter = new RemoveBookmarkPresenter(bookmarksViewModel);
+        ListBookmarksPresenter listBookmarksPresenter = new ListBookmarksPresenter(bookmarksViewModel);
+        AddBookmarkOutputBoundary addBookmarkPresenter = new AddBookmarkPresenter(bookmarksViewModel);
+
+        AddBookmarkInputBoundary addBookmarkUseCase = new AddBookmarkUseCase(bookmarkStorage, addBookmarkPresenter);
+        RemoveBookmarkInputBoundary removeBookmarkUseCase = new RemoveBookmarkUseCase(bookmarkStorage, removeBookmarkPresenter);
+        ListBookmarksInputBoundary listBookmarksUseCase = new ListBookmarksUseCase(bookmarkStorage, listBookmarksPresenter);
     public AppBuilder addSearchBarView() {
         final SearchBarViewModel viewModel = new SearchBarViewModel();
         final GeocodingAPI api = new OpenWeatherGeocodingAPI();
@@ -210,6 +218,8 @@ public class AppBuilder {
         final ListBookmarksController listBookmarksController =
                 new ListBookmarksController(listBookmarksUseCase);
 
+        VisitBookmarkOutputBoundary visitBookmarkPresenter = new VisitBookmarkPresenter(bookmarksViewModel);
+        VisitBookmarkInputBoundary visitBookmarkUseCase = new VisitBookmarkUseCase(
         final VisitBookmarkOutputBoundary visitBookmarkPresenter =
                 new VisitBookmarkPresenter(bookmarksViewModel);
         final VisitBookmarkInputBoundary visitBookmarkUseCase =
@@ -219,6 +229,7 @@ public class AppBuilder {
                 panAndZoomPresenter,
                 visitBookmarkPresenter
         );
+        VisitBookmarkController visitBookmarkController = new VisitBookmarkController(visitBookmarkUseCase);
         final VisitBookmarkController visitBookmarkController =
                 new VisitBookmarkController(visitBookmarkUseCase);
 
@@ -244,10 +255,9 @@ public class AppBuilder {
         return this;
     }
 
-    public AppBuilder addChangeOpacityView() {
-        weatherLayersViewModel = new WeatherLayersViewModel(0.5);
-        changeWeatherView =
-                new ChangeWeatherLayersView(weatherLayersViewModel, mapViewer);
+    public AppBuilder addChangeOpacityView(){
+        weatherLayersViewModel = new WeatherLayersViewModel(Constants.DEFAULT_OPACITY);
+        changeWeatherView = new ChangeWeatherLayersView(weatherLayersViewModel, mapViewer);
         return this;
     }
     /**
@@ -438,6 +448,15 @@ public class AppBuilder {
                     viewport,
                     changeLayerUseCase
         );
+        
+        LoadMapSettingsInputBoundary loadMapSettingsUseCase = new LoadMapSettingsUseCase(mapSettingsStorage, autoLoadPresenter);
+        SaveMapSettingsInputBoundary saveMapSettingsUseCase = new SaveMapSettingsUseCase(mapSettingsStorage, 
+                new interfaceadapter.mapsettings.savemapsettings.SaveMapSettingsPresenter(
+                        new interfaceadapter.mapsettings.MapSettingsViewModel()));
+        
+        loadMapSettingsController = new LoadMapSettingsController(loadMapSettingsUseCase);
+        saveMapSettingsController = new SaveMapSettingsController(saveMapSettingsUseCase);
+
         loadMapSettingsUseCase = new LoadMapSettingsUseCase(
                 mapSettingsStorage,
                 autoLoadPresenter);

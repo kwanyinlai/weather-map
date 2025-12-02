@@ -1,5 +1,6 @@
 package view;
 
+import constants.Constants;
 import entity.LayerNotFoundException;
 import entity.WeatherType;
 import interfaceadapter.weatherlayers.updateoverlay.UpdateOverlayController;
@@ -25,11 +26,11 @@ public class ChangeWeatherLayersView extends JPanel{
     private transient UpdateOverlayController updateController;
 
     public ChangeWeatherLayersView(WeatherLayersViewModel vm, JMapViewer mapViewer){
-        this.setPreferredSize(new Dimension(200,200));
+        this.setPreferredSize(new Dimension(Constants.CHANGE_WEATHER_VIEW_SIZE,Constants.CHANGE_WEATHER_VIEW_SIZE));
 
 
-        slider = new JSlider(SwingConstants.HORIZONTAL, 0, 100, 50);
-        slider.setPreferredSize(new Dimension(100, 50));
+        slider = new JSlider(SwingConstants.HORIZONTAL, 0, Constants.OPACITY_SLIDER_MAX_VAL,
+                Constants.OPACITY_SLIDER_DEFAULT_VAL);
         slider.addChangeListener(evt -> {
                     JSlider source = (JSlider) evt.getSource();
                     if(!source.getValueIsAdjusting()) {
@@ -46,16 +47,14 @@ public class ChangeWeatherLayersView extends JPanel{
         }
         else{
             JLabel warning = new JLabel("<html>Missing Thunderforest API key.<br>Basemap cannot be switched.</html>");
-            warning.setSize(200,200);
             this.add(warning);
         }
 
         weatherDropdown = new JComboBox<>(WeatherType.values());
-        weatherDropdown.setPreferredSize(new Dimension(200, 100));
         weatherDropdown.addActionListener(e -> {
             try {
                 layersController.executeChangeLayer((WeatherType) weatherDropdown.getSelectedItem());
-                slider.setValue((int)(vm.getCurrentOpacity()*100));
+                slider.setValue((int)(vm.getCurrentOpacity()*Constants.OPACITY_SLIDER_MAX_VAL));
                 slider.setEnabled(true);
                 updateController.update();
             } catch (LayerNotFoundException ex) {
@@ -70,6 +69,9 @@ public class ChangeWeatherLayersView extends JPanel{
         this.add(slider);
     }
 
+    /**
+     * Create the dropdown menu for the basemap options
+     */
     @NotNull
     private static JComboBox<TileSource> getTileSourceJComboBox(JMapViewer mapViewer) {
         JComboBox<TileSource> basemapDropdown = new JComboBox<>(new TileSource[]{
