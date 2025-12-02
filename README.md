@@ -1,13 +1,89 @@
-# Team Project
+# Weather Map Viewer
 
-Please keep this up-to-date with information about your project throughout the term.
+![A screeshot of the application showing the wind speed weather map](img/demo_1.png)
+![A screenshot showing the temperature weather map](img/demo_2.png)
+![A screenshot showing a loading pressure weather map](img/demo_3.png)
 
-The readme should include information such as:
-- a summary of what your application is all about
-- a list of the user stories, along with who is responsible for each one
-- information about the API(s) that your project uses 
-- screenshots or animations demonstrating current functionality
+## Application Summary
 
-By keeping this README up-to-date,
-your team will find it easier to prepare for the final presentation
-at the end of the term.
+   This application displays a weather overlay over an interactive map, allowing the user to view the weather 
+   conditions of differnt parts of the world by navigating the map.
+### Map
+   - The interactive map allows the user to navigate the map by dragging the mouse or using the mousewheel to zoom 
+   in.
+   - The basemap can be changed using the top dropdown menu on the right. This menu is only avalible if a 
+   ThunderForest API key is set as an enviroment variable (THUNDERFOREST_KEY=[key here]), avalible for free. 
+   https://thunderforest.com/
+### Weather Overlay:
+   - The weather overlay displays the weather conditions of the visible areas as an overlay on top of the map.
+   The color gradient legend at the top of the application shows the values that the colors correspond to, 
+   provided by https://www.weatherapi.com/. 
+   There are 4 types of weather data avalible, which can be selected using the dropdown menu on the right:
+     - Temperature
+     - Precipitation
+     - Pressure
+     - Wind Speed
+   - The opacity slider below the drowdown menu allows the user to set the overlay opacity of each weather type.
+
+### Forecast:
+   - The time slider at the bottom of the window allows the user to set the forecast time of the overlay, up to 3 
+   days in the future, and the play button will automatically move the slider forward, showing the weather forecast 
+   as an animated map. Note that due to internet speed and caching the weather overlay on the first cycle may be slightly
+   laggy, but it will be much smoother once all tiles have been cached.
+   
+### Info Panel:
+   - When the user zooms in past a certain zoom level, an info panel pops up on the map, showing detailed weather information for the current view.
+   - The panel displays point-based current conditions for the center of the visible area.
+   - Below the current conditions, the panel shows an hourly forecast timeline for that location, allowing the user to see how the weather will change over the next several hours.
+   - As the user pans or zooms the map (while staying above the zoom threshold), the info panel automatically updates to reflect the new center location.
+   - If weather data cannot be retrieved for the current location (for example, due to network or API issues), the panel shows a clear error message instead of outdated information.
+### Bookmarks:
+   - The bookmarks panel lets the user save specific locations on the map so they can quickly return to them later.
+   - Clicking **Add** creates a new bookmark for the current map view, storing the location (latitude/longitude) together with a user-provided name.
+   - All saved bookmarks are displayed in a list, where the user can:
+     - **Select** a bookmark by clicking on it. 
+     - Click **Visit** to move the map viewport to the bookmarked location.
+     - Click **Remove** to delete the selected bookmark from the list.
+   - Bookmarks are stored persistently: closing and reopening the application will keep all previously saved bookmarks, so the user can continue navigating using their saved locations.
+
+  
+### Searchbar:
+   - The search bar panel allows user to search the specific cities they want and select it in resultscroll.
+     - Typing the city name you want in the search bar.
+     - Clicking **search** to have a result list of all related location.
+     - Select the location you want in the resultscroll.
+     - The map will automatically switch to the location you want.
+
+   
+###  Map Settings:
+   
+   - While the application is running, any changes to the map settings (e.g., the basemap type, zoom level, and weather overlay options such as opacity) are saved.
+
+   - When the app is launched, the previously saved map settings are automatically loaded, restoring the map layout, selected basemap, and overlay configuration.
+
+   - This allows the user to continue from where they left off, without needing to reconfigure their preferred map view each time they open the application.
+
+ *Note: While changing window size is supported, using the fullscreen button or using window's snapping feature will not update the overlay correctly.
+
+## User Stories:
+   - As a user, I want to add and remove location bookmarks that persist across app sessions, and jump to a bookmarked location by pressing a “Visit” button. (Igor Tatarov)
+   - As a user, I want the map layout and settings to be saved and automatically restored when I reopen the app. (Igor Tatarov)
+   - As a user, I want an information panel to pop up when I zoom in close enough to a specific city (or landmark), displaying the temperature and-or other forecasted weather at the location. (Griffin Wang)
+   - As a user, I want to freely switch between multiple weather overlays (such as temperature, cloud cover, and air pressure) on the map and change the base map. (Ian Lee)
+   - As a user, I want to be able to navigate backwards and forwards in time using a slider, accompanied by a play button which will automatically move the time slider across this time scale. (Kwan Yin Lai)
+   - As a user, I want to check the weather conditions around me by being able to zoom in/out on the map, or pan around the map to look at a specific location.(Junxi Huang)
+   - As a user, I want to search for the location that I want to check the weather condition of using a search bar, And the map will automatically switch to the location after I clicked the result location.(Junxi Huang)
+     
+- API Information:
+    - https://thunderforest.com/: This api is used by the JMapViewer module to display the maps. The default map type
+      (Mapnik) does not require an API key, while the other options require one, avalible for free. 
+      Set enviroment variable THUNDERFOREST_KEY=[key here] to enable the basemap dropdown menu.
+    - https://www.weatherapi.com/docs/: We are using 2 services provided by this provider. 
+      - weathermaps: returns an image based on the specified time, zoom level, and tile coordinates. Used to construct
+      the weather overlay. Does not require a key.
+      - forecast: shows the hourly forecast. Set environment variable WEATHER_API_KEY = [key here]
+    - https://openweathermap.org/api/geocoding-api Geocoding API: This API is used to provide all related search result 
+      as a list when a user type a location name in search bar.
+      Set environment variable GEOCODING_KEY =[key here] to enable the search result list.
+
+
