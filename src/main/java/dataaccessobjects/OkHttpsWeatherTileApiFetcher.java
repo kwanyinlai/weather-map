@@ -1,5 +1,6 @@
 package dataaccessobjects;
 
+import constants.Constants;
 import dataaccessinterface.TileNotFoundException;
 import okhttp3.Request;
 import okhttp3.Response;
@@ -11,6 +12,8 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import entity.WeatherTile;
 import javax.imageio.ImageIO;
@@ -66,16 +69,20 @@ public class OkHttpsWeatherTileApiFetcher implements WeatherTileApiFetcher {
 
     public List<BufferedImage> getListOfWeatherTileImageData(List<WeatherTile> weatherTileList){
         List<BufferedImage> imageList = new ArrayList<>();
-        List<CompletableFuture<BufferedImage>> futures = new ArrayList<>();
-        for (WeatherTile tile : weatherTileList) {
-            CompletableFuture<BufferedImage> imageData =
-                    CompletableFuture.supplyAsync(() -> {
-                            try {
-                                return getWeatherTileImageData(tile);
-                            } catch (TileNotFoundException e) {
-                                return null;
-                            }
-                        })
+        ExecutorService executor = Executors.newFixedThreadPool(Constants.TILE_FETCH_WORKERS);
+        try{
+
+            List<CompletableFuture<BufferedImage>> futures = new ArrayList<>();
+
+            for (WeatherTile tile : weatherTileList) {
+                CompletableFuture<BufferedImage> imageData =
+                        CompletableFuture.supplyAsync(() -> {
+                                    try {
+                                        return getWeatherTileImageData(tile);
+                                    } catch (TileNotFoundException e) {
+                                        return null;
+                                    }
+                                }, executor)
                                 .exceptionally(ex -> null);
 
                 futures.add(imageData);
@@ -85,7 +92,8 @@ public class OkHttpsWeatherTileApiFetcher implements WeatherTileApiFetcher {
             }
             return imageList;
             }
+        finally{
+            executor.shutdown();
+        }
     }
-
-
-
+}
