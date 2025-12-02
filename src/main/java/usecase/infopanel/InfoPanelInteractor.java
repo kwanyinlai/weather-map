@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.util.*;
+import javax.xml.XMLConstants;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -102,12 +103,20 @@ public class InfoPanelInteractor implements InfoPanelInputBoundary {
             throws ParserConfigurationException, SAXException, IOException {
 
         final DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+        factory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
+        factory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
+        factory.setFeature("http://xml.org/sax/features/external-general-entities", false);
+        factory.setFeature("http://xml.org/sax/features/external-parameter-entities", false);
+        factory.setXIncludeAware(false);
+        factory.setExpandEntityReferences(false);
+
         final DocumentBuilder builder = factory.newDocumentBuilder();
         final Document document = builder.parse(
                 new ByteArrayInputStream(xml.getBytes(StandardCharsets.UTF_8)));
         document.getDocumentElement().normalize();
         return document;
     }
+
 
     private String parsePlace(Document doc) {
         String place = TAG_LOCATION;

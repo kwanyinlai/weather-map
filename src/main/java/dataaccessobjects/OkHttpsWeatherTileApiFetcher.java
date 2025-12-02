@@ -97,5 +97,3 @@ public class OkHttpsWeatherTileApiFetcher implements WeatherTileApiFetcher {
         }
     }
 }
-
-
