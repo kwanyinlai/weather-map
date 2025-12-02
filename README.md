@@ -71,7 +71,7 @@
    - As a user, I want to check the weather conditions around me by being able to zoom in/out on the map, or pan around the map to look at a specific location.
    - As a user, I want an information panel to pop up when I zoom in close enough to a specific city (or landmark), displaying the temperature and-or other forecasted weather at the location. (Griffin Wang)
    - As a user, I want to freely switch between multiple weather overlays (such as temperature, cloud cover, and air pressure) on the map and change the base map. (Ian Lee)
-   - As a user, I want to be able to navigate backwards and forwards in time using a slider, accompanied by a play button which will automatically move the time slider across this time scale.
+   - As a user, I want to be able to navigate backwards and forwards in time using a slider, accompanied by a play button which will automatically move the time slider across this time scale. (Kwan Yin Lai)
    - As a user, I want to check the weather conditions around me by being able to zoom in/out on the map, or pan around the map to look at a specific location.(Junxi Huang)
    - As a user, I want to search for the location that I want to check the weather condition of using a search bar, And the map will automatically switch to the location after I clicked the result location.(Junxi Huang)
      
