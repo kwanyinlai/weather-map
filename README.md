@@ -73,16 +73,15 @@
    - As a user, I want to be able to navigate backwards and forwards in time using a slider, accompanied by a play button which will automatically move the time slider across this time scale.
    - As a user, I want to check the weather conditions around me by being able to zoom in/out on the map, or pan around the map to look at a specific location.
    - As a user, I want to search for the location that I want to check the weather condition of using a search bar, And the map will automatically switch to the location after I clicked the result location.
-     
-- API Information:
-    - https://thunderforest.com/: This api is used by the JMapViewer module to display the maps. The default map type
+## API Information:
+   - https://thunderforest.com/: This api is used by the JMapViewer module to display the maps. The default map type
       (Mapnik) does not require an API key, while the other options require one, avalible for free. 
       Set enviroment variable THUNDERFOREST_KEY=[key here] to enable the basemap dropdown menu.
-    - https://www.weatherapi.com/docs/: We are using 2 services provided by this provider. 
+   - https://www.weatherapi.com/docs/: We are using 2 services provided by this provider. 
       - weathermaps: returns an image based on the specified time, zoom level, and tile coordinates. Used to construct
       the weather overlay. Does not require a key.
       - forecast: shows the hourly forecast. Set environment variable WEATHER_API_KEY = [key here]
-    - https://openweathermap.org/api/geocoding-api Geocoding API: This API is used to provide all related search result 
+   - https://openweathermap.org/api/geocoding-api Geocoding API: This API is used to provide all related search result 
       as a list when a user type a location name in search bar.
       Set environment variable GEOCODING_KEY =[key here] to enable the search result list.
 
