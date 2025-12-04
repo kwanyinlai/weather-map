@@ -66,13 +66,13 @@
  *Note: While changing window size is supported, using the fullscreen button or using window's snapping feature will not update the overlay correctly.
 
 ## User Stories:
-   - As a user, I want to add and remove location bookmarks that persist across app sessions, and jump to a bookmarked location by pressing a “Visit” button. (Igor Tatarov)
-   - As a user, I want the map layout and settings to be saved and automatically restored when I reopen the app. (Igor Tatarov)
-   - As a user, I want an information panel to pop up when I zoom in close enough to a specific city (or landmark), displaying the temperature and-or other forecasted weather at the location. (Griffin Wang)
-   - As a user, I want to freely switch between multiple weather overlays (such as temperature, cloud cover, and air pressure) on the map and change the base map. (Ian Lee)
-   - As a user, I want to be able to navigate backwards and forwards in time using a slider, accompanied by a play button which will automatically move the time slider across this time scale. (Kwan Yin Lai)
-   - As a user, I want to check the weather conditions around me by being able to zoom in/out on the map, or pan around the map to look at a specific location.(Junxi Huang)
-   - As a user, I want to search for the location that I want to check the weather condition of using a search bar, And the map will automatically switch to the location after I clicked the result location.(Junxi Huang)
+   - As a user, I want to add and remove location bookmarks that persist across app sessions, and jump to a bookmarked location by pressing a “Visit” button.
+   - As a user, I want the map layout and settings to be saved and automatically restored when I reopen the app.
+   - As a user, I want an information panel to pop up when I zoom in close enough to a specific city (or landmark), displaying the temperature and-or other forecasted weather at the location.
+   - As a user, I want to freely switch between multiple weather overlays (such as temperature, cloud cover, and air pressure) on the map and change the base map.
+   - As a user, I want to be able to navigate backwards and forwards in time using a slider, accompanied by a play button which will automatically move the time slider across this time scale.
+   - As a user, I want to check the weather conditions around me by being able to zoom in/out on the map, or pan around the map to look at a specific location.
+   - As a user, I want to search for the location that I want to check the weather condition of using a search bar, And the map will automatically switch to the location after I clicked the result location.
      
 - API Information:
     - https://thunderforest.com/: This api is used by the JMapViewer module to display the maps. The default map type
